@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Net.NetworkInformation;
 using System.IO;
 
@@ -32,7 +33,7 @@ namespace PLG_Connect_Presenter
         int count = 0;
         public async void Start()
         {
-            string IP = "10.16.10.18";
+            string IP = "10.16.10.18"; // HIER IP-ADRESSE ERHALTEN
             PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
 
             while (await timer.WaitForNextTickAsync())
