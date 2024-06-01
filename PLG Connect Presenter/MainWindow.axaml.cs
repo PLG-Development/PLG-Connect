@@ -19,8 +19,9 @@ namespace PLG_Connect_Presenter
         {
             InitializeComponent();
             LoadImage();
-            
+
             Start();
+            NetworkHandler nh = new NetworkHandler();
         }
 
         public void LoadImage()
@@ -64,7 +65,7 @@ namespace PLG_Connect_Presenter
             }
 
 
-            
+
 
         }
     }
