@@ -5,5 +5,14 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect_Presenter.MainWindow"
         Title="PLG_Connect_Presenter">
-    Welcome to Avalonia!
+	<Grid>
+		<TextBlock x:Name="TbStartupInformation" TextAlignment="Center" Text="Starting up..." Margin="270,0,270,-130" FontSize="23" Height="60" VerticalAlignment="Center"/>
+		<Image Height="100" Margin="350,149,350,185" Width="100" Source="/Schullogo_PNG_white.png"/>
+		<Grid>
+			<Image x:Name="ImgMain"></Image>
+			<Label x:Name="TbContents" Content="[Hier könnte Ihr Text stehen]" HorizontalContentAlignment="Center" FontSize="38" VerticalContentAlignment="Center"></Label>
+		</Grid>
+
+
+	</Grid>
 </Window>

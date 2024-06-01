@@ -4,6 +4,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect.MainWindow"
-        Title="PLG_Connect">
-    Welcome to Avalonia!
+        Title="PLG Connect">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Label Content="IP Address: " x:Name="LblAddress" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.321,0.348"/>
+		<StackPanel x:Name="StpDevices" Orientation="Horizontal" Margin="10,64,10,10" Background="#343439"/>
+		<Label Content="Connected Devices" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
+		<StackPanel x:Name="StpScreens" Orientation="Vertical" Margin="10,64,10,50" Background="#343439" Grid.Column="1"/>
+		<Button x:Name="BtnNextAll" Grid.Column="1" Content="Next (all)" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="110" Height="35"/>
+		<Button x:Name="BtnPreviousAll" Grid.Column="1" Content="Previous (all)" HorizontalAlignment="Right" Margin="0,0,125,10" VerticalAlignment="Bottom" Width="110" Height="35" Click="BtnPreviousAll_Click"/>
+		<Button Grid.Column="1" x:Name="BtnAddNewMonitor" Content="Add new..." HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Height="35" Width="75" Click="BtnAddNewMonitor_Click"/>
+
+	</Grid>
 </Window>
