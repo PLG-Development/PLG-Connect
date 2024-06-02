@@ -35,19 +35,19 @@ public partial class MainWindow : Window
 
     }
 
-        public void LoadImage()
-        {
-            string theme = Application.Current.ActualThemeVariant.ToString();
-            if(theme == "Light"){
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
-            } else if (theme == "Dark") {
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
-            } else {
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
-            }
-            
-            
+    public void LoadImage()
+    {
+        string theme = Application.Current.ActualThemeVariant.ToString();
+        if(theme == "Light"){
+            ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
+        } else if (theme == "Dark") {
+            ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
+        } else {
+            ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
         }
+        
+        
+    }
 
     // DispatcherTimer starter = new DispatcherTimer();
     // Random r = new Random();
