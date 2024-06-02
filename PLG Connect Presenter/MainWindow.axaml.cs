@@ -35,11 +35,12 @@ namespace PLG_Connect_Presenter
         public void LoadImage()
         {
             string theme = Application.Current.ActualThemeVariant.ToString();
-            Console.WriteLine(theme);
             if(theme == "Light"){
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
-            } else {
+            } else if (theme == "Dark") {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
+            } else {
+                ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
             }
             
             
