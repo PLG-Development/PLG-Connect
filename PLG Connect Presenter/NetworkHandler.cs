@@ -27,7 +27,7 @@ namespace PLG_Connect_Network
             Webserver server = new Webserver(settings, DefaultRoute);
 
             server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, "/ping", PingRoute);
-            server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, "/displayText", DisplyTextRoute);
+            server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, "/displayText", DisplayTextRoute);
             server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
             server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, "/runCommand", RunCommandRoute);
             server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, "/openSlide", OpenSlideRoute);
@@ -59,7 +59,7 @@ namespace PLG_Connect_Network
         }
 
         // General purpose routes
-        async Task DisplyTextRoute(HttpContextBase ctx)
+        async Task DisplayTextRoute(HttpContextBase ctx)
         {
             DisplayTextMessage result;
 
