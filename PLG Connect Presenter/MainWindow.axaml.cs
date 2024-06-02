@@ -41,8 +41,8 @@ namespace PLG_Connect_Presenter
             } else {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
             }
-            
-            
+
+
         }
 
         // DispatcherTimer starter = new DispatcherTimer();
