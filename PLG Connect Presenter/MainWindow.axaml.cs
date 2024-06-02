@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Net.NetworkInformation;
 using System.IO;
+using PLG_Connect_Network;
 
 namespace PLG_Connect_Presenter
 {
@@ -21,7 +22,7 @@ namespace PLG_Connect_Presenter
             LoadImage();
 
             Start();
-            NetworkHandler nh = new NetworkHandler();
+            Server nh = new Server();
         }
 
         public void LoadImage()

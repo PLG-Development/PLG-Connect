@@ -5,16 +5,16 @@ using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Net;
 
-namespace PLG_Connect_Presenter
+namespace PLG_Connect_Network
 {
-    public class NetworkHandler
+    public class Server
     {
-        public NetworkHandler()
+        public Server(int port = 8080)
         {
             WebserverSettings settings = new()
             {
                 Hostname = "127.0.0.1",
-                Port = 8080,
+                Port = port,
             };
             Webserver server = new Webserver(settings, DefaultRoute);
 
