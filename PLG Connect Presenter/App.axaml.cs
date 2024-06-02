@@ -11,6 +11,8 @@ namespace PLG_Connect_Presenter
             AvaloniaXamlLoader.Load(this);
         }
 
+        
+
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

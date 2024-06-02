@@ -11,6 +11,8 @@ using System.Threading;
 using System.Net.NetworkInformation;
 using System.IO;
 using PLG_Connect_Network;
+using Avalonia;
+using Avalonia.Styling;
 
 namespace PLG_Connect_Presenter
 {
@@ -23,11 +25,24 @@ namespace PLG_Connect_Presenter
 
             Start();
             Server nh = new Server();
+            nh.displayTextHandlers.Add((string s) => {Foo();});
+        }
+
+        public void Foo(){
+
         }
 
         public void LoadImage()
         {
-            ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
+            string theme = Application.Current.ActualThemeVariant.ToString();
+            Console.WriteLine(theme);
+            if(theme == "Light"){
+                ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
+            } else {
+                ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
+            }
+            
+            
         }
 
         // DispatcherTimer starter = new DispatcherTimer();
