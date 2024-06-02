@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
-using System.Linq.Expressions;
+using System.Net;
 
 namespace PLG_Connect_Presenter
 {
-
     public class NetworkHandler
     {
         public NetworkHandler()
@@ -43,31 +42,57 @@ namespace PLG_Connect_Presenter
         // General purpose routes
         static async Task DisplyTextRoute(HttpContextBase ctx)
         {
+            string message;
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<DisplayTextMessage>(ctx.Request.DataAsString);
+                if (result == null)
+                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await ctx.Response.Send("ERROR: Invalid JSON");
+                    return;
+                }
+                message = result.Text;
+            }
+            catch (Exception e)
+            {
+                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await ctx.Response.Send($"ERROR: {e.Message}");
+                return;
+            }
+
+            await ctx.Response.Send("");
         }
 
         static async Task ToggleBlackScreenRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Toggle Black Screen");
+            await ctx.Response.Send("");
         }
         static async Task RunCommandRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Run Command");
+            await ctx.Response.Send("");
         }
 
         // Slide Routes
         static async Task OpenSlideRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Open Slide");
+            await ctx.Response.Send("");
         }
 
         static async Task NextSlideRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Next Slide");
+            await ctx.Response.Send("");
         }
 
         static async Task PreviousSlideRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Previous Slide");
+            await ctx.Response.Send("");
         }
+    }
+
+    public class DisplayTextMessage
+    {
+        public required string Text { get; set; }
     }
 }
