@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG Connect Presenter", "PL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG Connect", "PLG Connect\PLG Connect.csproj", "{07CA418F-B54C-4372-A20D-60CD9B161D77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLG-Connect-Network", "PLG-Connect-Network\PLG-Connect-Network.csproj", "{030E501E-B441-44F4-A378-0A2C023E7FDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{07CA418F-B54C-4372-A20D-60CD9B161D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07CA418F-B54C-4372-A20D-60CD9B161D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07CA418F-B54C-4372-A20D-60CD9B161D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{030E501E-B441-44F4-A378-0A2C023E7FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{030E501E-B441-44F4-A378-0A2C023E7FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{030E501E-B441-44F4-A378-0A2C023E7FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{030E501E-B441-44F4-A378-0A2C023E7FDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

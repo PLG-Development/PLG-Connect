@@ -14,23 +14,26 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Styling;
 
-namespace PLG_Connect_Presenter
+
+namespace PLG_Connect_Presenter;
+
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            LoadImage();
+        InitializeComponent();
+        LoadImage();
 
-            Start();
-            Server nh = new Server();
-            nh.displayTextHandlers.Add((string s) => {Foo();});
-        }
+        Start();
+        Server nh = new Server();
+        nh.displayTextHandlers.Add((string s) => { Foo(); });
+    }
 
-        public void Foo(){
+    public void Foo()
+    {
 
-        }
+    }
 
         public void LoadImage()
         {
@@ -46,44 +49,39 @@ namespace PLG_Connect_Presenter
             
         }
 
-        // DispatcherTimer starter = new DispatcherTimer();
-        // Random r = new Random();
-        int count = 0;
-        public async void Start()
+    // DispatcherTimer starter = new DispatcherTimer();
+    // Random r = new Random();
+    int count = 0;
+    public async void Start()
+    {
+        string IP = "10.16.10.18"; // HIER IP-ADRESSE ERHALTEN
+        PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
+
+        while (await timer.WaitForNextTickAsync())
         {
-            string IP = "10.16.10.18"; // HIER IP-ADRESSE ERHALTEN
-            PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
-
-            while (await timer.WaitForNextTickAsync())
+            switch (count)
             {
-                switch (count)
-                {
-                    case 0:
-                        TbStartupInformation.Text = "Loading data...";
-                        count = 1;
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
-                        break;
-                    case 1:
-                        TbStartupInformation.Text = "Start listening...";
-                        count = 2;
-                        ///(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
-                        break;
-                    case 2:
-                        count = 3;
-                        TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + IP.ToString();
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
-                        break;
-                    case 3:
-                        count = 2;
-                        TbStartupInformation.Text = "Ready to Connect\n" + IP.ToString();
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
-                        break;
-                }
+                case 0:
+                    TbStartupInformation.Text = "Loading data...";
+                    count = 1;
+                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
+                    break;
+                case 1:
+                    TbStartupInformation.Text = "Start listening...";
+                    count = 2;
+                    ///(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
+                    break;
+                case 2:
+                    count = 3;
+                    TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + IP.ToString();
+                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
+                    break;
+                case 3:
+                    count = 2;
+                    TbStartupInformation.Text = "Ready to Connect\n" + IP.ToString();
+                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
+                    break;
             }
-
-
-
-
         }
     }
 }
