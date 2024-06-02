@@ -1,12 +1,13 @@
 using Avalonia.Controls;
 
-namespace PLG_Connect
+
+namespace PLG_Connect;
+
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
