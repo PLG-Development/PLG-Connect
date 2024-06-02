@@ -4,11 +4,19 @@ using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Net;
+using System.Collections.Generic;
 
 namespace PLG_Connect_Network
 {
     public class Server
     {
+        public List<Action<string>> displayTextHandlers = new List<Action<string>>();
+        public List<Action> toggleBlackScreenHandlers = new List<Action>();
+        public List<Action<string>> runCommandHandlers = new List<Action<string>>();
+        public List<Action<string>> openSlideHandlers = new List<Action<string>>();
+        public List<Action> nextSlideHandlers = new List<Action>();
+        public List<Action> previousSlideHandlers = new List<Action>();
+
         public Server(int port = 8080)
         {
             WebserverSettings settings = new()
@@ -42,16 +50,16 @@ namespace PLG_Connect_Network
 
         static async Task DefaultRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("Hello from the default route!");
+            await ctx.Response.Send("This should never be called");
         }
 
         static async Task PingRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("pong");
+            await ctx.Response.Send("Pong");
         }
 
         // General purpose routes
-        static async Task DisplyTextRoute(HttpContextBase ctx)
+        async Task DisplyTextRoute(HttpContextBase ctx)
         {
             DisplayTextMessage result;
 
@@ -66,14 +74,22 @@ namespace PLG_Connect_Network
                 return;
             }
 
+            foreach (var handler in displayTextHandlers)
+            {
+                handler(result.Text);
+            }
             await ctx.Response.Send("");
         }
 
-        static async Task ToggleBlackScreenRoute(HttpContextBase ctx)
+        async Task ToggleBlackScreenRoute(HttpContextBase ctx)
         {
+            foreach (var handler in toggleBlackScreenHandlers)
+            {
+                handler();
+            }
             await ctx.Response.Send("");
         }
-        static async Task RunCommandRoute(HttpContextBase ctx)
+        async Task RunCommandRoute(HttpContextBase ctx)
         {
             RunCommandMessage result;
 
@@ -88,11 +104,15 @@ namespace PLG_Connect_Network
                 return;
             }
 
+            foreach (var handler in runCommandHandlers)
+            {
+                handler(result.Command);
+            }
             await ctx.Response.Send("");
         }
 
         // Slide Routes
-        static async Task OpenSlideRoute(HttpContextBase ctx)
+        async Task OpenSlideRoute(HttpContextBase ctx)
         {
             OpenSlideMessage result;
 
@@ -107,16 +127,27 @@ namespace PLG_Connect_Network
                 return;
             }
 
+            foreach (var handler in openSlideHandlers)
+            {
+                handler(result.SlidePath);
+            }
+        }
+
+        async Task NextSlideRoute(HttpContextBase ctx)
+        {
+            foreach (var handler in nextSlideHandlers)
+            {
+                handler();
+            }
             await ctx.Response.Send("");
         }
 
-        static async Task NextSlideRoute(HttpContextBase ctx)
+        async Task PreviousSlideRoute(HttpContextBase ctx)
         {
-            await ctx.Response.Send("");
-        }
-
-        static async Task PreviousSlideRoute(HttpContextBase ctx)
-        {
+            foreach (var handler in previousSlideHandlers)
+            {
+                handler();
+            }
             await ctx.Response.Send("");
         }
     }
