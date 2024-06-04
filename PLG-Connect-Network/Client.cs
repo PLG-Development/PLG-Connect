@@ -1,5 +1,8 @@
 using System.Text.Json;
 using System.Text;
+using System.Net.NetworkInformation;
+using System.Net;
+using System.Text.RegularExpressions;
 
 
 namespace PLG_Connect_Network;
@@ -7,8 +10,21 @@ namespace PLG_Connect_Network;
 
 public class Client
 {
-    public required string ServerAddress { get; set; }
+    public string ServerAddress { get; set; }
+    public string MacAddress { get; set; }
     static readonly HttpClient client = new HttpClient();
+
+    public Client(string serverAddress, string macAddress)
+    {
+        string macAddressPattern = @"^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$";
+        if (!Regex.IsMatch(macAddress, macAddressPattern))
+        {
+          throw new ArgumentException("Invalid MAC address format");
+        }
+
+        ServerAddress = serverAddress;
+        MacAddress = macAddress;
+    }
 
     private async Task sendPostRequest<T>(string path, T message)
     {
@@ -26,6 +42,11 @@ public class Client
         {
             return;
         }
+    }
+
+    public void SendWakeOnLAN()
+    {
+      PhysicalAddress.Parse(MacAddress).SendWol();
     }
 
     public async Task DisplayText(string text)
