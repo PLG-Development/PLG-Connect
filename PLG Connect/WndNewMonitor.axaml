@@ -4,8 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect.WndNewMonitor"
-        ResizeMode="NoResize"
-        WindowStyle="ToolWindow"
+        CanResize="false"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
         WindowStartupLocation="CenterScreen"
         Title="Add new monitor..." Height="215" Width="315" Closing="Window_Closing">
     <Grid Background="#343439">
