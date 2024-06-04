@@ -15,6 +15,7 @@ public partial class WndNewMonitor : Window
 
     public bool start_n = true;
     public bool start_ip = true;
+    public bool start_mac = true;
     private void TextBox_GotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
         TextBox? tb = (sender as TextBox);
@@ -42,14 +43,28 @@ public partial class WndNewMonitor : Window
             start_ip = false;
         }
     }
+    private void TextBox_GotFocus_2(object sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        TextBox? tb = sender as TextBox;
+        if (tb == null)
+        {
+            return;
+        }
+        if (start_mac && tb.Text == "Enter MAC...")
+        {
+            tb.Text = "";
+            start_mac = false;
+        }
+    }
     bool finished = false;
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-        if (!start_n && !start_ip)
+        if (!start_n && !start_ip && !start_mac)
         {
             MainWindow.new_mon_temp_ip = TbIP.Text;
             MainWindow.new_mon_temp_name = TbName.Text;
+            MainWindow.new_mon_temp_mac = TbMAC.Text;
             MainWindow.new_mon_canceled = false;
             finished = true;
         }

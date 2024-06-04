@@ -37,13 +37,19 @@ public partial class MainWindow : Window
 
     public void LoadImage()
     {
-        if(Application.Current != null){
+        if (Application.Current != null)
+        {
             string theme = Application.Current.ActualThemeVariant.ToString();
-            if(theme == "Light"){
+            if (theme == "Light")
+            {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
-            } else if (theme == "Dark") {
+            }
+            else if (theme == "Dark")
+            {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
-            } else {
+            }
+            else
+            {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
             }
         }
@@ -62,7 +68,7 @@ public partial class MainWindow : Window
             switch (count)
             {
                 case 0:
-                    TbStartupInformation.Text = "Loading data...";
+                    TbStartupInformation.Text = "Loading IP Address...";
                     count = 1;
                     //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
                     break;
