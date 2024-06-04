@@ -27,12 +27,7 @@ public partial class MainWindow : Window
 
         Start();
         Server nh = new Server();
-        nh.displayTextHandlers.Add((string s) => { Foo(); });
-    }
-
-    public void Foo()
-    {
-
+        nh.displayTextHandlers.Add((string s) => { });
     }
 
     public void LoadImage()
@@ -55,14 +50,16 @@ public partial class MainWindow : Window
         }
     }
 
-    // DispatcherTimer starter = new DispatcherTimer();
-    // Random r = new Random();
-    int count = 0;
     public async void Start()
     {
-        string IP = "10.16.10.18"; // HIER IP-ADRESSE ERHALTEN
-        PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
+        string hostName = Dns.GetHostName();
+        string ipAddress = Array.Find(
+            Dns.GetHostAddresses(hostName)
+            , ip => ip.AddressFamily == AddressFamily.InterNetwork
+        )!.ToString();
 
+        int count = 0;
+        PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
         while (await timer.WaitForNextTickAsync())
         {
             switch (count)
@@ -70,22 +67,18 @@ public partial class MainWindow : Window
                 case 0:
                     TbStartupInformation.Text = "Loading IP Address...";
                     count = 1;
-                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
                     break;
                 case 1:
                     TbStartupInformation.Text = "Start listening...";
                     count = 2;
-                    ///(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
                     break;
                 case 2:
                     count = 3;
-                    TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + IP.ToString();
-                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
+                    TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + ipAddress;
                     break;
                 case 3:
                     count = 2;
-                    TbStartupInformation.Text = "Ready to Connect\n" + IP.ToString();
-                    //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
+                    TbStartupInformation.Text = "Ready to Connect\n" + ipAddress;
                     break;
             }
         }
