@@ -8,13 +8,13 @@ using System.Text.RegularExpressions;
 namespace PLG_Connect_Network;
 
 
-public class Client
+public class ClientConnection
 {
     public string ServerAddress { get; set; }
     public string MacAddress { get; set; }
     static readonly HttpClient client = new HttpClient();
 
-    public Client(string serverAddress, string macAddress)
+    public ClientConnection(string serverAddress, string macAddress)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))

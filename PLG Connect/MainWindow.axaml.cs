@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using Avalonia.Controls;
 
 
 namespace PLG_Connect;
 
 
-public partial class MainWindow : Window
+partial class MainWindow : Window
 {
+    private List<Display> Displays = new();
+
     public MainWindow()
     {
         InitializeComponent();
@@ -16,4 +19,14 @@ public partial class MainWindow : Window
     public static string new_mon_temp_ip = "";
     public static string new_mon_temp_mac = "";
     public static bool new_mon_canceled = false;
+
+    private void SaveConfig()
+    {
+
+    }
+
+    private void LoadConfig()
+    {
+
+    }
 }
