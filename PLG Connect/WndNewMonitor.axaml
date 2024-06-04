@@ -4,6 +4,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect.WndNewMonitor"
-        Title="WndNewMonitor">
-  Welcome to Avalonia!
+        ResizeMode="NoResize"
+        WindowStyle="ToolWindow"
+        WindowStartupLocation="CenterScreen"
+        Title="Add new monitor..." Height="215" Width="315" Closing="Window_Closing">
+    <Grid Background="#343439">
+        <Label Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="IP" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="TbName" Margin="10,33,10,0" TextWrapping="Wrap" Text="Enter name..." GotFocus="TextBox_GotFocus" VerticalAlignment="Top" Height="37" TextChanged="TextBox_TextChanged"/>
+        <TextBox x:Name="TbIP" Margin="10,104,10,45" TextWrapping="Wrap" Text="Enter IP..." GotFocus="TextBox_GotFocus_1"/>
+        <Button Content="Test Ping" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="70" Height="30"/>
+        <Button Content="Please" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="70" Height="30" Click="Button_Click"/>
+        <Button Content="No!" HorizontalAlignment="Right" Margin="0,0,87,10" VerticalAlignment="Bottom" Width="70" Height="30" Click="Button_Click_1"/>
+
+    </Grid>
 </Window>
