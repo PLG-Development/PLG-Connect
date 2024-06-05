@@ -57,7 +57,9 @@ public partial class MainWindow : Window
             Dns.GetHostAddresses(hostName)
             , ip => ip.AddressFamily == AddressFamily.InterNetwork
         )!.ToString();
+        string macAddress = getMacAddress();
 
+        TbStartupInformation.Text = "Starting Up ...\n\n";
         int count = 0;
         PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
         while (await timer.WaitForNextTickAsync())
@@ -65,22 +67,41 @@ public partial class MainWindow : Window
             switch (count)
             {
                 case 0:
-                    TbStartupInformation.Text = "Loading IP Address...";
+                    TbStartupInformation.Text = "Loading IP Address...\n\n";
                     count = 1;
                     break;
                 case 1:
-                    TbStartupInformation.Text = "Start listening...";
+                    TbStartupInformation.Text = "Start Listening...\n\n";
                     count = 2;
                     break;
                 case 2:
                     count = 3;
-                    TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + ipAddress;
+                    TbStartupInformation.Text = $"Welcome to PLG Connect Presenter!\n{ipAddress}\n{macAddress}";
                     break;
                 case 3:
                     count = 2;
-                    TbStartupInformation.Text = "Ready to Connect\n" + ipAddress;
+                    TbStartupInformation.Text = $"Ready to Connect\n{ipAddress}\n{macAddress}";
                     break;
             }
         }
+    }
+
+    private static string getMacAddress()
+    {
+        foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (ni.OperationalStatus == OperationalStatus.Up && ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+            {
+                string rawMacAddress = ni.GetPhysicalAddress().ToString();
+                List<string> macAddressParts = new();
+                for (int i = 0; i < rawMacAddress.Length; i += 2)
+                {
+                    macAddressParts.Add(rawMacAddress[i].ToString() + rawMacAddress[i + 1].ToString());
+                }
+                return String.Join("-", macAddressParts);
+            }
+        }
+
+        throw new Exception("No MAC Address found");
     }
 }
