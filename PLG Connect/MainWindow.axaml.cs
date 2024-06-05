@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.IO;
 using PLG_Connect_Network;
 using System;
+using System.Linq;
 
 
 namespace PLG_Connect;
@@ -35,7 +36,8 @@ partial class MainWindow : Window
 
     private void SaveConfig()
     {
-        string json = JsonSerializer.Serialize(Displays);
+        DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
+        string json = JsonSerializer.Serialize(settings);
         File.WriteAllText(ConfigPath, json);
     }
 
