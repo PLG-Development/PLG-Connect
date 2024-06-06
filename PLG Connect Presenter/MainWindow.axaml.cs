@@ -105,7 +105,7 @@ public partial class MainWindow : Window
                 {
                     macAddressParts.Add(rawMacAddress[i].ToString() + rawMacAddress[i + 1].ToString());
                 }
-                return String.Join("-", macAddressParts);
+                return String.Join(":", macAddressParts);
             }
         }
 
