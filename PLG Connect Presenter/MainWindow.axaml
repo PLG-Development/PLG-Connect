@@ -6,7 +6,7 @@
         x:Class="PLG_Connect_Presenter.MainWindow" ExtendClientAreaToDecorationsHint="true"
         Title="PLG_Connect_Presenter" WindowState="FullScreen">
 	<Grid>
-		<TextBlock x:Name="TbStartupInformation" TextAlignment="Center" Text="Starting up..." Margin="270,0,270,-130" FontSize="23" Height="60" VerticalAlignment="Center"/>
+		<TextBlock x:Name="TbStartupInformation" TextAlignment="Center" Text="Starting up..." Margin="270,0,270,-190" FontSize="23" Height="100" VerticalAlignment="Center"/>
 		<Image Height="100" Margin="350,149,350,185" Width="100" x:Name="ImgLoading" />
 		<Grid x:Name="GrdTextImage" IsVisible="false">
 			<Image x:Name="ImgMain"></Image>
