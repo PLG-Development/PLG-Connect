@@ -52,6 +52,12 @@ partial class MainWindow : Window
         string json = File.ReadAllText(ConfigPath);
         Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
     }
+
+    public void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        WndNewMonitor w = new WndNewMonitor();
+        w.Show();
+    }
 }
 
 class Display : ClientConnection

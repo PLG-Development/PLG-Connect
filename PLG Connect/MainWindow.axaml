@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		WindowState="Maximized"
         x:Class="PLG_Connect.MainWindow"
         Title="PLG Connect">
 	<Grid>
@@ -16,6 +17,6 @@
 		<StackPanel x:Name="StpScreens" Orientation="Vertical" Margin="5,64,10,50" Background="#343439" Grid.Column="1"/>
 		<Button x:Name="BtnNextAll" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Next (all)" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="110" Height="35"/>
 		<Button x:Name="BtnPreviousAll" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Previous (all)" HorizontalAlignment="Right" Margin="0,0,125,10" VerticalAlignment="Bottom" Width="110" Height="35" />
-		<Button Grid.Column="1" x:Name="BtnAddNewMonitor" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Add new..." HorizontalAlignment="Left" Margin="5,0,0,10" VerticalAlignment="Bottom" Height="35" Width="75" />
+		<Button Grid.Column="1" x:Name="BtnAddNewMonitor" Click="BtnAddNewMonitor_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Add new..." HorizontalAlignment="Left" Margin="5,0,0,10" VerticalAlignment="Bottom" Height="35" Width="75" />
 	</Grid>
 </Window>
