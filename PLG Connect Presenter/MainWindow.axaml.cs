@@ -44,15 +44,15 @@ public partial class MainWindow : Window
             string theme = Application.Current.ActualThemeVariant.ToString();
             if (theme == "Light")
             {
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
+                ImgLoading.Source = new Bitmap("LOGO_black.png");
             }
             else if (theme == "Dark")
             {
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
+                ImgLoading.Source = new Bitmap("LOGO_white.png");
             }
             else
             {
-                ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
+                ImgLoading.Source = new Bitmap("LOGO_white.png");
             }
         }
     
