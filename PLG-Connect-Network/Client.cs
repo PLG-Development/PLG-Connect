@@ -10,11 +10,12 @@ namespace PLG_Connect_Network;
 
 public class ClientConnection
 {
-    public string ServerAddress { get; set; }
+    public string IpAddress { get; set; }
     public string MacAddress { get; set; }
+    public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public ClientConnection(string serverAddress, string macAddress)
+    public ClientConnection(string ipAddress, string macAddress, string password)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))
@@ -22,7 +23,8 @@ public class ClientConnection
           throw new ArgumentException("Invalid MAC address format");
         }
 
-        ServerAddress = serverAddress;
+        Password = password;
+        IpAddress = ipAddress;
         MacAddress = macAddress.Replace(":", "-");
     }
 
@@ -31,9 +33,12 @@ public class ClientConnection
         try
         {
             string json = JsonSerializer.Serialize(message);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://" + IpAddress + path);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            request.Headers.Add("Authorization", "Bearer " + Password);
 
-            HttpResponseMessage response = await client.PostAsync(ServerAddress + path, content);
+            var response = await client.SendAsync(request);
+
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
             return;

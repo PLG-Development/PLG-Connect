@@ -64,7 +64,7 @@ class Display : ClientConnection
 {
     public required DisplaySettings Settings;
 
-    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress) { }
+    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password) { }
 }
 
 
@@ -73,4 +73,5 @@ struct DisplaySettings
     public string Name;
     public string IPAddress;
     public string MacAddress;
+    public string Password;
 }
