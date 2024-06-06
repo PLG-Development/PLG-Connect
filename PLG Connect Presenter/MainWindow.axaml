@@ -12,5 +12,6 @@
 			<Image x:Name="ImgMain"></Image>
 			<Label x:Name="TbContents" Content="[Hier könnte Ihr Text stehen]" HorizontalContentAlignment="Center" FontSize="38" VerticalContentAlignment="Center"></Label>
 		</Grid>
-	</StackPanel>
+	</Grid>
+	
 </Window>

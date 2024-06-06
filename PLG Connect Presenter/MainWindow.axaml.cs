@@ -20,10 +20,10 @@ namespace PLG_Connect_Presenter;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
-    {
-        InitializeComponent();
-        LoadImage();
+        public MainWindow()
+        {
+            InitializeComponent();
+            LoadImage();
 
             Start();
             Server nh = new Server();
@@ -36,7 +36,7 @@ public partial class MainWindow : Window
 
         public void DisplayText(string content)
         {
-            TbContents.Text = content;
+            TbContents.Content = content;
         }
 
         public void LoadImage()
@@ -55,7 +55,7 @@ public partial class MainWindow : Window
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
             }
         }
-    }
+    
 
     public async void Start()
     {
