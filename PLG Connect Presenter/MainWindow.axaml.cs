@@ -14,14 +14,16 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Styling;
 
-namespace PLG_Connect_Presenter
+
+namespace PLG_Connect_Presenter;
+
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            LoadImage();
+        InitializeComponent();
+        LoadImage();
 
             Start();
             Server nh = new Server();
@@ -40,54 +42,73 @@ namespace PLG_Connect_Presenter
         public void LoadImage()
         {
             string theme = Application.Current.ActualThemeVariant.ToString();
-            Console.WriteLine(theme);
-            if(theme == "Light"){
+            if (theme == "Light")
+            {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_dark.png");
-            } else {
+            }
+            else if (theme == "Dark")
+            {
                 ImgLoading.Source = new Bitmap("Schullogo_PNG_white.png");
             }
-            
-            
-        }
-
-        // DispatcherTimer starter = new DispatcherTimer();
-        // Random r = new Random();
-        int count = 0;
-        public async void Start()
-        {
-            string IP = "10.16.10.18"; // HIER IP-ADRESSE ERHALTEN
-            PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
-
-            while (await timer.WaitForNextTickAsync())
+            else
             {
-                switch (count)
-                {
-                    case 0:
-                        TbStartupInformation.Text = "Loading data...";
-                        count = 1;
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
-                        break;
-                    case 1:
-                        TbStartupInformation.Text = "Start listening...";
-                        count = 2;
-                        ///(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, r.Next(2000, 4000));
-                        break;
-                    case 2:
-                        count = 3;
-                        TbStartupInformation.Text = "Welcome to PLG Connect Presenter!\n" + IP.ToString();
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
-                        break;
-                    case 3:
-                        count = 2;
-                        TbStartupInformation.Text = "Ready to Connect\n" + IP.ToString();
-                        //(sender as DispatcherTimer).Interval = new TimeSpan(0, 0, 0, 0, 2500);
-                        break;
-                }
+                ImgLoading.Source = new Bitmap("Schullogo_PNG_grey.png");
             }
-
-
-
-
         }
+    }
+
+    public async void Start()
+    {
+        string hostName = Dns.GetHostName();
+        string ipAddress = Array.Find(
+            Dns.GetHostAddresses(hostName)
+            , ip => ip.AddressFamily == AddressFamily.InterNetwork
+        )!.ToString();
+        string macAddress = getMacAddress();
+
+        TbStartupInformation.Text = "Starting Up ...\n\n";
+        int count = 0;
+        PeriodicTimer timer = new(TimeSpan.FromMilliseconds(2000));
+        while (await timer.WaitForNextTickAsync())
+        {
+            switch (count)
+            {
+                case 0:
+                    TbStartupInformation.Text = "Loading IP Address...\n\n";
+                    count = 1;
+                    break;
+                case 1:
+                    TbStartupInformation.Text = "Start Listening...\n\n";
+                    count = 2;
+                    break;
+                case 2:
+                    count = 3;
+                    TbStartupInformation.Text = $"Welcome to PLG Connect Presenter!\n{ipAddress}\n{macAddress}";
+                    break;
+                case 3:
+                    count = 2;
+                    TbStartupInformation.Text = $"Ready to Connect\n{ipAddress}\n{macAddress}";
+                    break;
+            }
+        }
+    }
+
+    private static string getMacAddress()
+    {
+        foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (ni.OperationalStatus == OperationalStatus.Up && ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+            {
+                string rawMacAddress = ni.GetPhysicalAddress().ToString();
+                List<string> macAddressParts = new();
+                for (int i = 0; i < rawMacAddress.Length; i += 2)
+                {
+                    macAddressParts.Add(rawMacAddress[i].ToString() + rawMacAddress[i + 1].ToString());
+                }
+                return String.Join("-", macAddressParts);
+            }
+        }
+
+        throw new Exception("No MAC Address found");
     }
 }
