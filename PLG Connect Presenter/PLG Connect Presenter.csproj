@@ -6,6 +6,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>PLG-Connect-LOGO-black.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,9 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
   </ItemGroup>
 
+<ItemGroup>
+  <AvaloniaResource Include="PLG-Connect-LOGO-black.ico"></AvaloniaResource>
+</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PLG-Connect-Network\PLG-Connect-Network.csproj" />
   </ItemGroup>

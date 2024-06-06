@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect_Presenter.MainWindow" ExtendClientAreaToDecorationsHint="true"
-        Title="PLG_Connect_Presenter" WindowState="FullScreen">
+        Title="PLG_Connect_Presenter" WindowState="FullScreen" Icon="PLG-Connect-LOGO-black.ico">
 	<Grid>
 		<TextBlock x:Name="TbStartupInformation" TextAlignment="Center" Text="Starting up..." Margin="270,0,270,-190" FontSize="23" Height="100" VerticalAlignment="Center"/>
 		<Image Height="100" Margin="350,149,350,185" Width="100" x:Name="ImgLoading" />

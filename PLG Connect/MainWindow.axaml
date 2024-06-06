@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		WindowState="Maximized"
+		Icon="PLG-Connect-LOGO-black.ico"
         x:Class="PLG_Connect.MainWindow"
         Title="PLG Connect">
 	<Grid>
