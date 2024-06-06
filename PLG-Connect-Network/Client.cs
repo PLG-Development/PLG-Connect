@@ -16,14 +16,14 @@ public class ClientConnection
 
     public ClientConnection(string serverAddress, string macAddress)
     {
-        string macAddressPattern = @"^([0-9A-Fa-f]{2}-){5}([0-9A-Fa-f]{2})$";
+        string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))
         {
           throw new ArgumentException("Invalid MAC address format");
         }
 
         ServerAddress = serverAddress;
-        MacAddress = macAddress;
+        MacAddress = macAddress.Replace(":", "-");
     }
 
     private async Task sendPostRequest<T>(string path, T message)
