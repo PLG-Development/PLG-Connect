@@ -25,11 +25,16 @@ namespace PLG_Connect_Presenter
 
             Start();
             Server nh = new Server();
-            nh.displayTextHandlers.Add((string s) => {Foo();});
+            nh.displayTextHandlers.Add((string s) => {DisplayText(s);});
         }
 
         public void Foo(){
 
+        }
+
+        public void DisplayText(string content)
+        {
+            TbContents.Text = content;
         }
 
         public void LoadImage()
