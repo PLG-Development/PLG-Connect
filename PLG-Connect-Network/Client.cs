@@ -40,6 +40,9 @@ public class ClientConnection
         }
         catch (HttpRequestException e)
         {
+#if DEBUG
+            Console.WriteLine(e.Message);
+#endif
             return;
         }
     }
