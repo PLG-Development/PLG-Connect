@@ -30,6 +30,8 @@ public class Server
         Webserver server = new Webserver(settings, DefaultRoute);
 
         server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.GET, "/ping", PingRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/changePassword", ChangePasswordRoute);
+
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplyTextRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
@@ -72,6 +74,26 @@ public class Server
         }
 
         return result;
+    }
+
+    async Task ChangePasswordRoute(HttpContextBase ctx)
+    {
+        ChangePasswordMessage result;
+
+        try
+        {
+            result = ExtractObject<ChangePasswordMessage>(ctx);
+        }
+        catch (Exception e)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await ctx.Response.Send($"ERROR: {e.Message}");
+            return;
+        }
+
+        Password = result.NewPassword;
+        await ctx.Response.Send("");
+
     }
 
     static async Task DefaultRoute(HttpContextBase ctx)
