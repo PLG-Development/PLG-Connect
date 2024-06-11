@@ -3,6 +3,7 @@ using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 
 
 namespace PLG_Connect_Network;
@@ -16,6 +17,7 @@ public class Server
     public List<Action<string>> openSlideHandlers = new List<Action<string>>();
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
+    public List<Action> firstRequestHandlers = new List<Action>();
     public string Password;
 
     public Server(string password = "0", int port = 8080)
@@ -39,9 +41,23 @@ public class Server
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
 
+        server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
 
         server.StartAsync();
+    }
+
+    bool firstRequestHappend = false;
+    Task BeforeRequest(HttpContextBase ctx)
+    {
+        if (firstRequestHappend) { return Task.CompletedTask; }
+
+        foreach (var handler in firstRequestHandlers)
+        {
+            handler();
+        }
+        firstRequestHappend = true;
+        return Task.CompletedTask;
     }
 
     async Task<bool> AuthenticateRequest(HttpContextBase ctx)
