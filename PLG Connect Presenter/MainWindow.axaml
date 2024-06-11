@@ -2,16 +2,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="PLG_Connect_Presenter.MainWindow" ExtendClientAreaToDecorationsHint="true"
-        Title="PLG_Connect_Presenter" WindowState="FullScreen" Icon="PLG-Connect-LOGO-black.ico">
-	<Grid>
-		<TextBlock x:Name="TbStartupInformation" TextAlignment="Center" Text="Starting up..." Margin="270,30,270,-190" FontSize="23" Height="100" VerticalAlignment="Center"/>
-		<Image Height="250" Margin="350,100,350,185" Width="250" x:Name="ImgLoading" />
-		<Grid x:Name="GrdTextImage" IsVisible="false">
-			<Image x:Name="ImgMain"></Image>
-			<Label x:Name="TbContents" Content="[Hier könnte Ihr Text stehen]" HorizontalContentAlignment="Center" FontSize="38" VerticalContentAlignment="Center"></Label>
-		</Grid>
-	</Grid>
-	
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+        x:Class="PLG_Connect_Presenter.MainWindow"
+        ExtendClientAreaToDecorationsHint="true"
+        Title="PLG_Connect_Presenter"
+        WindowState="FullScreen"
+        Icon="PLG-Connect-LOGO-black.ico">
+    <Grid>
+        <TextBlock x:Name="TbStartupInformation"
+                   TextAlignment="Center"
+                   Text="Starting up..."
+                   Margin="270,30,270,-190"
+                   FontSize="23"
+                   Height="100"
+                   VerticalAlignment="Center" />
+        <Image Height="250"
+               Margin="350,100,350,185"
+               Width="250"
+               x:Name="ImgLoading" />
+        <Grid x:Name="GrdTextImage"
+              IsVisible="false">
+            <Image x:Name="ImgMain" />
+            <Label x:Name="TbContents"
+                   Content="[Hier könnte Ihr Text stehen]"
+                   HorizontalContentAlignment="Center"
+                   FontSize="38"
+                   VerticalContentAlignment="Center" />
+        </Grid>
+    </Grid>
 </Window>
