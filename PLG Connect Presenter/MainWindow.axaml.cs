@@ -27,6 +27,13 @@ public partial class MainWindow : Window
         Server server = new Server();
         server.displayTextHandlers.Add((string s) => { DisplayText(s); });
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
+        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
+    }
+
+    private void firstRequest()
+    {
+        startInfo.IsVisible = false;
+        content.IsVisible = true;
     }
 
     bool showBlackScreen = false;
