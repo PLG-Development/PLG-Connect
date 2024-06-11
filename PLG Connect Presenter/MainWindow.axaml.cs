@@ -2,17 +2,14 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net.NetworkInformation;
-using System.IO;
 using PLG_Connect_Network;
 using Avalonia;
-using Avalonia.Styling;
+using Avalonia.Threading;
 
 
 namespace PLG_Connect_Presenter;
@@ -20,42 +17,47 @@ namespace PLG_Connect_Presenter;
 
 public partial class MainWindow : Window
 {
-        public MainWindow()
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        LoadImage();
+
+        Start();
+        Server server = new Server();
+        server.displayTextHandlers.Add((string s) => { DisplayText(s); });
+        server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
+    }
+
+    bool showBlackScreen = false;
+    private void ToggleBlackScreen()
+    {
+        showBlackScreen = !showBlackScreen;
+        main.IsVisible = !showBlackScreen;
+    }
+
+    private void DisplayText(string content)
+    {
+        TbContents.Content = content;
+    }
+
+    public void LoadImage()
+    {
+        string theme = Application.Current.ActualThemeVariant.ToString();
+        if (theme == "Light")
         {
-            InitializeComponent();
-            LoadImage();
-
-            Start();
-            Server nh = new Server();
-            nh.displayTextHandlers.Add((string s) => {DisplayText(s);});
+            ImgLoading.Source = new Bitmap("LOGO_black.png");
         }
-
-        public void Foo(){
-
-        }
-
-        public void DisplayText(string content)
+        else if (theme == "Dark")
         {
-            TbContents.Content = content;
+            ImgLoading.Source = new Bitmap("LOGO_white.png");
         }
-
-        public void LoadImage()
+        else
         {
-            string theme = Application.Current.ActualThemeVariant.ToString();
-            if (theme == "Light")
-            {
-                ImgLoading.Source = new Bitmap("LOGO_black.png");
-            }
-            else if (theme == "Dark")
-            {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
-            }
-            else
-            {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
-            }
+            ImgLoading.Source = new Bitmap("LOGO_white.png");
         }
-    
+    }
+
 
     public async void Start()
     {

@@ -10,7 +10,8 @@
         Title="PLG_Connect_Presenter"
         WindowState="FullScreen"
         Icon="PLG-Connect-LOGO-black.ico">
-    <Grid>
+    <Grid IsVisible="True"
+          Name="main">
         <TextBlock x:Name="TbStartupInformation"
                    TextAlignment="Center"
                    Text="Starting up..."
