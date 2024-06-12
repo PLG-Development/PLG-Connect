@@ -121,7 +121,7 @@ public partial class WndNewMonitor : Window
             }
             LblMac.Content = "MAC";
             mac_valid=true;
-
+            MAC=TbMAC.Text;
             
         }
         ButtonCheck();
@@ -154,6 +154,7 @@ public partial class WndNewMonitor : Window
             }
             LblIP.Content = "IP";
             ip_valid=true;
+            IP=TbIP.Text;
 
         } catch {
             LblIP.Foreground = new SolidColorBrush(Color.Parse("#FF3333"));
@@ -169,6 +170,7 @@ public partial class WndNewMonitor : Window
         if(mac_valid && ip_valid)
         {
             BtnAdd.IsEnabled = true;
+            CreationState = DisplayCreationState.Ready;
             return;
         }
         
@@ -177,12 +179,13 @@ public partial class WndNewMonitor : Window
     }
     private void TbName_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-
+        Name=TbName.Text;
     }
 }
 
 public enum DisplayCreationState{
     Created,
     Cancelled,
-    Failed
+    Failed,
+    Ready
 }
