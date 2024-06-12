@@ -1,7 +1,18 @@
-using Avalonia;
+using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia;
+using System.Text.RegularExpressions;
+using System.Text.Json;
+using System.IO;
+using PLG_Connect_Network;
+using System;
+using System.Linq;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml.Converters;
+using Avalonia.Media;
+
+
 
 namespace PLG_Connect;
 
@@ -31,8 +42,8 @@ public partial class WndNewMonitor : Window
     }
 
     public string Name;
-    public IPAddress IP;
-    public MacAddress MAC;
+    public string IP;
+    public string MAC;
     public DisplayCreationState CreationState;
 
     private void TextBox_GotFocus_1(object sender, Avalonia.Input.GotFocusEventArgs e)
@@ -67,15 +78,12 @@ public partial class WndNewMonitor : Window
     {
         if (!start_n && !start_ip && !start_mac)
         {
-            MainWindow.new_mon_temp_ip = TbIP.Text;
-            MainWindow.new_mon_temp_name = TbName.Text;
-            MainWindow.new_mon_temp_mac = TbMAC.Text;
-            MainWindow.new_mon_canceled = false;
-            finished = true;
+            //end
+            Close();
         }
 
 
-        Close();
+        
     }
 
     private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -91,7 +99,32 @@ public partial class WndNewMonitor : Window
         }
     }
 
-    private void TextBox_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
+    private void TbMAC_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+        string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
+        if (!Regex.IsMatch(TbMAC.Text, macAddressPattern))
+        {
+            LblMac.Foreground = new SolidColorBrush(Color.Parse("#FF3333"));
+            LblMac.Content = "MAC - Invalid";
+        } else {
+            string theme = Application.Current.ActualThemeVariant.ToString();
+            if (theme == "Light")
+            {
+                LblMac.Foreground = new SolidColorBrush(Color.Parse("#000000"));
+            }
+            else if (theme == "Dark")
+            {
+                LblMac.Foreground = new SolidColorBrush(Color.Parse("#FFFFFF"));
+            }
+            LblMac.Content = "MAC";
+            
+        }
+    }
+    private void TbIP_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
+    {
+
+    }
+    private void TbName_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
 
     }
