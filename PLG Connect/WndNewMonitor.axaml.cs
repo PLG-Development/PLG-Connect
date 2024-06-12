@@ -13,9 +13,9 @@ public partial class WndNewMonitor : Window
     }
 
 
-    public bool start_n = true;
-    public bool start_ip = true;
-    public bool start_mac = true;
+    private bool start_n = true;
+    private bool start_ip = true;
+    private bool start_mac = true;
     private void TextBox_GotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
         TextBox? tb = (sender as TextBox);
@@ -29,6 +29,11 @@ public partial class WndNewMonitor : Window
             start_n = false;
         }
     }
+
+    public string Name;
+    public IPAddress IP;
+    public MacAddress MAC;
+    public DisplayCreationState CreationState;
 
     private void TextBox_GotFocus_1(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
@@ -90,4 +95,10 @@ public partial class WndNewMonitor : Window
     {
 
     }
+}
+
+public enum DisplayCreationState{
+    Created,
+    Cancelled,
+    Failed
 }
