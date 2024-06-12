@@ -52,7 +52,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
+                ImgLoading.Source = new Bitmap("LOGO_black.png");
             }
         }
     
