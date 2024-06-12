@@ -3,6 +3,7 @@ using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 
 
 namespace PLG_Connect_Network;
@@ -16,9 +17,13 @@ public class Server
     public List<Action<string>> openSlideHandlers = new List<Action<string>>();
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
+    public List<Action> firstRequestHandlers = new List<Action>();
+    public string Password;
 
-    public Server(int port = 8080)
+    public Server(string password = "0", int port = 8080)
     {
+        Password = password;
+
         WebserverSettings settings = new()
         {
             Hostname = "127.0.0.1",
@@ -27,14 +32,53 @@ public class Server
         Webserver server = new Webserver(settings, DefaultRoute);
 
         server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.GET, "/ping", PingRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplyTextRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/openSlide", OpenSlideRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
-        server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/changePassword", ChangePasswordRoute);
+
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplyTextRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openSlide", OpenSlideRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
+
+        server.Routes.PreRouting = BeforeRequest;
+        server.Routes.AuthenticateRequest = AuthenticateRequest;
 
         server.StartAsync();
+    }
+
+    bool firstRequestHappend = false;
+    Task BeforeRequest(HttpContextBase ctx)
+    {
+        if (firstRequestHappend) { return Task.CompletedTask; }
+
+        foreach (var handler in firstRequestHandlers)
+        {
+            handler();
+        }
+        firstRequestHappend = true;
+        return Task.CompletedTask;
+    }
+
+    async Task<bool> AuthenticateRequest(HttpContextBase ctx)
+    {
+        string? authHeader = ctx.Request.Headers["Authorization"];
+        if (authHeader == null || !authHeader.StartsWith("Bearer "))
+        {
+            ctx.Response.StatusCode = 401;
+            await ctx.Response.Send("Unauthorized");
+            return false;
+        }
+
+        string token = authHeader.Substring("Bearer ".Length);
+        if (token != Password)
+        {
+            ctx.Response.StatusCode = 401;
+            await ctx.Response.Send("Unauthorized");
+            return false;
+        }
+
+        return true;
     }
 
     static T ExtractObject<T>(HttpContextBase ctx)
@@ -48,8 +92,29 @@ public class Server
         return result;
     }
 
+    async Task ChangePasswordRoute(HttpContextBase ctx)
+    {
+        ChangePasswordMessage result;
+
+        try
+        {
+            result = ExtractObject<ChangePasswordMessage>(ctx);
+        }
+        catch (Exception e)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await ctx.Response.Send($"ERROR: {e.Message}");
+            return;
+        }
+
+        Password = result.NewPassword;
+        await ctx.Response.Send("");
+
+    }
+
     static async Task DefaultRoute(HttpContextBase ctx)
     {
+        ctx.Response.StatusCode = 400;
         await ctx.Response.Send("This should never be called");
     }
 
