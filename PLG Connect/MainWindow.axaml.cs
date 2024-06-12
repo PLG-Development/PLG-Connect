@@ -5,6 +5,7 @@ using System.IO;
 using PLG_Connect_Network;
 using System;
 using System.Linq;
+using Avalonia.Interactivity;
 
 
 namespace PLG_Connect;
@@ -53,10 +54,29 @@ partial class MainWindow : Window
         Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
     }
 
-    public void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         WndNewMonitor w = new WndNewMonitor();
+        w.Closing += AddNewMonitor;
         w.Show();
+    }
+
+    private void AddNewMonitor(object sender, WindowClosingEventArgs e){
+        WndNewMonitor output = sender as WndNewMonitor;
+        if(output != null){
+            // Create new display instance here and import the monitor
+        }
+
+        RefreshGUI();
+    }
+
+    ///<summary>
+    /// Goes through every single instance of displays and mobile clients and updates their appearance in the window
+    ///</summary>
+    public void RefreshGUI(){
+        foreach(Display disp in Displays){
+            
+        }
     }
 }
 
