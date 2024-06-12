@@ -64,7 +64,15 @@ partial class MainWindow : Window
     private void AddNewMonitor(object sender, WindowClosingEventArgs e){
         WndNewMonitor output = sender as WndNewMonitor;
         if(output != null){
-            // Create new display instance here and import the monitor
+            if(output.CreationState == DisplayCreationState.Ready){
+                foreach(Display disp in Displays){
+                    if(disp.MacAddress == output.MAC){
+                        output.CreationState = DisplayCreationState.Failed;
+                        throw new Exception("PLG_Connect.MacAlreadyExistsException");
+                    }
+                }
+                Displays.Add(new Display(new DisplaySettings(){Name=output.Name,IPAddress=output.IP,MacAddress=output.MAC}));
+            }
         }
 
         RefreshGUI();
