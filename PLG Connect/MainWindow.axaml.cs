@@ -96,9 +96,12 @@ partial class MainWindow : Window
 
 class Display : ClientConnection
 {
-    public required DisplaySettings Settings;
+    public DisplaySettings Settings;
 
-    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password) { }
+    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
+    {
+        Settings = settings;
+    }
 }
 
 
