@@ -12,75 +12,54 @@
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaTitleBarHeightHint="-1"
         WindowStartupLocation="CenterScreen"
-        Title="Add new monitor..."
         Height="315"
         Width="315"
+        Title="Add Monitor"
         Closing="Window_Closing">
-    <Grid Background="#343439">
-        <Label Content="Name"
-               HorizontalAlignment="Left"
-               Margin="10,10,0,0"
-               VerticalAlignment="Top" />
-        <Label x:Name="LblIP"
-               Content="IP"
-               HorizontalAlignment="Left"
-               Margin="10,75,0,0"
-               VerticalAlignment="Top" />
-        <Label x:Name="LblMac"
-               Content="MAC"
-               HorizontalAlignment="Left"
-               Margin="10,145,0,0"
-               VerticalAlignment="Top" />
-        <TextBox x:Name="TbName"
-                 Margin="10,33,10,0"
-                 TextWrapping="Wrap"
-                 Text="Enter name..."
-                 GotFocus="TextBox_GotFocus"
-                 VerticalAlignment="Top"
-                 Height="33"
-                 TextChanged="TbName_TextChanged" />
-        <TextBox x:Name="TbIP"
-                 Margin="10,100,10,45"
-                 TextWrapping="Wrap"
-                 Text="Enter IP..."
-                 GotFocus="TextBox_GotFocus_1"
-                 VerticalAlignment="Top"
-                 Height="33"
-                 TextChanged="TbIP_TextChanged" />
-        <TextBox x:Name="TbMAC"
-                 Margin="10,170,10,45"
-                 TextWrapping="Wrap"
-                 Text="Enter MAC..."
-                 GotFocus="TextBox_GotFocus_2"
-                 VerticalAlignment="Top"
-                 Height="33"
-                 TextChanged="TbMAC_TextChanged" />
-        <Button x:Name="BtnPing"
-                HorizontalContentAlignment="Center"
-                Content="Test-Ping"
-                IsEnabled="False"
-                HorizontalAlignment="Left"
-                Margin="10,0,0,10"
-                VerticalAlignment="Bottom"
-                Width="84"
-                Height="30" />
-        <Button x:Name="BtnAdd"
-                HorizontalContentAlignment="Center"
-                Content="Add"
-                HorizontalAlignment="Right"
-                Margin="0,0,10,10"
-                VerticalAlignment="Bottom"
-                Width="70"
-                Height="30"
-                Click="Button_Click" />
-        <Button x:Name="BtnCancel"
-                HorizontalContentAlignment="Center"
-                Content="Cancel"
-                HorizontalAlignment="Right"
-                Margin="0,0,87,10"
-                VerticalAlignment="Bottom"
-                Width="70"
-                Height="30"
-                Click="Button_Click_1" />
-    </Grid>
+    <Border Padding="16">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top"
+                        Spacing="4">
+                <StackPanel>
+                    <Label Content="Name" />
+                    <TextBox x:Name="TbName"
+                             TextWrapping="Wrap"
+                             Watermark="Enter Name ..."
+                             GotFocus="TextBox_GotFocus"
+                             TextChanged="TbName_TextChanged" />
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="IP"
+                           x:Name="LblIP" />
+                    <TextBox x:Name="TbIP"
+                             TextWrapping="Wrap"
+                             Watermark="Enter IP ..."
+                             GotFocus="TextBox_GotFocus_1"
+                             TextChanged="TbIP_TextChanged" />
+                </StackPanel>
+                <StackPanel>
+                    <Label Content="MAC"
+                           x:Name="LblMac" />
+                    <TextBox x:Name="TbMAC"
+                             TextWrapping="Wrap"
+                             Watermark="Enter MAC ..."
+                             GotFocus="TextBox_GotFocus_2"
+                             TextChanged="TbMAC_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        DockPanel.Dock="Bottom"
+                        Spacing="4">
+                <Button x:Name="BtnPing"
+                        Content="Test-Ping"
+                        IsEnabled="False" />
+                <Button x:Name="BtnAdd"
+                        Content="Add"
+                        Click="Button_Click" />
+                <Button x:Name="BtnCancel"
+                        Content="Cancel"
+                        Click="Button_Click_1" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
 </Window>
