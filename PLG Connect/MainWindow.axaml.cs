@@ -5,7 +5,6 @@ using System.IO;
 using PLG_Connect_Network;
 using System;
 using System.Linq;
-using Avalonia.Interactivity;
 
 
 namespace PLG_Connect;
@@ -61,17 +60,22 @@ partial class MainWindow : Window
         w.Show();
     }
 
-    private void AddNewMonitor(object sender, WindowClosingEventArgs e){
+    private void AddNewMonitor(object sender, WindowClosingEventArgs e)
+    {
         WndNewMonitor output = sender as WndNewMonitor;
-        if(output != null){
-            if(output.CreationState == DisplayCreationState.Ready){
-                foreach(Display disp in Displays){
-                    if(disp.MacAddress == output.MAC){
+        if (output != null)
+        {
+            if (output.CreationState == DisplayCreationState.Ready)
+            {
+                foreach (Display disp in Displays)
+                {
+                    if (disp.MacAddress == output.MAC)
+                    {
                         output.CreationState = DisplayCreationState.Failed;
                         throw new Exception("PLG_Connect.MacAlreadyExistsException");
                     }
                 }
-                Displays.Add(new Display(new DisplaySettings(){Name=output.Name,IPAddress=output.IP,MacAddress=output.MAC}));
+                Displays.Add(new Display(new DisplaySettings() { Name = output.Name, IPAddress = output.IP, MacAddress = output.MAC }));
             }
         }
 
@@ -81,9 +85,11 @@ partial class MainWindow : Window
     ///<summary>
     /// Goes through every single instance of displays and mobile clients and updates their appearance in the window
     ///</summary>
-    public void RefreshGUI(){
-        foreach(Display disp in Displays){
-            
+    public void RefreshGUI()
+    {
+        foreach (Display disp in Displays)
+        {
+
         }
     }
 }

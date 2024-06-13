@@ -1,20 +1,13 @@
-using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia;
 using System.Text.RegularExpressions;
-using System.Text.Json;
-using System.IO;
-using PLG_Connect_Network;
 using System;
-using System.Linq;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Converters;
 using Avalonia.Media;
 
 
-
 namespace PLG_Connect;
+
 
 public partial class WndNewMonitor : Window
 {
@@ -81,9 +74,6 @@ public partial class WndNewMonitor : Window
             //end
             Close();
         }
-
-
-        
     }
 
     private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -108,8 +98,10 @@ public partial class WndNewMonitor : Window
             LblMac.Foreground = new SolidColorBrush(Color.Parse("#FF3333"));
             LblMac.Content = "MAC - Invalid";
 
-            mac_valid=false;
-        } else {
+            mac_valid = false;
+        }
+        else
+        {
             string theme = Application.Current.ActualThemeVariant.ToString();
             if (theme == "Light")
             {
@@ -120,9 +112,9 @@ public partial class WndNewMonitor : Window
                 LblMac.Foreground = new SolidColorBrush(Color.Parse("#FFFFFF"));
             }
             LblMac.Content = "MAC";
-            mac_valid=true;
-            MAC=TbMAC.Text;
-            
+            mac_valid = true;
+            MAC = TbMAC.Text;
+
         }
         ButtonCheck();
     }
@@ -130,15 +122,21 @@ public partial class WndNewMonitor : Window
     private bool ip_valid = false;
     private void TbIP_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        try{
+        try
+        {
             string[] parts = TbIP.Text.Split('.');
-            if(parts.Length == 4){
-                foreach(string part in parts){
-                    if(0 >= Convert.ToInt32(part) && Convert.ToInt32(part) >= 255){
+            if (parts.Length == 4)
+            {
+                foreach (string part in parts)
+                {
+                    if (0 >= Convert.ToInt32(part) && Convert.ToInt32(part) >= 255)
+                    {
                         throw new Exception("PLG_Connect.ContainsInvalidNumberException");
                     }
                 }
-            } else {
+            }
+            else
+            {
                 throw new Exception("PLG_Connect.WrongPartLengthException");
             }
 
@@ -153,37 +151,41 @@ public partial class WndNewMonitor : Window
                 LblIP.Foreground = new SolidColorBrush(Color.Parse("#FFFFFF"));
             }
             LblIP.Content = "IP";
-            ip_valid=true;
-            IP=TbIP.Text;
+            ip_valid = true;
+            IP = TbIP.Text;
 
-        } catch {
+        }
+        catch
+        {
             LblIP.Foreground = new SolidColorBrush(Color.Parse("#FF3333"));
             LblIP.Content = "IP - Invalid";
-            ip_valid=false;
-            
+            ip_valid = false;
+
         }
         ButtonCheck();
     }
 
-    public void ButtonCheck(){
-        
-        if(mac_valid && ip_valid)
+    public void ButtonCheck()
+    {
+
+        if (mac_valid && ip_valid)
         {
             BtnAdd.IsEnabled = true;
             CreationState = DisplayCreationState.Ready;
             return;
         }
-        
+
         BtnAdd.IsEnabled = false;
 
     }
     private void TbName_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        Name=TbName.Text;
+        Name = TbName.Text;
     }
 }
 
-public enum DisplayCreationState{
+public enum DisplayCreationState
+{
     Created,
     Cancelled,
     Failed,
