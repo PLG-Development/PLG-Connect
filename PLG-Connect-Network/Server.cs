@@ -1,9 +1,10 @@
+using System;
 using System.Net;
 using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
-using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 
 namespace PLG_Connect_Network;
@@ -18,6 +19,7 @@ public class Server
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
     public List<Action> firstRequestHandlers = new List<Action>();
+    public List<Action<string>> showImageHandlers = new List<Action<string>>();
     public string Password;
 
     public Server(string password = "0", int port = 8080)
@@ -40,6 +42,7 @@ public class Server
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openSlide", OpenSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/showImage", ShowImageRoute);
 
         server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
@@ -143,6 +146,36 @@ public class Server
         {
             handler(result.Text);
         }
+        await ctx.Response.Send("");
+    }
+
+    async Task ShowImageRoute(HttpContextBase ctx)
+    {
+        string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
+
+        string folderPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PLG-Connect"
+        );
+        // Create folder if it doesn't exist
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+
+        string filePath = Path.Combine(folderPath, fileHash);
+
+        // Only donwload file if it doesn't exist
+        if (!File.Exists(filePath))
+        {
+            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+        }
+
+        foreach (var handler in showImageHandlers)
+        {
+            handler(filePath);
+        }
+
         await ctx.Response.Send("");
     }
 
