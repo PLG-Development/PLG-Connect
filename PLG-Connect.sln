@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG-Connect-Presenter", "PLG Connect Presenter\PLG-Connect-Presenter.csproj", "{CD76FD35-FC5D-494F-A89F-F3A4A8CC3DFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG-Connect-Presenter", "PLG-Connect-Presenter\PLG-Connect-Presenter.csproj", "{CD76FD35-FC5D-494F-A89F-F3A4A8CC3DFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG-Connect", "PLG Connect\PLG-Connect.csproj", "{07CA418F-B54C-4372-A20D-60CD9B161D77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PLG-Connect", "PLG-Connect\PLG-Connect.csproj", "{07CA418F-B54C-4372-A20D-60CD9B161D77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLG-Connect-Network", "PLG-Connect-Network\PLG-Connect-Network.csproj", "{030E501E-B441-44F4-A378-0A2C023E7FDC}"
 EndProject
