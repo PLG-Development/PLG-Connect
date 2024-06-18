@@ -5,7 +5,7 @@
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        x:Class="PLG_Connect.WndNewMonitor"
+        x:Class="PLG_Connect.NewMonitorWindow"
         CanResize="false"
         Icon="PLG-Connect-LOGO-black.ico"
         ExtendClientAreaToDecorationsHint="True"

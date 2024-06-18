@@ -55,14 +55,14 @@ partial class MainWindow : Window
 
     private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        WndNewMonitor w = new WndNewMonitor();
+        NewMonitorWindow w = new NewMonitorWindow();
         w.Closing += AddNewMonitor;
         w.Show();
     }
 
     private void AddNewMonitor(object sender, WindowClosingEventArgs e)
     {
-        WndNewMonitor output = sender as WndNewMonitor;
+        NewMonitorWindow output = sender as NewMonitorWindow;
         if (output != null)
         {
             if (output.CreationState == DisplayCreationState.Ready)
