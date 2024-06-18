@@ -10,6 +10,7 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
 using System.IO;
+using System.Diagnostics;
 
 
 namespace PLG_Connect_Presenter;
@@ -30,23 +31,36 @@ public partial class MainWindow : Window
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
-        server.showImageHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => showImage(path)));
+        server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
     }
 
-    private void hideAllContent()
-    {
-        ImageContent.IsVisible = false;
-        TextContent.IsVisible = false;
-    }
 
-    private void showImage(string imagePath)
+    private void OpenFile(string path)
     {
-        FileStream fs = File.OpenRead(imagePath);
-        ImageContent.Source = new Bitmap(fs);
-        fs.Close();
+        string osName = Environment.OSVersion.Platform.ToString().ToLower();
 
-        hideAllContent();
-        ImageContent.IsVisible = true;
+        try
+        {
+
+            if (osName.Contains("win"))
+            {
+                Process.Start(path);
+            }
+            else if (osName.Contains("linux") || osName.Contains("unix"))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "xdg-open",
+                    Arguments = path,
+                    UseShellExecute = true
+                });
+
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     private void firstRequest()
@@ -65,9 +79,6 @@ public partial class MainWindow : Window
     private void DisplayText(string content)
     {
         TextContent.Content = content;
-
-        hideAllContent();
-        TextContent.IsVisible = true;
     }
 
     public void LoadImage()

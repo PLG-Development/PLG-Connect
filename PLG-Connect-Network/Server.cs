@@ -15,11 +15,10 @@ public class Server
     public List<Action<string>> displayTextHandlers = new List<Action<string>>();
     public List<Action> toggleBlackScreenHandlers = new List<Action>();
     public List<Action<string>> runCommandHandlers = new List<Action<string>>();
-    public List<Action<string>> openSlideHandlers = new List<Action<string>>();
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
     public List<Action> firstRequestHandlers = new List<Action>();
-    public List<Action<string>> showImageHandlers = new List<Action<string>>();
+    public List<Action<string>> openFileHandlers = new List<Action<string>>();
     public string Password;
 
     public Server(string password = "0", int port = 8080)
@@ -39,10 +38,9 @@ public class Server
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplyTextRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
-        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openSlide", OpenSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
-        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/showImage", ShowImageRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openFile", OpenFileRoute);
 
         server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
@@ -149,36 +147,6 @@ public class Server
         await ctx.Response.Send("");
     }
 
-    async Task ShowImageRoute(HttpContextBase ctx)
-    {
-        string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
-
-        string folderPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PLG-Connect"
-        );
-        // Create folder if it doesn't exist
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-
-        string filePath = Path.Combine(folderPath, fileHash);
-
-        // Only donwload file if it doesn't exist
-        if (!File.Exists(filePath))
-        {
-            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
-        }
-
-        foreach (var handler in showImageHandlers)
-        {
-            handler(filePath);
-        }
-
-        await ctx.Response.Send("");
-    }
-
     async Task ToggleBlackScreenRoute(HttpContextBase ctx)
     {
         foreach (var handler in toggleBlackScreenHandlers)
@@ -209,26 +177,34 @@ public class Server
         await ctx.Response.Send("");
     }
 
-    // Slide Routes
-    async Task OpenSlideRoute(HttpContextBase ctx)
+    async Task OpenFileRoute(HttpContextBase ctx)
     {
-        OpenSlideMessage result;
+        string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
 
-        try
+        string folderPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PLG-Connect"
+        );
+        // Create folder if it doesn't exist
+        if (!Directory.Exists(folderPath))
         {
-            result = ExtractObject<OpenSlideMessage>(ctx);
-        }
-        catch (Exception e)
-        {
-            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            await ctx.Response.Send($"ERROR: {e.Message}");
-            return;
+            Directory.CreateDirectory(folderPath);
         }
 
-        foreach (var handler in openSlideHandlers)
+        string filePath = Path.Combine(folderPath, fileHash);
+
+        // Only donwload file if it doesn't exist
+        if (!File.Exists(filePath))
         {
-            handler(result.SlidePath);
+            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
         }
+
+        foreach (var handler in openFileHandlers)
+        {
+            handler(filePath);
+        }
+
+        await ctx.Response.Send("");
     }
 
     async Task NextSlideRoute(HttpContextBase ctx)
