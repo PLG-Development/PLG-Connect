@@ -26,8 +26,8 @@
         </Grid>
         <Grid x:Name="content"
               IsVisible="False">
-            <Image x:Name="ImgMain" />
-            <Label x:Name="TbContents"
+            <Image x:Name="ImageContent" />
+            <Label x:Name="TextContent"
                    Content="[Hier könnte Ihr Text stehen]"
                    HorizontalContentAlignment="Center"
                    FontSize="38"

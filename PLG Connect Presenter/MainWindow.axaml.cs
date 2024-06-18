@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
+using System.IO;
 
 
 namespace PLG_Connect_Presenter;
@@ -30,6 +30,23 @@ public partial class MainWindow : Window
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
+        server.showImageHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => showImage(path)));
+    }
+
+    private void hideAllContent()
+    {
+        ImageContent.IsVisible = false;
+        TextContent.IsVisible = false;
+    }
+
+    private void showImage(string imagePath)
+    {
+        FileStream fs = File.OpenRead(imagePath);
+        ImageContent.Source = new Bitmap(fs);
+        fs.Close();
+
+        hideAllContent();
+        ImageContent.IsVisible = true;
     }
 
     private void firstRequest()
@@ -47,7 +64,10 @@ public partial class MainWindow : Window
 
     private void DisplayText(string content)
     {
-        TbContents.Content = content;
+        TextContent.Content = content;
+
+        hideAllContent();
+        TextContent.IsVisible = true;
     }
 
     public void LoadImage()
