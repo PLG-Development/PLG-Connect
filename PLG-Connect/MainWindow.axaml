@@ -17,7 +17,7 @@
                 <Border DockPanel.Dock="Bottom"
                         BorderThickness="2"
                         CornerRadius="4"
-                        BorderBrush="Black">
+                        BorderBrush="#545458">
                     <StackPanel x:Name="StpDevices"
                                 Orientation="Vertical" />
                 </Border>
@@ -43,7 +43,7 @@
                         DockPanel.Dock="Top"
                         CornerRadius="4"
                         BorderThickness="2"
-                        BorderBrush="Black">
+                        BorderBrush="#545458">
                     <StackPanel x:Name="StpScreens"
                                 Orientation="Vertical" />
                 </Border>
