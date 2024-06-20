@@ -16,7 +16,7 @@ namespace PLG_Connect;
 
 partial class MainWindow : Window
 {
-    private List<Display> Displays = new();
+    public List<Display> Displays = new();
 
     public MainWindow()
     {
@@ -31,12 +31,6 @@ partial class MainWindow : Window
         );
         LoadConfig();
     }
-
-    // New Monitor static variables just let them here
-    public static string new_mon_temp_name = "";
-    public static string new_mon_temp_ip = "";
-    public static string new_mon_temp_mac = "";
-    public static bool new_mon_canceled = false;
 
     private string ConfigPath;
 
@@ -61,31 +55,8 @@ partial class MainWindow : Window
 
     private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        NewMonitorWindow w = new NewMonitorWindow();
-        w.Closing += AddNewMonitor;
+        NewMonitorWindow w = new NewMonitorWindow(this);
         w.Show();
-    }
-
-    private void AddNewMonitor(object sender, WindowClosingEventArgs e)
-    {
-        NewMonitorWindow output = sender as NewMonitorWindow;
-        if (output != null)
-        {
-            if (output.CreationState == DisplayCreationState.Ready)
-            {
-                foreach (Display disp in Displays)
-                {
-                    if (disp.MacAddress == output.MAC)
-                    {
-                        output.CreationState = DisplayCreationState.Failed;
-                        throw new Exception("PLG_Connect.MacAlreadyExistsException");
-                    }
-                }
-                Displays.Add(new Display(new DisplaySettings() { Name = output.Name, IPAddress = output.IP, MacAddress = output.MAC }));
-            }
-        }
-
-        RefreshGUI();
     }
 
     ///<summary>

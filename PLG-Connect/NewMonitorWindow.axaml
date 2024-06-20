@@ -14,8 +14,7 @@
         WindowStartupLocation="CenterScreen"
         Height="315"
         Width="315"
-        Title="Add Monitor"
-        Closing="Window_Closing">
+        Title="Add Monitor" >
     <Border Padding="16">
         <DockPanel>
             <StackPanel DockPanel.Dock="Top"

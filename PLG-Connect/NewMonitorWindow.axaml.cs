@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using System.Linq;
 
 
 namespace PLG_Connect;
@@ -11,15 +12,22 @@ namespace PLG_Connect;
 
 public partial class NewMonitorWindow : Window
 {
-    public NewMonitorWindow()
+    internal NewMonitorWindow(MainWindow mv)
     {
         InitializeComponent();
+
+        mainWindow = mv;
     }
 
-    public string Name;
-    public string IP;
-    public string MAC;
-    public DisplayCreationState CreationState;
+    public string DisplayName;
+    public string DisplayIp;
+    public string DisplayMac;
+    private MainWindow mainWindow;
+
+    private void CancelButtonClick(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
 
     private void TextBoxGotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
@@ -27,30 +35,6 @@ public partial class NewMonitorWindow : Window
         if (tb == null)
         {
             return;
-        }
-
-    }
-
-    bool finished = false;
-
-    private void AddButtonClick(object sender, RoutedEventArgs e)
-    {
-
-        CreationState = DisplayCreationState.Ready;
-        Close();
-    }
-
-    private void CancelButtonClick(object sender, RoutedEventArgs e)
-    {
-        CreationState = DisplayCreationState.Cancelled;
-        Close();
-    }
-
-    private void Window_Closing(object sender, Avalonia.Controls.WindowClosingEventArgs e)
-    {
-        if (!finished)
-        {
-            MainWindow.new_mon_canceled = true;
         }
     }
 
@@ -78,7 +62,7 @@ public partial class NewMonitorWindow : Window
             }
             MacLabel.Content = "MAC";
             macValid = true;
-            MAC = MacTextBox.Text;
+            DisplayMac = MacTextBox.Text;
 
         }
         ButtonCheck();
@@ -117,7 +101,7 @@ public partial class NewMonitorWindow : Window
             }
             IpLabel.Content = "IP";
             ipValid = true;
-            IP = IpTextBox.Text;
+            DisplayIp = IpTextBox.Text;
 
         }
         catch
@@ -136,7 +120,6 @@ public partial class NewMonitorWindow : Window
         if (macValid && ipValid)
         {
             AddButton.IsEnabled = true;
-            CreationState = DisplayCreationState.Ready;
             return;
         }
 
@@ -145,14 +128,20 @@ public partial class NewMonitorWindow : Window
     }
     private void NameTextBoxTextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
-        Name = NameTextBox.Text;
+        DisplayName = NameTextBox.Text;
     }
-}
 
-public enum DisplayCreationState
-{
-    Created,
-    Cancelled,
-    Failed,
-    Ready
+    private void AddButtonClick(object sender, RoutedEventArgs e)
+    {
+        // Check if mac already exists
+        if (mainWindow.Displays.Where(d => d.Settings.MacAddress == DisplayMac).Count() > 0)
+        {
+            return;
+        }
+
+        mainWindow.Displays.Add(new Display(new DisplaySettings { IPAddress = DisplayIp, MacAddress = DisplayMac, Name = DisplayName }));
+        mainWindow.RefreshGUI();
+
+        Close();
+    }
 }
