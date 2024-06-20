@@ -136,7 +136,7 @@ partial class MainWindow : Window
                     b3,
                     b4,
                 }
-            }
+            };
             StackPanel p = new StackPanel()
             {
 
