@@ -16,10 +16,6 @@ public partial class NewMonitorWindow : Window
         InitializeComponent();
     }
 
-
-    private bool start_n = true;
-    private bool start_ip = true;
-    private bool start_mac = true;
     private void TextBox_GotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
         TextBox? tb = (sender as TextBox);
@@ -27,11 +23,7 @@ public partial class NewMonitorWindow : Window
         {
             return;
         }
-        if (start_n && tb.Text == "Enter name...")
-        {
-            tb.Text = "";
-            start_n = false;
-        }
+
     }
 
     public string Name;
@@ -46,11 +38,7 @@ public partial class NewMonitorWindow : Window
         {
             return;
         }
-        if (start_ip && tb.Text == "Enter IP...")
-        {
-            tb.Text = "";
-            start_ip = false;
-        }
+
     }
     private void TextBox_GotFocus_2(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
@@ -59,25 +47,19 @@ public partial class NewMonitorWindow : Window
         {
             return;
         }
-        if (start_mac && tb.Text == "Enter MAC...")
-        {
-            tb.Text = "";
-            start_mac = false;
-        }
     }
     bool finished = false;
 
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-        if (!start_n && !start_ip && !start_mac)
-        {
-            //end
-            Close();
-        }
+
+        CreationState = DisplayCreationState.Ready;
+        Close();
     }
 
     private void Button_Click_1(object sender, RoutedEventArgs e)
     {
+        CreationState = DisplayCreationState.Cancelled;
         Close();
     }
 
