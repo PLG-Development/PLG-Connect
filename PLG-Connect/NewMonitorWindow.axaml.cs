@@ -9,9 +9,9 @@ using Avalonia.Media;
 namespace PLG_Connect;
 
 
-public partial class WndNewMonitor : Window
+public partial class NewMonitorWindow : Window
 {
-    public WndNewMonitor()
+    public NewMonitorWindow()
     {
         InitializeComponent();
     }

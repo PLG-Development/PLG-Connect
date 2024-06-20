@@ -84,10 +84,11 @@ public class ClientConnection
         await sendJsonPostRequest<RunCommandMessage>("/runCommand", message);
     }
 
-    public async Task OpenSlide(string slidePath)
+    public async Task OpenFile(string path)
     {
-        var message = new OpenSlideMessage { SlidePath = slidePath };
-        await sendJsonPostRequest<OpenSlideMessage>("/openSlide", message);
+        byte[] fileBytes = File.ReadAllBytes(path);
+        ByteArrayContent content = new ByteArrayContent(fileBytes);
+        await sendPostRequest("/openFile", content);
     }
 
     public async Task NextSlide()
@@ -100,13 +101,5 @@ public class ClientConnection
     {
         var message = new object();
         await sendJsonPostRequest<object>("/previousSlide", message);
-    }
-
-    public async Task ShowImage(string imagePath)
-    {
-        // Load the image into memory
-        byte[] imageBytes = File.ReadAllBytes(imagePath);
-        ByteArrayContent content = new ByteArrayContent(imageBytes);
-        await sendPostRequest("/showImage", content);
     }
 }

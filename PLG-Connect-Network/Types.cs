@@ -13,12 +13,6 @@ public class RunCommandMessage
 }
 
 
-public class OpenSlideMessage
-{
-    public required string SlidePath { get; set; }
-}
-
-
 public class ChangePasswordMessage
 {
     public required string NewPassword { get; set; }
