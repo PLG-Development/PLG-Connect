@@ -11,4 +11,8 @@ we are going to use it to perform high level video presentations over multiple d
 
 ## Version history (Changelog)
 Currently, there is not published version available.
+|Version|Release Date|Changes|
+|--------|----------|--------------------|
+|1.0|15.08.2024|Initial Application|
+
 Install .NET 8.0 SDK and AvaloniaUI to execute "dotnet run" in your terminal to start the downloaded source code.
