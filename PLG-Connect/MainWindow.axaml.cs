@@ -20,6 +20,8 @@ partial class MainWindow : Window
 
     public MainWindow()
     {
+
+        Debuggers.Launch();
         InitializeComponent();
 
         ConfigPath = Path.Combine(
