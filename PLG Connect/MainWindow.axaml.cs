@@ -3,8 +3,12 @@ using Avalonia.Controls;
 using System.Text.Json;
 using System.IO;
 using PLG_Connect_Network;
+using Avalonia.Layout;
+using Avalonia.Markup;
 using System;
 using System.Linq;
+using Avalonia;
+using Avalonia.Media;
 
 
 namespace PLG_Connect;
@@ -87,16 +91,79 @@ partial class MainWindow : Window
     ///</summary>
     public void RefreshGUI()
     {
+        var bc = new BrushConverter();
+        StpScreens.Children.Clear();
         foreach (Display disp in Displays)
         {
+            TextBox TbContent = new TextBox();
+            TbContent.Margin = new Thickness(5);
+            Button b = new Button();
+            b.Margin = new Thickness(5);
+            b.Content = "Display Text";
+            b.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                await disp.DisplayText(TbContent.Text);
+                disp.Messages = DateTime.Now + " - Displayed text on screen: " + TbContent.Text + "\n\n" + disp.Messages;
+                TbContent.Text = "";
+            };
+            Button b2 = new Button();
+            b2.Margin = new Thickness(5);
+            b2.Content = "Next Image";
+            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                await disp.NextSlide();
+                disp.Messages = DateTime.Now + " - Image: next" + "\n\n" + disp.Messages;
+            };
+            
+            Button b3 = new Button();
+            b3.Margin = new Thickness(5);
+            b3.Content = "Prevoius Image";
+            b3.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                await disp.PreviousSlide();
+                disp.Messages = DateTime.Now + " - Image: previous" + "\n\n" + disp.Messages;
+            };
+            
+            Button b4 = new Button();
+            b4.Margin = new Thickness(5);
+            b4.Content = "Blackout";
+            b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                await disp.ToggleBlackScreen();
+                disp.Messages = DateTime.Now + " - Toggled Blackout" + "\n\n" + disp.Messages;
+            };
+            StackPanel buttons = new StackPanel(){
+                Orientation = Orientation.Horizontal,
+                Children = {
+                    b,
+                    b2,
+                    b3,
+                    b4,
+                }
+            }
+            StackPanel p = new StackPanel()
+            {
 
+                Margin = new Thickness(5),
+                Children = {
+                    new Label() { Content = "Name: " + disp.Settings.Name },
+                    new Label() { Content = disp.Current_Mode },
+                    new Label() { Content = disp.Settings.IPAddress },
+                    TbContent,
+                    buttons,
+                    new Label() { Content = disp.Messages },
+                },
+                Background = new SolidColorBrush(Color.Parse("#545457"))
+            };
+            
+
+            StpScreens.Children.Add(p);
         }
     }
+
 }
 
 class Display : ClientConnection
 {
     public DisplaySettings Settings;
+    public string Messages;
+    public DisplayMode Current_Mode;
 
     public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
     {
@@ -111,4 +178,14 @@ struct DisplaySettings
     public string IPAddress;
     public string MacAddress;
     public string Password;
+}
+
+enum DisplayMode{
+    None,
+    Text,
+    Image,
+    Combined,
+    External,
+    Slideshow,
+    Animation
 }
