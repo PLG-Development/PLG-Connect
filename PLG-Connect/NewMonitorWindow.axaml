@@ -22,43 +22,43 @@
                         Spacing="4">
                 <StackPanel>
                     <Label Content="Name" />
-                    <TextBox x:Name="TbName"
+                    <TextBox x:Name="NameTextBox"
                              TextWrapping="Wrap"
                              Watermark="Enter Name ..."
-                             GotFocus="TextBox_GotFocus"
-                             TextChanged="TbName_TextChanged" />
+                             GotFocus="TextBoxGotFocus"
+                             TextChanged="NameTextBoxTextChanged" />
                 </StackPanel>
                 <StackPanel>
                     <Label Content="IP"
-                           x:Name="LblIP" />
-                    <TextBox x:Name="TbIP"
+                           x:Name="IpLabel" />
+                    <TextBox x:Name="IpTextBox"
                              TextWrapping="Wrap"
                              Watermark="Enter IP ..."
-                             GotFocus="TextBox_GotFocus_1"
-                             TextChanged="TbIP_TextChanged" />
+                             GotFocus="TextBoxGotFocus"
+                             TextChanged="IpTextBoxTextChanged" />
                 </StackPanel>
                 <StackPanel>
                     <Label Content="MAC"
-                           x:Name="LblMac" />
-                    <TextBox x:Name="TbMAC"
+                           x:Name="MacLabel" />
+                    <TextBox x:Name="MacTextBox"
                              TextWrapping="Wrap"
                              Watermark="Enter MAC ..."
-                             GotFocus="TextBox_GotFocus_2"
-                             TextChanged="TbMAC_TextChanged" />
+                             GotFocus="TextBoxGotFocus"
+                             TextChanged="MacTextBoxTextChanged" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         DockPanel.Dock="Bottom"
                         Spacing="4">
-                <Button x:Name="BtnPing"
+                <Button x:Name="PingButton"
                         Content="Test-Ping"
                         IsEnabled="False" />
-                <Button x:Name="BtnAdd"
+                <Button x:Name="AddButton"
                         Content="Add"
-                        Click="Button_Click" />
-                <Button x:Name="BtnCancel"
+                        Click="AddButtonClick" />
+                <Button x:Name="CancelButton"
                         Content="Cancel"
-                        Click="Button_Click_1" />
+                        Click="CancelButtonClick" />
             </StackPanel>
         </DockPanel>
     </Border>

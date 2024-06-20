@@ -21,7 +21,7 @@ partial class MainWindow : Window
     public MainWindow()
     {
 
-        Debuggers.Launch();
+        // Debuggers.Launch();
         InitializeComponent();
 
         ConfigPath = Path.Combine(
@@ -102,7 +102,8 @@ partial class MainWindow : Window
             Button b = new Button();
             b.Margin = new Thickness(5);
             b.Content = "Display Text";
-            b.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+            b.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
                 await disp.DisplayText(TbContent.Text);
                 disp.Messages = DateTime.Now + " - Displayed text on screen: " + TbContent.Text + "\n\n" + disp.Messages;
                 TbContent.Text = "";
@@ -110,27 +111,31 @@ partial class MainWindow : Window
             Button b2 = new Button();
             b2.Margin = new Thickness(5);
             b2.Content = "Next Image";
-            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
                 await disp.NextSlide();
                 disp.Messages = DateTime.Now + " - Image: next" + "\n\n" + disp.Messages;
             };
-            
+
             Button b3 = new Button();
             b3.Margin = new Thickness(5);
             b3.Content = "Prevoius Image";
-            b3.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+            b3.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
                 await disp.PreviousSlide();
                 disp.Messages = DateTime.Now + " - Image: previous" + "\n\n" + disp.Messages;
             };
-            
+
             Button b4 = new Button();
             b4.Margin = new Thickness(5);
             b4.Content = "Blackout";
-            b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+            b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
                 await disp.ToggleBlackScreen();
                 disp.Messages = DateTime.Now + " - Toggled Blackout" + "\n\n" + disp.Messages;
             };
-            StackPanel buttons = new StackPanel(){
+            StackPanel buttons = new StackPanel()
+            {
                 Orientation = Orientation.Horizontal,
                 Children = {
                     b,
@@ -153,7 +158,7 @@ partial class MainWindow : Window
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
-            
+
 
             StpScreens.Children.Add(p);
         }
@@ -182,7 +187,8 @@ struct DisplaySettings
     public string Password;
 }
 
-enum DisplayMode{
+enum DisplayMode
+{
     None,
     Text,
     Image,
