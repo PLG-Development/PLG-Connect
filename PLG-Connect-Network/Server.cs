@@ -5,6 +5,7 @@ using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Security.Cryptography;
+using System.Web;
 
 
 namespace PLG_Connect_Network;
@@ -149,6 +150,7 @@ public class Server
 
     async Task ToggleBlackScreenRoute(HttpContextBase ctx)
     {
+        // Console.WriteLine(ctx.Request.Query);
         foreach (var handler in toggleBlackScreenHandlers)
         {
             handler();
@@ -179,6 +181,14 @@ public class Server
 
     async Task OpenFileRoute(HttpContextBase ctx)
     {
+        string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");
+        if (fileEnding == null)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await ctx.Response.Send("Missing fileEnding");
+            return;
+        }
+
         string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
 
         string folderPath = Path.Combine(
@@ -191,7 +201,7 @@ public class Server
             Directory.CreateDirectory(folderPath);
         }
 
-        string filePath = Path.Combine(folderPath, fileHash);
+        string filePath = Path.Combine(folderPath, fileHash) + $".{fileEnding}";
 
         // Only donwload file if it doesn't exist
         if (!File.Exists(filePath))

@@ -86,9 +86,11 @@ public class ClientConnection
 
     public async Task OpenFile(string path)
     {
+        string extension = Path.GetExtension(path).TrimStart('.').ToLower();
+
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendPostRequest("/openFile", content);
+        await sendPostRequest($"/openFile?fileEnding={extension}", content);
     }
 
     public async Task NextSlide()
