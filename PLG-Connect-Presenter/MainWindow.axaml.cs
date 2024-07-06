@@ -86,7 +86,7 @@ public partial class MainWindow : Window
         string theme = Application.Current.ActualThemeVariant.ToString();
         if (theme == "Light")
         {
-            ImgLoading.Source = new Bitmap("LOGO_black.png");
+            ImgLoading.Source = new Bitmap("LOGO_white.png");
         }
         else if (theme == "Dark")
         {

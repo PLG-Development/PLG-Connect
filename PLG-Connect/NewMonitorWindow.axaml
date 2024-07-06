@@ -7,7 +7,7 @@
         d:DesignHeight="450"
         x:Class="PLG_Connect.NewMonitorWindow"
         CanResize="false"
-        Icon="PLG-Connect-LOGO-black.ico"
+        Icon="logo-black.ico"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaTitleBarHeightHint="-1"

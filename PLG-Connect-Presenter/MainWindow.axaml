@@ -9,7 +9,7 @@
         ExtendClientAreaToDecorationsHint="true"
         Title="PLG_Connect_Presenter"
         WindowState="FullScreen"
-        Icon="PLG-Connect-LOGO-black.ico">
+        Icon="/Assets/logo-black.ico">
     <Grid Name="main">
         <Grid Name="startInfo">
             <TextBlock x:Name="TbStartupInformation"
