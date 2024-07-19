@@ -9,45 +9,80 @@
         Icon="/Assets/logo-black.ico"
         x:Class="PLG_Connect.MainWindow"
         Title="PLG Connect">
-    <Border Padding="16">
-        <Grid ColumnDefinitions="*,*">
-            <DockPanel LastChildFill="True" Margin="0,0,8,0">
-                <TextBlock Text="Connected Devices" FontSize="18" Margin="0,0,0,4"
-                       DockPanel.Dock="Top" />
-                <Border DockPanel.Dock="Bottom"
-                        BorderThickness="2"
-                        CornerRadius="4"
-                        BorderBrush="#545458">
-                    <StackPanel x:Name="StpDevices"
-                                Orientation="Vertical" />
-                </Border>
-            </DockPanel>
-            <!-- Right Side -->
-            <DockPanel Grid.Column="1"
-                       LastChildFill="True">
-                <DockPanel DockPanel.Dock="Bottom">
-                    <StackPanel DockPanel.Dock="Right"
-                                Spacing="4"
-                                Orientation="Horizontal">
-                        <Button x:Name="BtnNextAll"
-                                Content="Next (all)" />
-                        <Button x:Name="BtnPreviousAll"
-                                Content="Previous (all)" />
-                    </StackPanel>
-                    <Button DockPanel.Dock="Left"
-                            x:Name="BtnAddNewMonitor"
-                            Click="BtnAddNewMonitor_Click"
-                            Content="Add Monitor" />
+    <Border Padding="0">
+        <Grid RowDefinitions="30,*">
+            <Menu Grid.Row="0" Background="#101012">
+                <MenuItem Header="File">
+                    <MenuItem Header="New..."/>
+                    <Separator />
+                    <MenuItem Header="Open..."/>
+                    <MenuItem Header="Save"/>
+                    <MenuItem Header="Save as..."/>
+                    <Separator />
+                    <MenuItem Header="Exit"/>
+                </MenuItem>
+                <MenuItem Header="Edit">
+                    <MenuItem Header="Add Monitor"/>
+                    <MenuItem Header="Delete Monitor"/>
+                    <MenuItem Header="Clear All Monitors"/>
+                    <Separator />
+                    <MenuItem Header="Request Device Connection"/>
+                    <MenuItem Header="Clear all Devices"/>
+                    <Separator />
+                    <MenuItem Header="Preferences"/>
+                </MenuItem>
+
+                <MenuItem Header="Help">
+                    <MenuItem Header="Online Help"/>
+                    <MenuItem Header="Github"/>
+                    <MenuItem Header="Homepage"/>
+                    <Separator />
+                    <MenuItem Header="Check for Updates"/>
+                    <Separator />
+                    <MenuItem Header="Info"/>
+                </MenuItem>
+            </Menu>
+            <Grid Margin="16" Grid.Row="1" ColumnDefinitions="*,*">
+                <DockPanel LastChildFill="True" Margin="0,0,8,0">
+                    <TextBlock Text="Connected Devices" FontSize="18" Margin="0,0,0,4"
+                        DockPanel.Dock="Top" />
+                    <Border DockPanel.Dock="Bottom"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            BorderBrush="#545458">
+                        <StackPanel x:Name="StpDevices"
+                                    Orientation="Vertical" />
+                    </Border>
                 </DockPanel>
-                <Border Margin="0,0,0,4"
-                        DockPanel.Dock="Top"
-                        CornerRadius="4"
-                        BorderThickness="2"
-                        BorderBrush="#545458">
-                    <StackPanel x:Name="StpScreens"
-                                Orientation="Vertical" />
-                </Border>
-            </DockPanel>
+                <!-- Right Side -->
+                <DockPanel Grid.Column="1"
+                        LastChildFill="True">
+                    <TextBlock Text="Connected Displays" FontSize="18" Margin="0,0,0,4"
+                        DockPanel.Dock="Top" />
+                    <DockPanel DockPanel.Dock="Bottom">
+                        <StackPanel DockPanel.Dock="Right"
+                                    Spacing="4"
+                                    Orientation="Horizontal">
+                            <Button x:Name="BtnNextAll"
+                                    Content="Next (all)" />
+                            <Button x:Name="BtnPreviousAll"
+                                    Content="Previous (all)" />
+                        </StackPanel>
+                        <Button DockPanel.Dock="Left"
+                                x:Name="BtnAddNewMonitor"
+                                Click="BtnAddNewMonitor_Click"
+                                Content="Add Dsiplay" />
+                    </DockPanel>
+                    <Border Margin="0,0,0,4"
+                            DockPanel.Dock="Top"
+                            CornerRadius="4"
+                            BorderThickness="2"
+                            BorderBrush="#545458">
+                        <StackPanel x:Name="StpScreens"
+                                    Orientation="Vertical" />
+                    </Border>
+                </DockPanel>
+            </Grid>
         </Grid>
     </Border>
 </Window>
