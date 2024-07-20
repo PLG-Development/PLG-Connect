@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using System.Text.Json;
 using System.IO;
 using PLG_Connect_Network;
@@ -9,7 +10,8 @@ using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Media;
-
+using System.Diagnostics;
+     
 
 namespace PLG_Connect;
 
@@ -52,9 +54,103 @@ partial class MainWindow : Window
         string json = File.ReadAllText(ConfigPath);
         Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
     }
+    // global internal properties
+    private bool isSaved = true; // updates the saved-status of the current project, e.g. adding a new monitor
+    private string filepath = null; // filepath of the currently loaded project, e.g. /home/tag/connect-projects/aula-main.pcnt
+    private static string projectFileExtension = "pcnt"; // file extension for project-files (currently: pcnt - Plg CoNnecT)
+
+    // Menu Structure variables
+    private bool delete = false;
+
+    private void Mnu_File_Exit_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        Close();
+    }
+
+    private void Mnu_File_New_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_File_Save_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_File_SaveAs_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        AddMonitor();
+    }
+
+    private async void Mnu_Edit_DeleteMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        if(delete == true){
+            delete = false;
+            Mnu_Edit_DeleteMonitor.Header = "Activate Deletion Mode";
+        } else {
+            // Messing. "Do-you-really-want-to?"-MessageBox :joy:
+            delete = true;
+            Mnu_Edit_DeleteMonitor.Header = "Deactivate Deletion Mode";
+            
+
+        }
+        RefreshGUI();
+    }
+
+    private void Mnu_Edit_ClearAllMonitors_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Edit_RequestDevConnection_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Edit_ClearAllDevices_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Edit_Preferences_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Help_Online_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        Process.Start(new ProcessStartInfo{
+            FileName = "https://www.plg-berlin.de/technik/plg_connect",
+            UseShellExecute = true
+        });
+    }
+
+    private void Mnu_Help_Github_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        Process.Start(new ProcessStartInfo{
+            FileName = "https://github.com/PLG-Development/PLG-Connect",
+            UseShellExecute = true
+        });
+    }
+
+    private void Mnu_Help_Homepage_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        Process.Start(new ProcessStartInfo{
+            FileName = "https://www.plg-berlin.de/technik/plg_connect",
+            UseShellExecute = true
+        });
+    }
+
+    private void Mnu_Help_Updates_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
+
+    private void Mnu_Help_Info_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        
+    }
 
     private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        AddMonitor();
+    }
+
+    private void AddMonitor(){
         NewMonitorWindow w = new NewMonitorWindow(this);
         w.Show();
     }
@@ -64,6 +160,15 @@ partial class MainWindow : Window
     ///</summary>
     public void RefreshGUI()
     {
+        if(delete){
+            RefreshDisplaysDeletion();
+        } else {
+            RefreshDisplaysDefault();
+        }
+        
+    }
+
+    public void RefreshDisplaysDefault(){
         var bc = new BrushConverter();
         StpScreens.Children.Clear();
         foreach (Display disp in Displays)
@@ -126,6 +231,47 @@ partial class MainWindow : Window
                     TbContent,
                     buttons,
                     new Label() { Content = disp.Messages },
+                },
+                Background = new SolidColorBrush(Color.Parse("#545457"))
+            };
+
+
+            StpScreens.Children.Add(p);
+        }
+    }
+
+    public void RefreshDisplaysDeletion(){
+        var bc = new BrushConverter();
+        StpScreens.Children.Clear();
+        foreach (Display disp in Displays)
+        {
+
+            Button b2 = new Button();
+            b2.Margin = new Thickness(5);
+            b2.Content = "Delete";
+            b2.Background = new SolidColorBrush(Color.Parse("#772327"));
+            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
+                //Deletion logic
+            };
+
+            StackPanel buttons = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Children = {
+                    b2,
+
+                }
+            };
+            StackPanel p = new StackPanel()
+            {
+
+                Margin = new Thickness(5),
+                Children = {
+                    new Label() { Content = "Name: " + disp.Settings.Name },
+                    new Label() { Content = disp.Current_Mode },
+                    new Label() { Content = disp.Settings.IPAddress },
+                    buttons,
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
