@@ -68,19 +68,21 @@ partial class MainWindow : Window
     }
 
     private void Mnu_File_New_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
-        
+        New();
     }
 
     private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
-        
+        Open();
     }
 
     private void Mnu_File_Save_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
-        
+        if(!Save()){
+            MessageBox.Show(this, "Error while saving file", "Error", MessageBoxButton.Ok);
+        }
     }
 
     private void Mnu_File_SaveAs_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
-        
+        SaveAs();
     }
 
     private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
@@ -100,9 +102,6 @@ partial class MainWindow : Window
                 BrdMonitors.Background = new SolidColorBrush(Color.Parse("#552327"));
 
             }
-            
-            
-
         }
         RefreshGUI();
     }
@@ -155,6 +154,30 @@ partial class MainWindow : Window
     private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         AddMonitor();
+    }
+
+    private void New()
+    {
+        if(saved){
+            // create new
+        } else {
+            // Request answer: Save?
+        }
+    }
+
+    private void Open()
+    {
+        //Open File Dialog
+    }
+
+    private bool Save()
+    {
+        return false;
+    }
+
+    private bool SaveAs()
+    {
+        return Save();
     }
 
     private void AddMonitor(){
