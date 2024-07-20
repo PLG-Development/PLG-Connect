@@ -11,6 +11,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Media;
 using System.Diagnostics;
+using PLG_Connect;
      
 
 namespace PLG_Connect;
@@ -90,10 +91,16 @@ partial class MainWindow : Window
         if(delete == true){
             delete = false;
             Mnu_Edit_DeleteMonitor.Header = "Activate Deletion Mode";
+            BrdMonitors.Background = new SolidColorBrush(Color.Parse("#232327"));
         } else {
-            // Messing. "Do-you-really-want-to?"-MessageBox :joy:
-            delete = true;
-            Mnu_Edit_DeleteMonitor.Header = "Deactivate Deletion Mode";
+            var res = await MessageBox.Show(this, "Do you really want to activate deletion mode? Deleting a monitor by clicking the delete-button will delete it permanentely and non-recoverable.", "Turn on deletion-mode?", MessageBoxButton.YesNo);
+            if(res == MessageBoxResult.Yes){
+                delete = true;
+                Mnu_Edit_DeleteMonitor.Header = "Deactivate Deletion Mode";
+                BrdMonitors.Background = new SolidColorBrush(Color.Parse("#552327"));
+
+            }
+            
             
 
         }

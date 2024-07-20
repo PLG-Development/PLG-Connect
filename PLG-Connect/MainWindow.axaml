@@ -55,11 +55,11 @@
                     </Border>
                 </DockPanel>
                 <!-- Right Side -->
-                <DockPanel Grid.Column="1"
+                <DockPanel Grid.Column="1" 
                         LastChildFill="True">
                     <TextBlock Text="Connected Monitors" FontSize="18" Margin="0,0,0,4"
                         DockPanel.Dock="Top" />
-                    <DockPanel DockPanel.Dock="Bottom">
+                    <DockPanel DockPanel.Dock="Bottom" >
                         <StackPanel DockPanel.Dock="Right"
                                     Spacing="4"
                                     Orientation="Horizontal">
@@ -76,7 +76,7 @@
                     <Border Margin="0,0,0,4"
                             DockPanel.Dock="Top"
                             CornerRadius="4"
-                            BorderThickness="2"
+                            BorderThickness="2" x:Name="BrdMonitors"
                             BorderBrush="#545458">
                         <StackPanel x:Name="StpScreens"
                                     Orientation="Vertical" />
