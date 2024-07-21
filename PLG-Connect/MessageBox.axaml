@@ -2,18 +2,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
         x:Class="PLG_Connect.MessageBox"
         Title="MessageBox">
-<StackPanel HorizontalAlignment="Center">
-        <TextBlock HorizontalAlignment="Center" Name="Text"/>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+<StackPanel>
+        <TextBlock Name="Text" Margin="10" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Right" Margin="5" Orientation="Horizontal" Name="Buttons">
             <StackPanel.Styles>
                 <Style Selector="Button">
                     <Setter Property="Margin" Value="5"/>
                 </Style>
             </StackPanel.Styles>
-
         </StackPanel>
     </StackPanel>
 </Window>

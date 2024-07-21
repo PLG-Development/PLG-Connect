@@ -7,8 +7,6 @@ namespace PLG_Connect;
 
 public partial class MessageBox : Window
 {
-    
-
     public MessageBox()
     {
         AvaloniaXamlLoader.Load(this);
@@ -48,6 +46,7 @@ public partial class MessageBox : Window
         if (buttons == MessageBoxButton.OkCancel || buttons == MessageBoxButton.YesNoCancel)
             AddButton("Cancel", MessageBoxResult.Cancel, true);
 
+        
 
         var tcs = new TaskCompletionSource<MessageBoxResult>();
         msgbox.Closed += delegate { tcs.TrySetResult(res); };
