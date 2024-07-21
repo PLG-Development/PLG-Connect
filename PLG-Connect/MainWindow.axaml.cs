@@ -158,7 +158,7 @@ partial class MainWindow : Window
 
     private void New()
     {
-        if(saved){
+        if(isSaved){
             // create new
         } else {
             // Request answer: Save?
