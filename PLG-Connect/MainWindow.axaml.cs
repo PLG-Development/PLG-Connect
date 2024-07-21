@@ -95,7 +95,7 @@ partial class MainWindow : Window
             Mnu_Edit_DeleteMonitor.Header = "Activate Deletion Mode";
             BrdMonitors.Background = new SolidColorBrush(Color.Parse("#232327"));
         } else {
-            var res = await MessageBox.Show(this, "Do you really want to activate deletion mode? Deleting a monitor by clicking the delete-button will delete it permanentely and non-recoverable.", "Turn on deletion-mode?", MessageBoxButton.YesNo);
+            var res = await MessageBox.Show(this, "Do you really want to activate deletion mode? Deleting a monitor by clicking the delete-button will delete\nit permanentely and non-recoverable.", "Turn on deletion-mode?", MessageBoxButton.YesNo);
             if(res == MessageBoxResult.Yes){
                 delete = true;
                 Mnu_Edit_DeleteMonitor.Header = "Deactivate Deletion Mode";
