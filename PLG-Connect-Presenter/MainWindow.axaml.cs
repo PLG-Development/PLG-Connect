@@ -44,7 +44,12 @@ public partial class MainWindow : Window
 
             if (osName.Contains("win"))
             {
-                Process.Start(path);
+                ProcessStartInfo startInfo = new ProcessStartInfo(path)
+                {
+                    UseShellExecute = true,
+                    Verb = "open"
+                };
+                Process.Start(startInfo);
             }
             else if (osName.Contains("linux") || osName.Contains("unix"))
             {
