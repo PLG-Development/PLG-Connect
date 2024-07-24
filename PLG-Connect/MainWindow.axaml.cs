@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Platform;
 using Avalonia.Interactivity;
 using System.Text.Json;
 using System.IO;
@@ -207,7 +209,8 @@ partial class MainWindow : Window
                 return true;
             } catch {}
         } else {
-            return SaveAs().Result;       
+            SaveAs();
+            return true;
         }
         return false;
     }
@@ -240,44 +243,55 @@ partial class MainWindow : Window
         }
     }
 
-    public async Task<bool> SaveAs()
+    public async void SaveAs()
     {
         try
         {
             Console.WriteLine("hi");
 
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save PLG-Connect-Show",
-                Filters = new List<FileDialogFilter>
+            // Get top level from the current control. Alternatively, you can use Window reference instead.
+            //var topLevel = TopLevel.GetTopLevel(this);
+
+            // Start async operation to open the dialog.
+            FilePickerSaveOptions f = new();
+
+            f.Title = "Sasve";
+            f.FileTypeFilter = new[] {new FilePickerFileType("PLG-Connect-Projects")
                 {
-                    new FileDialogFilter { Name = "PLG-Connect | *.pcnt", Extensions = { "pcnt" } }
-                }
-            };
+                    Patterns = new[] { "*.pcnt"},
+                }};
+            var file = await this.StorageProvider.SaveFilePickerAsync(f);
+
+            // var saveFileDialog = new this.StorageProvider.SaveFilePickerAsync
+            // {
+            //     Title = "Save PLG-Connect-Show", 
+                
+            // };
 
             Console.WriteLine("hi");
 
-            // Zeige den Dialog an und warte auf das Ergebnis
-            // var filepath = await saveFileDialog.ShowAsync(this).Result;
-            Console.WriteLine("hi");
+            // // Zeige den Dialog an und warte auf das Ergebnis
+            // var fp = await saveFileDialog.ShowAsync(this);
+            // Console.WriteLine("hi");
 
-            if (filepath != null)
+            if (file is not null)
             {
                 Console.WriteLine("hi");
 
                 // Hier sollten Sie die Logik zum Speichern der Datei implementieren
                 // Zum Beispiel:
-                return Save();
+                //return 
+                Save();
             }
             else
             {
-                return false;
+                //return false;
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Fehler beim Speichern der Datei: {ex.Message}");
-            return false;
+            //return false;
         }
     }
 
