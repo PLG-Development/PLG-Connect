@@ -28,7 +28,7 @@ public class Server
 
         WebserverSettings settings = new()
         {
-            Hostname = "127.0.0.1",
+            Hostname = "*",
             Port = port,
         };
         Webserver server = new Webserver(settings, DefaultRoute);
