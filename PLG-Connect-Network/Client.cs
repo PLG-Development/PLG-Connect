@@ -3,7 +3,6 @@ using System.Text;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Diagnostics.CodeAnalysis;
 
 
 namespace PLG_Connect_Network;
@@ -54,9 +53,10 @@ public class ClientConnection
         }
         catch (HttpRequestException e)
         {
-#if DEBUG
             Console.WriteLine(e.Message);
-#endif
+            return;
+        } catch (TaskCanceledException e) {
+            Console.WriteLine(e.Message);
             return;
         }
     }
