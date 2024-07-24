@@ -258,7 +258,7 @@ partial class MainWindow : Window
             Console.WriteLine("hi");
 
             // Zeige den Dialog an und warte auf das Ergebnis
-            var filepath = await saveFileDialog.ShowAsync(this).Result;
+            // var filepath = await saveFileDialog.ShowAsync(this).Result;
             Console.WriteLine("hi");
 
             if (filepath != null)
