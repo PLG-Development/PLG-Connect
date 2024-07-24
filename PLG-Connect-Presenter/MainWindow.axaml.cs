@@ -9,8 +9,9 @@ using System.Net.NetworkInformation;
 using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
-using System.IO;
 using System.Diagnostics;
+using SharpHook;
+using SharpHook.Native;
 
 
 namespace PLG_Connect_Presenter;
@@ -41,7 +42,6 @@ public partial class MainWindow : Window
 
         try
         {
-
             if (osName.Contains("win"))
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(path)
@@ -60,6 +60,11 @@ public partial class MainWindow : Window
                     UseShellExecute = true
                 });
 
+                Thread.Sleep(5000);
+
+                var simulator = new EventSimulator();
+                simulator.SimulateKeyPress(KeyCode.VcF11);
+                simulator.SimulateKeyRelease(KeyCode.VcF11);
             }
         }
         catch (Exception e)
