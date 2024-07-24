@@ -11,7 +11,7 @@
         Title="PLG Connect">
     <Border Padding="0">
         <Grid RowDefinitions="30,*">
-            <Menu Grid.Row="0" Background="#101012">
+            <Menu Grid.Row="0" Background="#50888888">
                 <MenuItem Header="File">
                     <MenuItem Header="New..." Click="Mnu_File_New_Click"/>
                     <Separator />
