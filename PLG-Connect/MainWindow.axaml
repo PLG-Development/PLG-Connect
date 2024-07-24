@@ -55,7 +55,7 @@
                     </Border>
                 </DockPanel>
                 <!-- Right Side -->
-                <DockPanel Grid.Column="1" 
+                <DockPanel Grid.Column="1"
                         LastChildFill="True">
                     <TextBlock Text="Connected Monitors" FontSize="18" Margin="0,0,0,4"
                         DockPanel.Dock="Top" />
