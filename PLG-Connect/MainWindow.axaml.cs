@@ -88,7 +88,6 @@ partial class MainWindow : Window
     private bool isSaved = true; // updates the saved-status of the current project, e.g. adding a new monitor
     private string filepath = null; // filepath of the currently loaded project, e.g. /home/tag/connect-projects/aula-main.pcnt
     private static string projectFileExtension = "pcnt"; // file extension for project-files (currently: pcnt - Plg CoNnecT)
-
     // Menu Structure variables
     private bool delete = false;
 
@@ -205,88 +204,48 @@ partial class MainWindow : Window
             try{
                 DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
                 string json = JsonSerializer.Serialize(settings);
-                File.WriteAllText(ConfigPath, json);
+                File.WriteAllText(filepath, json);
                 return true;
             } catch {}
         } else {
-            SaveAs();
+            SaveAs(true);
             return true;
         }
         return false;
     }
-
-    public bool SaveAs2()
+    public async void SaveAs(bool fromsave = false)
     {
         try
         {
-            Console.WriteLine("hi");
-            var saveFileDialog = new SaveFileDialog
-            {
-                Title = "Save PLG-Connect-Show",
-                Filters = new List<Avalonia.Controls.FileDialogFilter>() { new Avalonia.Controls.FileDialogFilter { Name = "PLG-Connect | *.pcnt", Extensions = { "pcnt" } } }
-            };
-            Console.WriteLine("hi");
-            filepath = saveFileDialog.ShowAsync(this).Result;
-            Console.WriteLine("hi");
-            if (filepath != null)
-            {
-                Console.WriteLine("hi");
-                return Save();
+            string path, name;
+            path = Path.GetDirectoryName(filepath);
+            if(fromsave){
+                name = "New PLG-Connect Project";
             } else {
-                return false;
+                name = Path.GetFileNameWithoutExtension(filepath) + "-copy";
             }
-        }
-        catch
-        {
-            Console.WriteLine("hi");
-            return false;
-        }
-    }
 
-    public async void SaveAs()
-    {
-        try
-        {
-            Console.WriteLine("hi");
+            
 
-            // Get top level from the current control. Alternatively, you can use Window reference instead.
-            //var topLevel = TopLevel.GetTopLevel(this);
-
-            // Start async operation to open the dialog.
-            FilePickerSaveOptions f = new();
-
-            f.Title = "Sasve";
-            f.FileTypeFilter = new[] {new FilePickerFileType("PLG-Connect-Projects")
+            var filePicker = new SaveFileDialog
+            {
+                Title = "Save file...",
+                InitialFileName = name + ".pcnt",
+                DefaultExtension = ".pcnt",
+                Filters = new List<FileDialogFilter>
                 {
-                    Patterns = new[] { "*.pcnt"},
-                }};
-            var file = await this.StorageProvider.SaveFilePickerAsync(f);
+                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
+                }
+            };
 
-            // var saveFileDialog = new this.StorageProvider.SaveFilePickerAsync
-            // {
-            //     Title = "Save PLG-Connect-Show", 
-                
-            // };
+            var result = await filePicker.ShowAsync(this);
 
-            Console.WriteLine("hi");
-
-            // // Zeige den Dialog an und warte auf das Ergebnis
-            // var fp = await saveFileDialog.ShowAsync(this);
-            // Console.WriteLine("hi");
-
-            if (file is not null)
+            if (result != null)
             {
-                Console.WriteLine("hi");
-
-                // Hier sollten Sie die Logik zum Speichern der Datei implementieren
-                // Zum Beispiel:
-                //return 
+                filepath = result;
                 Save();
-            }
-            else
-            {
-                //return false;
-            }
+            }   
+
         }
         catch (Exception ex)
         {
