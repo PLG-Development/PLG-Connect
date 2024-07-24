@@ -11,7 +11,7 @@
         Title="PLG Connect">
     <Border Padding="0">
         <Grid RowDefinitions="30,*">
-            <Menu Grid.Row="0" Background="#101012">
+            <Menu Grid.Row="0">
                 <MenuItem Header="File">
                     <MenuItem Header="New..." Click="Mnu_File_New_Click"/>
                     <Separator />
@@ -55,7 +55,7 @@
                     </Border>
                 </DockPanel>
                 <!-- Right Side -->
-                <DockPanel Grid.Column="1" 
+                <DockPanel Grid.Column="1"
                         LastChildFill="True">
                     <TextBlock Text="Connected Monitors" FontSize="18" Margin="0,0,0,4"
                         DockPanel.Dock="Top" />
