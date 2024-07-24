@@ -5,14 +5,17 @@ using System.Text.Json;
 using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
+using Avalonia;
+using Avalonia.Input;
 using Avalonia.Markup;
 using System;
 using System.Linq;
-using Avalonia;
 using Avalonia.Media;
 using System.Diagnostics;
 using PLG_Connect;
-     
+using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
+
 
 namespace PLG_Connect;
 
@@ -26,22 +29,46 @@ partial class MainWindow : Window
 
         // Debuggers.Launch();
         InitializeComponent();
+        this.KeyDown += Handle_Keyboard_KeyDown;
 
+        // ConfigPath is just for Settings
         ConfigPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "PLG-Connect",
+            "PLG Development",
+            "PLG Connect",
             "config.json"
         );
         LoadConfig();
+    }
+
+    public void Handle_Keyboard_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S){
+            Save();
+            return;
+        }
+
+        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.S){
+            Save();
+            return;
+        }
+        
+        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.O){
+            Open();
+            return;
+        }
+        
+        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.N){
+            New();
+            return;
+        }
     }
 
     private string ConfigPath;
 
     private void SaveConfig()
     {
-        DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
-        string json = JsonSerializer.Serialize(settings);
-        File.WriteAllText(ConfigPath, json);
+
     }
 
     private void LoadConfig()
@@ -172,12 +199,86 @@ partial class MainWindow : Window
 
     private bool Save()
     {
+        if(filepath != null){
+            try{
+                DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
+                string json = JsonSerializer.Serialize(settings);
+                File.WriteAllText(ConfigPath, json);
+                return true;
+            } catch {}
+        } else {
+            return SaveAs().Result;       
+        }
         return false;
     }
 
-    private bool SaveAs()
+    public bool SaveAs2()
     {
-        return Save();
+        try
+        {
+            Console.WriteLine("hi");
+            var saveFileDialog = new SaveFileDialog
+            {
+                Title = "Save PLG-Connect-Show",
+                Filters = new List<Avalonia.Controls.FileDialogFilter>() { new Avalonia.Controls.FileDialogFilter { Name = "PLG-Connect | *.pcnt", Extensions = { "pcnt" } } }
+            };
+            Console.WriteLine("hi");
+            filepath = saveFileDialog.ShowAsync(this).Result;
+            Console.WriteLine("hi");
+            if (filepath != null)
+            {
+                Console.WriteLine("hi");
+                return Save();
+            } else {
+                return false;
+            }
+        }
+        catch
+        {
+            Console.WriteLine("hi");
+            return false;
+        }
+    }
+
+    public async Task<bool> SaveAs()
+    {
+        try
+        {
+            Console.WriteLine("hi");
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                Title = "Save PLG-Connect-Show",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "PLG-Connect | *.pcnt", Extensions = { "pcnt" } }
+                }
+            };
+
+            Console.WriteLine("hi");
+
+            // Zeige den Dialog an und warte auf das Ergebnis
+            var filepath = await saveFileDialog.ShowAsync(this).Result;
+            Console.WriteLine("hi");
+
+            if (filepath != null)
+            {
+                Console.WriteLine("hi");
+
+                // Hier sollten Sie die Logik zum Speichern der Datei implementieren
+                // Zum Beispiel:
+                return Save();
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler beim Speichern der Datei: {ex.Message}");
+            return false;
+        }
     }
 
     private void AddMonitor(){
