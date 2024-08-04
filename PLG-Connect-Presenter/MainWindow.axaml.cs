@@ -10,8 +10,7 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
 using System.Diagnostics;
-using SharpHook;
-using SharpHook.Native;
+using System.Text.RegularExpressions;
 
 
 namespace PLG_Connect_Presenter;
@@ -38,39 +37,33 @@ public partial class MainWindow : Window
 
     private void OpenFile(string path)
     {
-        string osName = Environment.OSVersion.Platform.ToString().ToLower();
+        // Open file with default application
+        Process program = new Process { StartInfo = new ProcessStartInfo {
+                FileName = "xdg-open",
+                Arguments = path,
+                UseShellExecute = true
+        }};
+        program.Start();
+        Thread.Sleep(1000);
 
-        try
-        {
-            if (osName.Contains("win"))
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo(path)
-                {
-                    UseShellExecute = true,
-                    Verb = "open"
-                };
-                Process.Start(startInfo);
-            }
-            else if (osName.Contains("linux") || osName.Contains("unix"))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "xdg-open",
-                    Arguments = path,
-                    UseShellExecute = true
-                });
+        // Find the window ID of the opened program
+        string openWindows = runTerminalCommand("wmctrl", "-l");
+        string idPattern = "(0x[a-fA-F0-9]+) .*\n*$";
+        // string id = Regex.Match(openWindows, idPattern).Groups[0].Value;
+        string winwdoId = Regex.Match(openWindows, idPattern).Groups[1].Value;
 
-                Thread.Sleep(5000);
+        // Bring the app into focus
+        runTerminalCommand("wmctrl", $"-i -a {winwdoId}");
+        runTerminalCommand("wmctrl", $"-i -r {winwdoId} -b add,fullscreen");
+    }
 
-                var simulator = new EventSimulator();
-                simulator.SimulateKeyPress(KeyCode.VcF11);
-                simulator.SimulateKeyRelease(KeyCode.VcF11);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
+    private static string runTerminalCommand(string command, string arguments) {
+        Process terminal = new Process { StartInfo = new ProcessStartInfo {
+            FileName = command, Arguments = arguments, RedirectStandardOutput = true
+        }};
+        terminal.Start();
+        terminal.WaitForExit();
+        return terminal.StandardOutput.ReadToEnd();
     }
 
     private void firstRequest()

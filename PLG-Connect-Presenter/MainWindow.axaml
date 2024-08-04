@@ -8,7 +8,6 @@
         x:Class="PLG_Connect_Presenter.MainWindow"
         ExtendClientAreaToDecorationsHint="true"
         Title="PLG_Connect_Presenter"
-        WindowState="FullScreen"
         Icon="/Assets/logo-black.ico">
     <Grid Name="main">
         <Grid Name="startInfo">
