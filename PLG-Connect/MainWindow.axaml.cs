@@ -153,17 +153,15 @@ partial class MainWindow : Window
 
     private void Mnu_Edit_ClearAllMonitors_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-
-    }
-
-    private void Mnu_Edit_RequestDevConnection_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-
+        foreach (Display d in Displays)
+        {
+            d.DisplayText("");
+        }
     }
 
     private void Mnu_Edit_ClearAllDevices_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-
+        // remove all mobile camera-devices
     }
 
     private void Mnu_Edit_Preferences_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -225,11 +223,52 @@ partial class MainWindow : Window
         }
     }
 
-    private void Open()
+    private void Load(string path)
     {
-        //Open File Dialog
+        try
+        {
+            //string result = File.ReadAllText(path);
+            //Displays = JsonSerializer.Deserialize<List<Display>>(result);
+
+
+
+            string json = File.ReadAllText(ConfigPath);
+            Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
+            RefreshGUI();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Error while reading");
+        }
     }
 
+    private async void Open()
+    {
+        try
+        {
+
+            var filePicker = new OpenFileDialog
+            {
+                Title = "Open file...",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
+                }
+            };
+
+            var result = await filePicker.ShowAsync(this);
+
+            if (result != null)
+            {
+                filepath = result[0];
+                Load(filepath);
+            }
+        }
+        catch
+        {
+
+        }
+    }
     private bool Save()
     {
         if (filepath != null)
@@ -241,7 +280,10 @@ partial class MainWindow : Window
                 File.WriteAllText(filepath, json);
                 return true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error while writing");
+            }
         }
         else
         {
@@ -402,7 +444,7 @@ partial class MainWindow : Window
             b2.Background = new SolidColorBrush(Color.Parse("#772327"));
             b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                //Deletion logic
+                // Deletion logic
             };
 
             StackPanel buttons = new StackPanel()
