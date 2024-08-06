@@ -136,6 +136,7 @@ public partial class NewMonitorWindow : Window
         // Check if mac already exists
         if (mainWindow.Displays.Where(d => d.Settings.MacAddress == DisplayMac).Count() > 0)
         {
+            PLG_Connect.MessageBox.Show(this, "This MAC-Address is already configured", "MAC-Adress already found");
             return;
         }
 
