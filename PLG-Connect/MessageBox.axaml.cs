@@ -12,7 +12,7 @@ public partial class MessageBox : Window
         AvaloniaXamlLoader.Load(this);
     }
 
-    public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButton buttons)
+    public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButton buttons = MessageBoxButton.Ok)
     {
         var msgbox = new MessageBox()
         {
@@ -25,8 +25,9 @@ public partial class MessageBox : Window
 
         void AddButton(string caption, MessageBoxResult r, bool def = false)
         {
-            var btn = new Button {Content = caption};
-            btn.Click += (_, __) => { 
+            var btn = new Button { Content = caption };
+            btn.Click += (_, __) =>
+            {
                 res = r;
                 msgbox.Close();
             };
@@ -46,7 +47,7 @@ public partial class MessageBox : Window
         if (buttons == MessageBoxButton.OkCancel || buttons == MessageBoxButton.YesNoCancel)
             AddButton("Cancel", MessageBoxResult.Cancel, true);
 
-        
+
 
         var tcs = new TaskCompletionSource<MessageBoxResult>();
         msgbox.Closed += delegate { tcs.TrySetResult(res); };
