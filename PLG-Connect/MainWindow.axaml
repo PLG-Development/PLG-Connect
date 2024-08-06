@@ -26,7 +26,6 @@
                     <MenuItem Header="Activate Deletion Mode" Click="Mnu_Edit_DeleteMonitor_Click" x:Name="Mnu_Edit_DeleteMonitor"/>
                     <MenuItem Header="Clear All Monitors" Click="Mnu_Edit_ClearAllMonitors_Click"/>
                     <Separator />
-                    <MenuItem Header="Request Device Connection" Click="Mnu_Edit_RequestDevConnection_Click"/>
                     <MenuItem Header="Clear all Devices" Click="Mnu_Edit_ClearAllDevices_Click"/>
                     <Separator />
                     <MenuItem Header="Preferences" Click="Mnu_Edit_Preferences_Click"/>
