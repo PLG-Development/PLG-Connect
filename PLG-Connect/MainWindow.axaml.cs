@@ -47,7 +47,7 @@ partial class MainWindow : Window
     {
         if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S)
         {
-            Save();
+            SaveAs();
             return;
         }
 
