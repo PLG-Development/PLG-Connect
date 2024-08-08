@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect.WndPreferences"
-        Title="WndPreferences">
-  Welcome to Avalonia!
+        Title="Preferences">
+  <Grid>
+    </Grid>
 </Window>
