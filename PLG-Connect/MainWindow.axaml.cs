@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
 using Avalonia.Interactivity;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
@@ -72,9 +72,11 @@ partial class MainWindow : Window
 
     private string ConfigPath;
 
-    private void SaveConfig() // Just for application settings
+    private void SaveConfig(string path)
     {
-
+        DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
+        string json = JsonConvert.SerializeObject(settings);
+        File.WriteAllText(path, json);
     }
 
     private void LoadConfig()
@@ -233,7 +235,7 @@ partial class MainWindow : Window
 
 
             string json = File.ReadAllText(ConfigPath);
-            Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
+            Displays = JsonConvert.DeserializeObject<List<Display>>(json)!;
             RefreshGUI();
         }
         catch (Exception ex)
@@ -275,9 +277,7 @@ partial class MainWindow : Window
         {
             try
             {
-                DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
-                string json = JsonSerializer.Serialize(settings);
-                File.WriteAllText(filepath, json);
+                SaveConfig(filepath);
                 return true;
             }
             catch (Exception ex)
