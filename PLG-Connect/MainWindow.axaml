@@ -43,7 +43,7 @@
             </Menu>
             <Grid Margin="16" Grid.Row="1" ColumnDefinitions="*,*">
                 <DockPanel LastChildFill="True" Margin="0,0,8,0">
-                    <TextBlock Text="Connected Devices" FontSize="18" Margin="0,0,0,4"
+                    <TextBlock Text="Connected Devices - Coming Soon" FontSize="18" Margin="0,0,0,4"
                         DockPanel.Dock="Top" />
                     <Border DockPanel.Dock="Bottom"
                             BorderThickness="2"
