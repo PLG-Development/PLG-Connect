@@ -46,24 +46,8 @@ public partial class MainWindow : Window
         program.Start();
         Thread.Sleep(1000);
 
-        // Find the window ID of the opened program
-        string openWindows = runTerminalCommand("wmctrl", "-l");
-        string idPattern = "(0x[a-fA-F0-9]+) .*\n*$";
-        // string id = Regex.Match(openWindows, idPattern).Groups[0].Value;
-        string winwdoId = Regex.Match(openWindows, idPattern).Groups[1].Value;
-
-        // Bring the app into focus
-        runTerminalCommand("wmctrl", $"-i -a {winwdoId}");
-        runTerminalCommand("wmctrl", $"-i -r {winwdoId} -b add,fullscreen");
-    }
-
-    private static string runTerminalCommand(string command, string arguments) {
-        Process terminal = new Process { StartInfo = new ProcessStartInfo {
-            FileName = command, Arguments = arguments, RedirectStandardOutput = true
-        }};
-        terminal.Start();
-        terminal.WaitForExit();
-        return terminal.StandardOutput.ReadToEnd();
+        string winwdoId = WindowManager.getLatestWindowId();
+        WindowManager.focusWindow(winwdoId);
     }
 
     private void firstRequest()
