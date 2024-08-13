@@ -1,0 +1,15 @@
+meta {
+  name: toggleBlackscreen
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/toggleBlackscreen
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: 0
+}
