@@ -50,8 +50,11 @@ public partial class MainWindow : Window
         WindowManager.focusWindow(winwdoId);
     }
 
+    private string ownWindowId;
     private void firstRequest()
     {
+        ownWindowId = WindowManager.getLatestWindowId();
+
         startInfo.IsVisible = false;
         content.IsVisible = true;
     }
