@@ -26,7 +26,6 @@
                     <MenuItem Header="Activate Deletion Mode" Click="Mnu_Edit_DeleteMonitor_Click" x:Name="Mnu_Edit_DeleteMonitor"/>
                     <MenuItem Header="Clear All Monitors" Click="Mnu_Edit_ClearAllMonitors_Click"/>
                     <Separator />
-                    <MenuItem Header="Request Device Connection" Click="Mnu_Edit_RequestDevConnection_Click"/>
                     <MenuItem Header="Clear all Devices" Click="Mnu_Edit_ClearAllDevices_Click"/>
                     <Separator />
                     <MenuItem Header="Preferences" Click="Mnu_Edit_Preferences_Click"/>
@@ -44,7 +43,7 @@
             </Menu>
             <Grid Margin="16" Grid.Row="1" ColumnDefinitions="*,*">
                 <DockPanel LastChildFill="True" Margin="0,0,8,0">
-                    <TextBlock Text="Connected Devices" FontSize="18" Margin="0,0,0,4"
+                    <TextBlock Text="Connected Devices - Coming Soon" FontSize="18" Margin="0,0,0,4"
                         DockPanel.Dock="Top" />
                     <Border DockPanel.Dock="Bottom"
                             BorderThickness="2"
