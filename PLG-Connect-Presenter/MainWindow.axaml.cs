@@ -32,10 +32,11 @@ public partial class MainWindow : Window
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
+        server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
     }
 
 
-    private string openWindowId;
+    private string openWindowId = "";
     async private void OpenFile(string path)
     {
         // Open file with default application
@@ -64,6 +65,14 @@ public partial class MainWindow : Window
 
         startInfo.IsVisible = false;
         content.IsVisible = true;
+    }
+
+    private async void BeforeRequest() {
+        // only run this code if an additional window was opened
+        if (openWindowId == "") { return; }
+
+        await WindowManager.closeWindow(openWindowId);
+        openWindowId = "";
     }
 
     bool showBlackScreen = false;

@@ -21,6 +21,10 @@ public class WindowManager {
         return winwdoId;
     }
 
+    public async static Task closeWindow(string windowId) {
+        await runTerminalCommand("wmctrl", $"-ic {windowId}");
+    }
+
     private async static Task<string> runTerminalCommand(string command, string arguments) {
         Process terminal = new Process { StartInfo = new ProcessStartInfo {
             FileName = command, Arguments = arguments, RedirectStandardOutput = true
