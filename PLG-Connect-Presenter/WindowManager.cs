@@ -5,15 +5,18 @@ using System.Threading.Tasks;
 
 namespace PLG_Connect_Presenter;
 
-public class WindowManager {
-    public async static void focusWindow(string windowId) {
-        await runTerminalCommand("wmctrl", $"-i -a {windowId}");
-        await runTerminalCommand("wmctrl", $"-i -r {windowId} -b add,fullscreen");
+public class WindowManager
+{
+    public async static void FocusWindow(string windowId)
+    {
+        await RunTerminalCommand("wmctrl", $"-i -a {windowId}");
+        await RunTerminalCommand("wmctrl", $"-i -r {windowId} -b add,fullscreen");
     }
 
-    public async static Task<string> getLatestWindowId() {
+    public async static Task<string> getLatestWindowId()
+    {
         // get ids and names of all open windows
-        string openWindows = await runTerminalCommand("wmctrl", "-l");
+        string openWindows = await RunTerminalCommand("wmctrl", "-l");
         // get the last outputed window id
         string idPattern = "(0x[a-fA-F0-9]+) .*\n*$";
 
@@ -21,14 +24,22 @@ public class WindowManager {
         return winwdoId;
     }
 
-    public async static Task closeWindow(string windowId) {
-        await runTerminalCommand("wmctrl", $"-ic {windowId}");
+    public async static Task CloseWindow(string windowId)
+    {
+        await RunTerminalCommand("wmctrl", $"-ic {windowId}");
     }
 
-    private async static Task<string> runTerminalCommand(string command, string arguments) {
-        Process terminal = new Process { StartInfo = new ProcessStartInfo {
-            FileName = command, Arguments = arguments, RedirectStandardOutput = true
-        }};
+    private async static Task<string> RunTerminalCommand(string command, string arguments)
+    {
+        Process terminal = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = command,
+                Arguments = arguments,
+                RedirectStandardOutput = true
+            }
+        };
         terminal.Start();
         await terminal.WaitForExitAsync();
         return terminal.StandardOutput.ReadToEnd();

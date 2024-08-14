@@ -30,36 +30,41 @@ public partial class MainWindow : Window
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
-        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
+        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(FirstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
         server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
     }
 
 
-    private string openWindowId = "";
+    private string openWindowId = "nothing";
     async private void OpenFile(string path)
     {
         // Open file with default application
-        Process program = new Process { StartInfo = new ProcessStartInfo {
+        Process program = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
                 FileName = "xdg-open",
                 Arguments = path,
                 UseShellExecute = true
-        }};
+            }
+        };
         program.Start();
 
         string windowId = ownWindowId;
         // wait until the latest window id changes -> app has started
-        while (windowId == ownWindowId) {
+        while (windowId == ownWindowId)
+        {
             Console.WriteLine("Waiting for window to open ...");
             await Task.Delay(1000);
             windowId = await WindowManager.getLatestWindowId();
         }
         openWindowId = windowId;
-        WindowManager.focusWindow(windowId);
+        WindowManager.FocusWindow(windowId);
     }
 
     private string ownWindowId;
-    private async void firstRequest()
+    private async void FirstRequest()
     {
         ownWindowId = await WindowManager.getLatestWindowId();
 
@@ -67,11 +72,12 @@ public partial class MainWindow : Window
         content.IsVisible = true;
     }
 
-    private async void BeforeRequest() {
+    private async void BeforeRequest()
+    {
         // only run this code if an additional window was opened
         if (openWindowId == "") { return; }
 
-        await WindowManager.closeWindow(openWindowId);
+        await WindowManager.CloseWindow(openWindowId);
         openWindowId = "";
     }
 
@@ -89,7 +95,7 @@ public partial class MainWindow : Window
 
     public void LoadImage()
     {
-        string theme = Application.Current.ActualThemeVariant.ToString();
+        string theme = Application.Current!.ActualThemeVariant.ToString();
         if (theme == "Light")
         {
             ImgLoading.Source = new Bitmap("LOGO_white.png");
@@ -112,7 +118,7 @@ public partial class MainWindow : Window
             Dns.GetHostAddresses(hostName)
             , ip => ip.AddressFamily == AddressFamily.InterNetwork
         )!.ToString();
-        string macAddress = getMacAddress();
+        string macAddress = GetMacAddress();
 
         TbStartupInformation.Text = "Starting Up ...\n\n";
         int count = 0;
@@ -141,7 +147,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private static string getMacAddress()
+    private static string GetMacAddress()
     {
         foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
         {
