@@ -10,7 +10,7 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 
 namespace PLG_Connect_Presenter;
@@ -35,7 +35,8 @@ public partial class MainWindow : Window
     }
 
 
-    private void OpenFile(string path)
+    private string openWindowId;
+    async private void OpenFile(string path)
     {
         // Open file with default application
         Process program = new Process { StartInfo = new ProcessStartInfo {
@@ -44,16 +45,22 @@ public partial class MainWindow : Window
                 UseShellExecute = true
         }};
         program.Start();
-        Thread.Sleep(1000);
 
-        string winwdoId = WindowManager.getLatestWindowId();
-        WindowManager.focusWindow(winwdoId);
+        string windowId = ownWindowId;
+        // wait until the latest window id changes -> app has started
+        while (windowId == ownWindowId) {
+            Console.WriteLine("Waiting for window to open ...");
+            await Task.Delay(1000);
+            windowId = await WindowManager.getLatestWindowId();
+        }
+        openWindowId = windowId;
+        WindowManager.focusWindow(windowId);
     }
 
     private string ownWindowId;
-    private void firstRequest()
+    private async void firstRequest()
     {
-        ownWindowId = WindowManager.getLatestWindowId();
+        ownWindowId = await WindowManager.getLatestWindowId();
 
         startInfo.IsVisible = false;
         content.IsVisible = true;
