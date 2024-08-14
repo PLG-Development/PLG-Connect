@@ -1,21 +1,15 @@
-# PLG-Connect
+# PLG Connect
 
-New PLG Connect Project (OpenSource, Avalonia UI)
+Open source multi-platform solution for advanced remote control and coordination of one or more presentation displays. Specially optimized for highly dynamic multi-display situations.
 
-## A new aera begins!
+## Requirements
 
-PLG Connect is going to be multi platform! Revolutionary (ask apple -\_-)!
+### PLG Connect Presenter
 
-## PLG Connect
+- Linux
+- X11 Display Server
+- `wmctrl` library
 
-PLG Connect is (will be) a software to communicate between displays, cameras and a host. Generally
-we are going to use it to perform high level video presentations over multiple displays (like five or more).
+## Development Setup
 
-## Version history (Changelog)
-
-Currently, there is not published version available.
-|Version|Release Date|Changes|
-|--------|----------|--------------------|
-|1.0|15.08.2024|Initial Application|
-
-Install .NET 8.0 SDK and AvaloniaUI to execute "`dotnet run`" in your terminal to start the downloaded source code.
+Install .NET 8.0 SDK and AvaloniaUI to execute `dotnet run` in your terminal to start the downloaded source code.
