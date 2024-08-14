@@ -19,6 +19,7 @@ public class Server
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
     public List<Action> firstRequestHandlers = new List<Action>();
+    public List<Action> beforeRequestHandlers = new List<Action>();
     public List<Action<string>> openFileHandlers = new List<Action<string>>();
     public string Password;
 
@@ -52,6 +53,11 @@ public class Server
     bool firstRequestHappend = false;
     Task BeforeRequest(HttpContextBase ctx)
     {
+        foreach (var handler in beforeRequestHandlers)
+        {
+            handler();
+        }
+
         if (firstRequestHappend) { return Task.CompletedTask; }
 
         foreach (var handler in firstRequestHandlers)

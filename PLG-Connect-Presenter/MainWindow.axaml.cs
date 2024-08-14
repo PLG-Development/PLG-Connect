@@ -10,8 +10,7 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Threading;
 using System.Diagnostics;
-using SharpHook;
-using SharpHook.Native;
+using System.Threading.Tasks;
 
 
 namespace PLG_Connect_Presenter;
@@ -31,52 +30,55 @@ public partial class MainWindow : Window
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
-        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(firstRequest));
+        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
+        server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
     }
 
 
-    private void OpenFile(string path)
+    private string openWindowId = "nothing";
+    async private void OpenFile(string path)
     {
-        string osName = Environment.OSVersion.Platform.ToString().ToLower();
-
-        try
+        // Open file with default application
+        Process program = new Process
         {
-            if (osName.Contains("win"))
+            StartInfo = new ProcessStartInfo
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo(path)
-                {
-                    UseShellExecute = true,
-                    Verb = "open"
-                };
-                Process.Start(startInfo);
+                FileName = "xdg-open",
+                Arguments = path,
+                UseShellExecute = true
             }
-            else if (osName.Contains("linux") || osName.Contains("unix"))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "xdg-open",
-                    Arguments = path,
-                    UseShellExecute = true
-                });
+        };
+        program.Start();
 
-                Thread.Sleep(5000);
-
-                var simulator = new EventSimulator();
-                simulator.SimulateKeyPress(KeyCode.VcF11);
-                simulator.SimulateKeyRelease(KeyCode.VcF11);
-            }
-        }
-        catch (Exception e)
+        string windowId = ownWindowId!;
+        // wait until the latest window id changes -> app has started
+        while (windowId == ownWindowId)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Waiting for window to open ...");
+            await Task.Delay(1000);
+            windowId = await WindowManager.getLatestWindowId();
         }
+        openWindowId = windowId;
+        WindowManager.FocusWindow(windowId);
     }
 
-    private void firstRequest()
+    private string? ownWindowId;
+    private async void BeforeFirstRequest()
     {
+        ownWindowId = await WindowManager.getLatestWindowId();
+
         startInfo.IsVisible = false;
         content.IsVisible = true;
+    }
+
+    private async void BeforeRequest()
+    {
+        // only run this code if an additional window was opened
+        if (openWindowId == "") { return; }
+
+        await WindowManager.CloseWindow(openWindowId);
+        openWindowId = "";
     }
 
     bool showBlackScreen = false;
@@ -93,7 +95,7 @@ public partial class MainWindow : Window
 
     public void LoadImage()
     {
-        string theme = Application.Current.ActualThemeVariant.ToString();
+        string theme = Application.Current!.ActualThemeVariant.ToString();
         if (theme == "Light")
         {
             ImgLoading.Source = new Bitmap("LOGO_white.png");
@@ -116,7 +118,7 @@ public partial class MainWindow : Window
             Dns.GetHostAddresses(hostName)
             , ip => ip.AddressFamily == AddressFamily.InterNetwork
         )!.ToString();
-        string macAddress = getMacAddress();
+        string macAddress = GetMacAddress();
 
         TbStartupInformation.Text = "Starting Up ...\n\n";
         int count = 0;
@@ -145,7 +147,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private static string getMacAddress()
+    private static string GetMacAddress()
     {
         foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
         {
