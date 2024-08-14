@@ -30,7 +30,7 @@ public partial class MainWindow : Window
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
-        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(FirstRequest));
+        server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
         server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
     }
@@ -51,7 +51,7 @@ public partial class MainWindow : Window
         };
         program.Start();
 
-        string windowId = ownWindowId;
+        string windowId = ownWindowId!;
         // wait until the latest window id changes -> app has started
         while (windowId == ownWindowId)
         {
@@ -63,8 +63,8 @@ public partial class MainWindow : Window
         WindowManager.FocusWindow(windowId);
     }
 
-    private string ownWindowId;
-    private async void FirstRequest()
+    private string? ownWindowId;
+    private async void BeforeFirstRequest()
     {
         ownWindowId = await WindowManager.getLatestWindowId();
 
