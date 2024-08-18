@@ -35,15 +35,17 @@ public partial class MainWindow : Window
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
-        server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
     }
 
 
-    private string openWindowId = "nothing";
+    private bool fileWindowOpen = false;
+    private string? fileWindowId;
     async private void OpenFile(string path)
     {
+        TextContent.IsVisible = false;
+
         // Open file with default application
         Process program = new Process
         {
@@ -64,8 +66,17 @@ public partial class MainWindow : Window
             await Task.Delay(1000);
             windowId = await WindowManager.getLatestWindowId();
         }
-        openWindowId = windowId;
-        WindowManager.FocusWindow(windowId);
+        fileWindowId = windowId;
+        fileWindowOpen = true;
+
+        // focus the file window only when the black screen is not shown
+        // if the black screen is shown focus the main window so that the user
+        // wont see file window
+        if (showBlackScreen) {
+            WindowManager.FocusWindow(ownWindowId!);
+        } else {
+            WindowManager.FocusWindow(windowId);
+        }
     }
 
     private string? ownWindowId;
@@ -74,27 +85,34 @@ public partial class MainWindow : Window
         ownWindowId = await WindowManager.getLatestWindowId();
 
         startInfo.IsVisible = false;
-        content.IsVisible = true;
-    }
-
-    private async void BeforeRequest()
-    {
-        // only run this code if an additional window was opened
-        if (openWindowId == "") { return; }
-
-        await WindowManager.CloseWindow(openWindowId);
-        openWindowId = "";
     }
 
     bool showBlackScreen = false;
     private void ToggleBlackScreen()
     {
         showBlackScreen = !showBlackScreen;
+
         main.IsVisible = !showBlackScreen;
+
+        // also hide the file window if it was opened
+        if (showBlackScreen && fileWindowOpen) {
+            WindowManager.FocusWindow(ownWindowId!);
+        }
+        // focus the opend file window when exiting the black screen
+        if (!showBlackScreen && fileWindowOpen) {
+            WindowManager.FocusWindow(fileWindowId!);
+        }
     }
 
-    private void DisplayText(string content)
+    private async void DisplayText(string content)
     {
+        // close additional window if it was opened
+        if (fileWindowOpen) {
+            await WindowManager.CloseWindow(fileWindowId!);
+            fileWindowOpen = false;
+        }
+
+        TextContent.IsVisible = true;
         TextContent.Content = content;
     }
 

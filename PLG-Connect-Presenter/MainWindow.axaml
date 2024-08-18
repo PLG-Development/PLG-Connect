@@ -23,13 +23,12 @@
                    Width="250"
                    x:Name="ImgLoading" />
         </Grid>
-        <Grid x:Name="content"
-              IsVisible="False">
-            <Image x:Name="ImageContent" />
+        <Grid>
             <Label x:Name="TextContent"
                    Content="[Hier könnte Ihr Text stehen]"
                    HorizontalContentAlignment="Center"
                    FontSize="38"
+                   IsVisible="False"
                    VerticalContentAlignment="Center" />
         </Grid>
     </Grid>
