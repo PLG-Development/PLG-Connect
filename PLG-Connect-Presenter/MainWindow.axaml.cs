@@ -119,7 +119,7 @@ public partial class MainWindow : Window
         EventSimulator simulator = new EventSimulator();
 
         simulator.SimulateKeyPress(KeyCode.VcRight);
-        await Task.Delay(500);
+        await Task.Delay(100);
         simulator.SimulateKeyRelease(KeyCode.VcRight);
     }
 
@@ -127,7 +127,7 @@ public partial class MainWindow : Window
         EventSimulator simulator = new EventSimulator();
 
         simulator.SimulateKeyPress(KeyCode.VcLeft);
-        await Task.Delay(500);
+        await Task.Delay(100);
         simulator.SimulateKeyRelease(KeyCode.VcLeft);
     }
 
