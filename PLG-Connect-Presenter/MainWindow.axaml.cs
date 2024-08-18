@@ -11,6 +11,8 @@ using Avalonia;
 using Avalonia.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using SharpHook;
+using SharpHook.Native;
 
 
 namespace PLG_Connect_Presenter;
@@ -26,6 +28,7 @@ public partial class MainWindow : Window
 
         Start();
         Server server = new Server();
+
         server.displayTextHandlers.Add(
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))
         );
@@ -33,6 +36,8 @@ public partial class MainWindow : Window
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
         server.beforeRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeRequest));
+        server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
+        server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
     }
 
 
@@ -108,6 +113,22 @@ public partial class MainWindow : Window
         {
             ImgLoading.Source = new Bitmap("LOGO_white.png");
         }
+    }
+
+    private async void NextSlide() {
+        EventSimulator simulator = new EventSimulator();
+
+        simulator.SimulateKeyPress(KeyCode.VcRight);
+        await Task.Delay(500);
+        simulator.SimulateKeyRelease(KeyCode.VcRight);
+    }
+
+    private async void PreviousSlide() {
+        EventSimulator simulator = new EventSimulator();
+
+        simulator.SimulateKeyPress(KeyCode.VcLeft);
+        await Task.Delay(500);
+        simulator.SimulateKeyRelease(KeyCode.VcLeft);
     }
 
 
