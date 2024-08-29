@@ -396,10 +396,29 @@ partial class MainWindow : Window
             Button b4 = new Button();
             b4.Margin = new Thickness(5);
             b4.Content = "Blackout";
+            bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
+            if (blackout)
+            {
+                b4.Background = new SolidColorBrush(Color.Parse("#772327"));
+            }
+            else
+            {
+                b4.Background = new SolidColorBrush(Color.Parse("#545458"));
+            }
             b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
                 await disp.ToggleBlackScreen();
                 disp.Messages = DateTime.Now + " - Toggled Blackout" + "\n\n" + disp.Messages;
+                bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
+
+                if (blackout)
+                {
+                    (sender as Button).Background = new SolidColorBrush(Color.Parse("#772327"));
+                }
+                else
+                {
+                    (sender as Button).Background = new SolidColorBrush(Color.Parse("#545458"));
+                }
             };
             StackPanel buttons = new StackPanel()
             {
