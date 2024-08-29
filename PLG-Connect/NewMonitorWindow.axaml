@@ -51,7 +51,8 @@
                         Spacing="4">
                 <Button x:Name="PingButton"
                         Content="Test-Ping"
-                        IsEnabled="False" />
+                        IsEnabled="False"
+                        Click="PingButtonClick" />
                 <Button x:Name="AddButton"
                         Content="Add"
                         Click="AddButtonClick" />

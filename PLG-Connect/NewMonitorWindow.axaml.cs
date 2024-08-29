@@ -29,6 +29,11 @@ public partial class NewMonitorWindow : Window
         Close();
     }
 
+    private async void PingButtonClick(object sender, RoutedEventArgs e)
+    {
+        await new Display().sendPing();
+    }
+
     private void TextBoxGotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
     {
         TextBox? tb = (sender as TextBox);
@@ -120,10 +125,12 @@ public partial class NewMonitorWindow : Window
         if (macValid && ipValid)
         {
             AddButton.IsEnabled = true;
+            PingButton.IsEnabled = true;
             return;
         }
 
         AddButton.IsEnabled = false;
+        PingButton.IsEnabled = false;
 
     }
     private void NameTextBoxTextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
