@@ -1,8 +1,8 @@
-using System.Text.Json;
 using System.Text;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 
 namespace PLG_Connect_Network;
@@ -28,14 +28,19 @@ public class ClientConnection
         MacAddress = macAddress.Replace(":", "-");
     }
 
-    private async Task sendJsonPostRequest<T>(string path, T message)
+    private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
-        string json = JsonSerializer.Serialize(message);
+        string json = JsonConvert.SerializeObject(message);
         StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-        await sendPostRequest(path, content);
+        string response = await sendPostRequest(path, content);
+
+        // only return an object if we got content from the server
+        if (response == null) return default!;
+        ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+        return result;
     }
 
-    private async Task sendPostRequest(string path, HttpContent content)
+    private async Task<string> sendPostRequest(string path, HttpContent content)
     {
         try
         {
@@ -49,15 +54,13 @@ public class ClientConnection
 
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
-            return;
+            return responseBody;
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine(e.Message);
-            return;
+            throw new Exception($"Could not send post request to {IpAddress}{path}: {e.Message}");
         } catch (TaskCanceledException e) {
-            Console.WriteLine(e.Message);
-            return;
+            throw new Exception($"Could not send post request to {IpAddress}{path}: {e.Message}");
         }
     }
 
@@ -69,19 +72,20 @@ public class ClientConnection
     public async Task DisplayText(string text)
     {
         var message = new DisplayTextMessage { Text = text };
-        await sendJsonPostRequest<DisplayTextMessage>("/displayText", message);
+        await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
     }
 
-    public async Task ToggleBlackScreen()
+    public async Task<bool> ToggleBlackScreen()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/toggleBlackScreen", message);
+        ToggleBlackScreenReturnMessage result = await sendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
+        return result.BlackScreenEnabled;
     }
 
     public async Task RunCommand(string command)
     {
         var message = new RunCommandMessage { Command = command };
-        await sendJsonPostRequest<RunCommandMessage>("/runCommand", message);
+        await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
     }
 
     public async Task OpenFile(string path)
@@ -96,12 +100,12 @@ public class ClientConnection
     public async Task NextSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/nextSlide", message);
+        await sendJsonPostRequest<object, object>("/nextSlide", message);
     }
 
     public async Task PreviousSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/previousSlide", message);
+        await sendJsonPostRequest<object, object>("/previousSlide", message);
     }
 }

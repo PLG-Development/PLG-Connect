@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="WakeOnLAN" Version="2.0.2" />
     <PackageReference Include="Watson" Version="6.1.10" />
   </ItemGroup>

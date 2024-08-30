@@ -1,11 +1,10 @@
-using System;
 using System.Net;
 using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Security.Cryptography;
-using System.Web;
+using Newtonsoft.Json;
 
 
 namespace PLG_Connect_Network;
@@ -91,7 +90,7 @@ public class Server
 
     static T ExtractObject<T>(HttpContextBase ctx)
     {
-        var result = JsonSerializer.Deserialize<T>(ctx.Request.DataAsString);
+        var result = JsonConvert.DeserializeObject<T>(ctx.Request.DataAsString);
         if (result == null)
         {
             throw new Exception("Invalid JSON");
@@ -154,14 +153,17 @@ public class Server
         await ctx.Response.Send("");
     }
 
+    // note: this function handels the black screen state paralel to the actual presenter logic which duplicats the code and is not ideal
+    // however this makes it much simpler to handler because the presenter need to work on different thread and therefore cant easily return values
+    private bool blackScreenEnabled = false;
     async Task ToggleBlackScreenRoute(HttpContextBase ctx)
     {
-        // Console.WriteLine(ctx.Request.Query);
         foreach (var handler in toggleBlackScreenHandlers)
         {
             handler();
         }
-        await ctx.Response.Send("");
+        blackScreenEnabled = !blackScreenEnabled;
+        await ctx.Response.Send(JsonConvert.SerializeObject(new ToggleBlackScreenReturnMessage { BlackScreenEnabled = blackScreenEnabled }));
     }
     async Task RunCommandRoute(HttpContextBase ctx)
     {

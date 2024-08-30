@@ -17,3 +17,8 @@ public class ChangePasswordMessage
 {
     public required string NewPassword { get; set; }
 }
+
+public class ToggleBlackScreenReturnMessage
+{
+    public required bool BlackScreenEnabled { get; set; }
+}
