@@ -24,7 +24,7 @@ public class Tests
   }
 
   [Fact]
-  public async Task TestPing()
+  public async Task TestPingWoring()
   {
     var server = new PLGServer("password", 8081);
     var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "wrongPassword", 8081);
@@ -33,6 +33,15 @@ public class Tests
     Assert.True(success);
 
     server.Stop();
+  }
+
+  [Fact]
+  public async Task TestPingTimout()
+  {
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "wrongPassword", 8081);
+
+    bool success = await client.Ping();
+    Assert.False(success);
   }
 
   [Fact]

@@ -71,7 +71,12 @@ public class PLGClient
 
     public async Task<bool> Ping()
     {
-        string response = await sendRequest("/ping", null, HttpMethod.Get);
+        string response = "";
+        try {
+            response = await sendRequest("/ping", null, HttpMethod.Get);
+        } catch (Exception) {
+            return false;
+        }
         if (response == "pong") return true;
         return false;
     }
