@@ -22,6 +22,7 @@ public class Server
     public List<Action<string>> openFileHandlers = new List<Action<string>>();
     public string Password;
 
+    private Webserver server;
     public Server(string password = "0", int port = 8080)
     {
         Password = password;
@@ -31,7 +32,7 @@ public class Server
             Hostname = "*",
             Port = port,
         };
-        Webserver server = new Webserver(settings, DefaultRoute);
+        server = new Webserver(settings, DefaultRoute);
 
         server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.GET, "/ping", PingRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/changePassword", ChangePasswordRoute);
@@ -47,6 +48,11 @@ public class Server
         server.Routes.AuthenticateRequest = AuthenticateRequest;
 
         server.StartAsync();
+    }
+
+    public void Stop()
+    {
+        server.Stop();
     }
 
     bool firstRequestHappend = false;
