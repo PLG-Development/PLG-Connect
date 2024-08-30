@@ -10,12 +10,12 @@ namespace PLG_Connect_Network;
 
 public class ClientConnection
 {
-    public string IpAddress { get; set; }
+    public string Address { get; set; }
     public string MacAddress { get; set; }
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public ClientConnection(string ipAddress, string macAddress, string password)
+    public ClientConnection(string ipAddress, string macAddress, string password, int port = 8080)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))
@@ -24,7 +24,7 @@ public class ClientConnection
         }
 
         Password = password;
-        IpAddress = ipAddress;
+        Address = ipAddress+":"+port;
         MacAddress = macAddress.Replace(":", "-");
     }
 
@@ -44,7 +44,7 @@ public class ClientConnection
     {
         try
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://" + IpAddress + path);
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://" + Address + path);
             request.Content = content;
 
             // request.Content = new ByteArrayContent()
@@ -58,9 +58,9 @@ public class ClientConnection
         }
         catch (HttpRequestException e)
         {
-            throw new Exception($"Could not send post request to {IpAddress}{path}: {e.Message}");
+            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         } catch (TaskCanceledException e) {
-            throw new Exception($"Could not send post request to {IpAddress}{path}: {e.Message}");
+            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         }
     }
 
