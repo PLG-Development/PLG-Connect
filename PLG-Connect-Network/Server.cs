@@ -133,7 +133,7 @@ public class Server
 
     static async Task PingRoute(HttpContextBase ctx)
     {
-        await ctx.Response.Send("Pong");
+        await ctx.Response.Send("pong");
     }
 
     // General purpose routes

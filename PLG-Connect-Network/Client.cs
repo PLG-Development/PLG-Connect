@@ -32,7 +32,7 @@ public class ClientConnection
     {
         string json = JsonConvert.SerializeObject(message);
         StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-        string response = await sendPostRequest(path, content);
+        string response = await sendRequest(path, content, HttpMethod.Post);
 
         // only return an object if we got content from the server
         if (response == null) return default!;
@@ -40,11 +40,11 @@ public class ClientConnection
         return result;
     }
 
-    private async Task<string> sendPostRequest(string path, HttpContent content)
+    private async Task<string> sendRequest(string path, HttpContent? content, HttpMethod method)
     {
         try
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://" + Address + path);
+            var request = new HttpRequestMessage(method, "http://" + Address + path);
             request.Content = content;
 
             // request.Content = new ByteArrayContent()
@@ -67,6 +67,13 @@ public class ClientConnection
     public void SendWakeOnLAN()
     {
         PhysicalAddress.Parse(MacAddress).SendWol();
+    }
+
+    public async Task<bool> Ping()
+    {
+        string response = await sendRequest("/ping", null, HttpMethod.Get);
+        if (response == "pong") return true;
+        return false;
     }
 
     public async Task DisplayText(string text)
@@ -94,7 +101,7 @@ public class ClientConnection
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendPostRequest($"/openFile?fileEnding={extension}", content);
+        await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post);
     }
 
     public async Task NextSlide()
