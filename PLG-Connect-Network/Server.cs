@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace PLG_Connect_Network;
 
 
-public class Server
+public class PLGServer
 {
     public List<Action<string>> displayTextHandlers = new List<Action<string>>();
     public List<Action> toggleBlackScreenHandlers = new List<Action>();
@@ -23,7 +23,7 @@ public class Server
     public string Password;
 
     private Webserver server;
-    public Server(string password = "0", int port = 8080)
+    public PLGServer(string password = "0", int port = 8080)
     {
         Password = password;
 

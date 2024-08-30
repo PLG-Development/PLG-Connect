@@ -15,19 +15,19 @@ public class Tests
   {
     if (shouldThrow)
     {
-      Assert.Throws<ArgumentException>(() => new ClientConnection("127.0.0.1", macAddress, "password"));
+      Assert.Throws<ArgumentException>(() => new PLGClient("127.0.0.1", macAddress, "password"));
     }
     else
     {
-      var client = new ClientConnection("127.0.0.1", macAddress, "password");
+      var client = new PLGClient("127.0.0.1", macAddress, "password");
     }
   }
 
   [Fact]
   public async Task TestPing()
   {
-    var server = new Server("password", 8081);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "wrongPassword", 8081);
+    var server = new PLGServer("password", 8081);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "wrongPassword", 8081);
 
     bool success = await client.Ping();
     Assert.True(success);
@@ -38,8 +38,8 @@ public class Tests
   [Fact]
   public async Task TestDisplayText()
   {
-    var server = new Server("password", 8082);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "password", 8082);
+    var server = new PLGServer("password", 8082);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "password", 8082);
 
     string recivedText = "";
     server.displayTextHandlers.Add((text) => {recivedText = text;});
@@ -52,8 +52,8 @@ public class Tests
   [Fact]
   public async Task TestToggleBlackScreen()
   {
-    var server = new Server("password", 8083);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "password", 8083);
+    var server = new PLGServer("password", 8083);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "password", 8083);
 
     bool blackScreenState;
     blackScreenState = await client.ToggleBlackScreen();
@@ -68,8 +68,8 @@ public class Tests
   [Fact]
   public async Task TestRunCommand()
   {
-    var server = new Server("password", 8084);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "password", 8084);
+    var server = new PLGServer("password", 8084);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "password", 8084);
 
     string recivedCommand = "";
     server.runCommandHandlers.Add((command) => {recivedCommand = command;});
@@ -82,8 +82,8 @@ public class Tests
   [Fact]
   public async Task TestPreviousSlide()
   {
-    var server = new Server("password", 8085);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "password", 8085);
+    var server = new PLGServer("password", 8085);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "password", 8085);
 
     bool recivedMessage = false;
     server.previousSlideHandlers.Add(() => {recivedMessage = true;});
@@ -96,8 +96,8 @@ public class Tests
   [Fact]
   public async Task TestNextSlide()
   {
-    var server = new Server("password", 8086);
-    var client = new ClientConnection("127.0.0.1", "00:11:22:33:44:55", "password", 8086);
+    var server = new PLGServer("password", 8086);
+    var client = new PLGClient("127.0.0.1", "00:11:22:33:44:55", "password", 8086);
 
     bool recivedMessage = false;
     server.nextSlideHandlers.Add(() => {recivedMessage = true;});
