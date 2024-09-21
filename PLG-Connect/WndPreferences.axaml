@@ -5,6 +5,101 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="PLG_Connect.WndPreferences"
         Title="Preferences">
-  <Grid>
-    </Grid>
+<TabControl>
+        <!-- General Settings Tab -->
+        <TabItem Header="General">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Personal Information" FontWeight="Bold" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Name:" VerticalAlignment="Center" Width="150" />
+                    <TextBox Width="300" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Organization:" VerticalAlignment="Center" Width="150" />
+                    <TextBox Width="300" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Public Email:" VerticalAlignment="Center" Width="150" />
+                    <TextBox Width="300" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Check for Updates:" VerticalAlignment="Center" Width="150" />
+                    <Button Content="Check Now" Width="150" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Allow Multiple Instances:" VerticalAlignment="Center" Width="150" />
+                    <CheckBox />
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+
+        <!-- Display Settings Tab -->
+        <TabItem Header="Display">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Appearance Settings" FontWeight="Bold" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Color Scheme:" VerticalAlignment="Center" Width="150" />
+                    <ComboBox Width="150">
+                        <ComboBoxItem Content="Light" />
+                        <ComboBoxItem Content="Dark" />
+                        <ComboBoxItem Content="System Default" />
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Displayed Areas:" VerticalAlignment="Center" Width="150" />
+                    <ComboBox Width="150">
+                        <ComboBoxItem Content="Mobile" />
+                        <ComboBoxItem Content="Display" />
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Disable OS Power Options:" VerticalAlignment="Center" Width="150" />
+                    <CheckBox />
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+
+        <!-- Language and Region Settings Tab -->
+        <TabItem Header="Language and Region">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Language Settings" FontWeight="Bold" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Language:" VerticalAlignment="Center" Width="150" />
+                    <ComboBox Width="150">
+                        <ComboBoxItem Content="English" />
+                        <ComboBoxItem Content="German" />
+                        <ComboBoxItem Content="French" />
+                        <ComboBoxItem Content="Spanish" />
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+
+        <!-- App Behavior Settings Tab -->
+        <TabItem Header="App Behavior">
+            <StackPanel Spacing="10">
+                <TextBlock Text="App Behavior Settings" FontWeight="Bold" />
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Start Project:" VerticalAlignment="Center" Width="150" />
+                    <TextBox Width="300" />
+                    <Button Content="Browse" Width="75" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Enable Shortcuts:" VerticalAlignment="Center" Width="150" />
+                    <CheckBox />
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </Window>

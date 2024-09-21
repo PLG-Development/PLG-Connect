@@ -168,7 +168,7 @@ partial class MainWindow : Window
 
     private void Mnu_Edit_Preferences_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-
+        new WndPreferences().Show();
     }
 
     private void Mnu_Help_Online_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
