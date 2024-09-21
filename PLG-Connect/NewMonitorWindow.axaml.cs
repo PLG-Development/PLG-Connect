@@ -31,7 +31,7 @@ public partial class NewMonitorWindow : Window
 
     private async void PingButtonClick(object sender, RoutedEventArgs e)
     {
-        await new Display().sendPing();
+        //Send PING to Monitor (DisplayMac and DisplayIp)
     }
 
     private void TextBoxGotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)
