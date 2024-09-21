@@ -540,7 +540,7 @@ partial class MainWindow : Window
             {
                 foreach (Display d in Displays)
                 {
-                    if (d.IpAddress == disp.IpAddress && d.MacAddress == disp.MacAddress)
+                    if (d.Address == disp.Address)
                     {
                         Displays.Remove(d);
                         RefreshGUI();
