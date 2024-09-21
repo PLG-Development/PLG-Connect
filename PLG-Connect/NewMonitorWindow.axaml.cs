@@ -5,6 +5,7 @@ using System;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using System.Linq;
+using PLG_Connect_Network;
 
 
 namespace PLG_Connect;
@@ -31,7 +32,8 @@ public partial class NewMonitorWindow : Window
 
     private async void PingButtonClick(object sender, RoutedEventArgs e)
     {
-        //Send PING to Monitor (DisplayMac and DisplayIp)
+        PLGClient client = new PLGClient(IpTextBox.Text, MacTextBox.Text, mainWindow.Password);
+        bool success = await client.Ping();
     }
 
     private void TextBoxGotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)

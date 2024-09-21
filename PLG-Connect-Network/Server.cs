@@ -1,17 +1,16 @@
-using System;
 using System.Net;
 using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Security.Cryptography;
-using System.Web;
+using Newtonsoft.Json;
 
 
 namespace PLG_Connect_Network;
 
 
-public class Server
+public class PLGServer
 {
     public List<Action<string>> displayTextHandlers = new List<Action<string>>();
     public List<Action> toggleBlackScreenHandlers = new List<Action>();
@@ -23,7 +22,8 @@ public class Server
     public List<Action<string>> openFileHandlers = new List<Action<string>>();
     public string Password;
 
-    public Server(string password = "0", int port = 8080)
+    private Webserver server;
+    public PLGServer(string password = "0", int port = 8080)
     {
         Password = password;
 
@@ -32,7 +32,7 @@ public class Server
             Hostname = "*",
             Port = port,
         };
-        Webserver server = new Webserver(settings, DefaultRoute);
+        server = new Webserver(settings, DefaultRoute);
 
         server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.GET, "/ping", PingRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/changePassword", ChangePasswordRoute);
@@ -48,6 +48,11 @@ public class Server
         server.Routes.AuthenticateRequest = AuthenticateRequest;
 
         server.StartAsync();
+    }
+
+    public void Stop()
+    {
+        server.Stop();
     }
 
     bool firstRequestHappend = false;
@@ -91,7 +96,7 @@ public class Server
 
     static T ExtractObject<T>(HttpContextBase ctx)
     {
-        var result = JsonSerializer.Deserialize<T>(ctx.Request.DataAsString);
+        var result = JsonConvert.DeserializeObject<T>(ctx.Request.DataAsString);
         if (result == null)
         {
             throw new Exception("Invalid JSON");
@@ -128,7 +133,7 @@ public class Server
 
     static async Task PingRoute(HttpContextBase ctx)
     {
-        await ctx.Response.Send("Pong");
+        await ctx.Response.Send("pong");
     }
 
     // General purpose routes
@@ -154,14 +159,17 @@ public class Server
         await ctx.Response.Send("");
     }
 
+    // note: this function handels the black screen state paralel to the actual presenter logic which duplicats the code and is not ideal
+    // however this makes it much simpler to handler because the presenter need to work on different thread and therefore cant easily return values
+    private bool blackScreenEnabled = false;
     async Task ToggleBlackScreenRoute(HttpContextBase ctx)
     {
-        // Console.WriteLine(ctx.Request.Query);
         foreach (var handler in toggleBlackScreenHandlers)
         {
             handler();
         }
-        await ctx.Response.Send("");
+        blackScreenEnabled = !blackScreenEnabled;
+        await ctx.Response.Send(JsonConvert.SerializeObject(new ToggleBlackScreenReturnMessage { BlackScreenEnabled = blackScreenEnabled }));
     }
     async Task RunCommandRoute(HttpContextBase ctx)
     {

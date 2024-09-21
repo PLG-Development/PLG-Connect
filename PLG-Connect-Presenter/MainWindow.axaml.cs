@@ -27,7 +27,7 @@ public partial class MainWindow : Window
         LoadImage();
 
         Start();
-        Server server = new Server();
+        PLGServer server = new PLGServer();
 
         server.displayTextHandlers.Add(
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))

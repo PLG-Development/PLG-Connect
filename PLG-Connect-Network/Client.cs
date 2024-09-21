@@ -1,21 +1,21 @@
-using System.Text.Json;
 using System.Text;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 
 namespace PLG_Connect_Network;
 
 
-public class ClientConnection
+public class PLGClient
 {
-    public string IpAddress { get; set; }
+    public string Address { get; set; }
     public string MacAddress { get; set; }
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public ClientConnection(string ipAddress, string macAddress, string password)
+    public PLGClient(string ipAddress, string macAddress, string password, int port = 8080)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))
@@ -24,22 +24,27 @@ public class ClientConnection
         }
 
         Password = password;
-        IpAddress = ipAddress;
+        Address = ipAddress+":"+port;
         MacAddress = macAddress.Replace(":", "-");
     }
 
-    private async Task sendJsonPostRequest<T>(string path, T message)
+    private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
-        string json = JsonSerializer.Serialize(message);
+        string json = JsonConvert.SerializeObject(message);
         StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-        await sendPostRequest(path, content);
+        string response = await sendRequest(path, content, HttpMethod.Post);
+
+        // only return an object if we got content from the server
+        if (response == null) return default!;
+        ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+        return result;
     }
 
-    private async Task sendPostRequest(string path, HttpContent content)
+    private async Task<string> sendRequest(string path, HttpContent? content, HttpMethod method)
     {
         try
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://" + IpAddress + path);
+            var request = new HttpRequestMessage(method, "http://" + Address + path);
             request.Content = content;
 
             // request.Content = new ByteArrayContent()
@@ -49,15 +54,13 @@ public class ClientConnection
 
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
-            return;
+            return responseBody;
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine(e.Message);
-            return;
+            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         } catch (TaskCanceledException e) {
-            Console.WriteLine(e.Message);
-            return;
+            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         }
     }
 
@@ -66,22 +69,35 @@ public class ClientConnection
         PhysicalAddress.Parse(MacAddress).SendWol();
     }
 
+    public async Task<bool> Ping()
+    {
+        string response = "";
+        try {
+            response = await sendRequest("/ping", null, HttpMethod.Get);
+        } catch (Exception) {
+            return false;
+        }
+        if (response == "pong") return true;
+        return false;
+    }
+
     public async Task DisplayText(string text)
     {
         var message = new DisplayTextMessage { Text = text };
-        await sendJsonPostRequest<DisplayTextMessage>("/displayText", message);
+        await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
     }
 
-    public async Task ToggleBlackScreen()
+    public async Task<bool> ToggleBlackScreen()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/toggleBlackScreen", message);
+        ToggleBlackScreenReturnMessage result = await sendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
+        return result.BlackScreenEnabled;
     }
 
     public async Task RunCommand(string command)
     {
         var message = new RunCommandMessage { Command = command };
-        await sendJsonPostRequest<RunCommandMessage>("/runCommand", message);
+        await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
     }
 
     public async Task OpenFile(string path)
@@ -90,18 +106,18 @@ public class ClientConnection
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendPostRequest($"/openFile?fileEnding={extension}", content);
+        await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post);
     }
 
     public async Task NextSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/nextSlide", message);
+        await sendJsonPostRequest<object, object>("/nextSlide", message);
     }
 
     public async Task PreviousSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object>("/previousSlide", message);
+        await sendJsonPostRequest<object, object>("/previousSlide", message);
     }
 }

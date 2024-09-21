@@ -577,7 +577,7 @@ partial class MainWindow : Window
 
 }
 
-public class Display : ClientConnection
+public class Display : PLGClient
 {
     public DisplaySettings Settings;
     public string Messages;
