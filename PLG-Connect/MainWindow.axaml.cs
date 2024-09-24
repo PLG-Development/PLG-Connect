@@ -1,22 +1,15 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Controls.Platform;
-using Avalonia.Interactivity;
 using Newtonsoft.Json;
 using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Markup;
 using System;
-using System.Linq;
 using Avalonia.Media;
 using System.Diagnostics;
-using PLG_Connect;
-using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
+using PLG_Connect.Config;
 
 
 namespace PLG_Connect;
@@ -26,71 +19,60 @@ partial class MainWindow : Window
 {
     public List<Display> Displays = new();
 
+    public Settings Settings;
+    public string SettingsPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "PLG-Development",
+        "PLG-Connect",
+        "config.json"
+    );
     public MainWindow()
     {
         InitializeComponent();
         this.KeyDown += Handle_Keyboard_KeyDown;
-
+        Settings = Config.Config.Load(SettingsPath);
         Task.Run(async () => await Analytics.SendEvent("connect"));
-
-        // ConfigPath is just for Settings
-        ConfigPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "PLG Development",
-            "PLG Connect",
-            "config.json"
-        );
-        LoadConfig();
     }
+
+    public void SettingsSaveDialog()
+    {}
+
+    public void SettingsSaveAsDialog()
+    {}
+
+    public void SettingsOpenDialog()
+    {}
+
+    public void SettingsNewDialog()
+    {}
 
     public void Handle_Keyboard_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S)
         {
-            SaveAs();
+            SettingsSaveAsDialog();
             return;
         }
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.S)
         {
-            Save();
+            SettingsSaveDialog();
             return;
         }
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.O)
         {
-            Open();
+            SettingsOpenDialog();
             return;
         }
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.N)
         {
-            New();
+            SettingsNewDialog();
             return;
         }
     }
 
-    private string ConfigPath;
-
-    private void SaveConfig(string path)
-    {
-        DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
-        string json = JsonConvert.SerializeObject(settings);
-        File.WriteAllText(path, json);
-    }
-
-    private void LoadConfig()
-    {
-        if (!File.Exists(ConfigPath))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
-            File.WriteAllText(ConfigPath, "[]");
-        }
-
-        string json = File.ReadAllText(ConfigPath);
-        //Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
-        //Settings-Class needed
-    }
     // global internal properties
     private bool isSaved = true; // updates the saved-status of the current project, e.g. adding a new monitor
     private string filepath = null; // filepath of the currently loaded project, e.g. /home/tag/connect-projects/aula-main.pcnt
@@ -105,12 +87,12 @@ partial class MainWindow : Window
 
     private void Mnu_File_New_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        New();
+        SettingsNewDialog();
     }
 
     private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Open();
+        SettingsOpenDialog();
     }
 
     private void Mnu_File_Save_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -123,7 +105,7 @@ partial class MainWindow : Window
 
     private void Mnu_File_SaveAs_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        SaveAs();
+        SettingsSaveAsDialog();
     }
 
     private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -211,129 +193,6 @@ partial class MainWindow : Window
     private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         AddMonitor();
-    }
-
-    private void New()
-    {
-        if (isSaved)
-        {
-            // create new
-        }
-        else
-        {
-            // Request answer: Save?
-        }
-    }
-
-    private void Load(string path)
-    {
-        try
-        {
-            //string result = File.ReadAllText(path);
-            //Displays = JsonSerializer.Deserialize<List<Display>>(result);
-
-
-
-            string json = File.ReadAllText(path);
-            Displays = JsonConvert.DeserializeObject<List<Display>>(json)!;
-            RefreshGUI();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, ex.Message, "Error while reading");
-        }
-    }
-
-    private async void Open()
-    {
-        try
-        {
-
-            var filePicker = new OpenFileDialog
-            {
-                Title = "Open file...",
-                Filters = new List<FileDialogFilter>
-                {
-                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
-                }
-            };
-
-            var result = await filePicker.ShowAsync(this);
-
-            if (result != null)
-            {
-                filepath = result[0];
-                Load(filepath);
-            }
-        }
-        catch
-        {
-
-        }
-    }
-    private bool Save()
-    {
-        if (filepath != null)
-        {
-            try
-            {
-                SaveConfig(filepath);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "Error while writing");
-            }
-        }
-        else
-        {
-            SaveAs(true);
-            return true;
-        }
-        return false;
-    }
-    public async void SaveAs(bool fromsave = false)
-    {
-        try
-        {
-            string path, name;
-            path = Path.GetDirectoryName(filepath);
-            if (fromsave)
-            {
-                name = "New PLG-Connect Project";
-            }
-            else
-            {
-                name = Path.GetFileNameWithoutExtension(filepath) + "-copy";
-            }
-
-
-
-            var filePicker = new SaveFileDialog
-            {
-                Title = "Save file...",
-                InitialFileName = name + ".pcnt",
-                DefaultExtension = ".pcnt",
-                Filters = new List<FileDialogFilter>
-                {
-                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
-                }
-            };
-
-            var result = await filePicker.ShowAsync(this);
-
-            if (result != null)
-            {
-                filepath = result;
-                Save();
-            }
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fehler beim Speichern der Datei: {ex.Message}");
-            //return false;
-        }
     }
 
     private void AddMonitor()
@@ -622,22 +481,6 @@ public class Display : PLGClient
     }
 }
 
-
-public struct DisplaySettings
-{
-    public string Name;
-    public string IPAddress;
-    public string MacAddress;
-    public string Password;
-
-    public DisplaySettings()
-    {
-        if (Password == null)
-        {
-            Password = "0";
-        }
-    }
-}
 
 public enum DisplayMode
 {
