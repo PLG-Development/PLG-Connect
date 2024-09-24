@@ -234,7 +234,7 @@ partial class MainWindow : Window
 
 
 
-            string json = File.ReadAllText(ConfigPath);
+            string json = File.ReadAllText(path);
             Displays = JsonConvert.DeserializeObject<List<Display>>(json)!;
             RefreshGUI();
         }
