@@ -34,6 +34,15 @@ public partial class NewMonitorWindow : Window
     {
         PLGClient client = new PLGClient(IpTextBox.Text, MacTextBox.Text); // error
         bool success = await client.Ping();
+        if (success)
+        {
+            await MessageBox.Show(this, "Ping successful", "Your display answered!");
+        }
+        else
+        {
+            await MessageBox.Show(this, "No answer", "Your display did not reply. :(");
+        }
+
     }
 
     private void TextBoxGotFocus(object sender, Avalonia.Input.GotFocusEventArgs e)

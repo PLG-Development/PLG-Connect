@@ -72,9 +72,12 @@ public partial class MainWindow : Window
         // focus the file window only when the black screen is not shown
         // if the black screen is shown focus the main window so that the user
         // wont see file window
-        if (showBlackScreen) {
+        if (showBlackScreen)
+        {
             WindowManager.FocusWindow(ownWindowId!);
-        } else {
+        }
+        else
+        {
             WindowManager.FocusWindow(windowId);
         }
     }
@@ -95,11 +98,13 @@ public partial class MainWindow : Window
         main.IsVisible = !showBlackScreen;
 
         // also hide the file window if it was opened
-        if (showBlackScreen && fileWindowOpen) {
+        if (showBlackScreen && fileWindowOpen)
+        {
             WindowManager.FocusWindow(ownWindowId!);
         }
         // focus the opend file window when exiting the black screen
-        if (!showBlackScreen && fileWindowOpen) {
+        if (!showBlackScreen && fileWindowOpen)
+        {
             WindowManager.FocusWindow(fileWindowId!);
         }
     }
@@ -107,7 +112,8 @@ public partial class MainWindow : Window
     private async void DisplayText(string content)
     {
         // close additional window if it was opened
-        if (fileWindowOpen) {
+        if (fileWindowOpen)
+        {
             await WindowManager.CloseWindow(fileWindowId!);
             fileWindowOpen = false;
         }
@@ -133,7 +139,8 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void NextSlide() {
+    private async void NextSlide()
+    {
         EventSimulator simulator = new EventSimulator();
 
         simulator.SimulateKeyPress(KeyCode.VcRight);
@@ -141,7 +148,8 @@ public partial class MainWindow : Window
         simulator.SimulateKeyRelease(KeyCode.VcRight);
     }
 
-    private async void PreviousSlide() {
+    private async void PreviousSlide()
+    {
         EventSimulator simulator = new EventSimulator();
 
         simulator.SimulateKeyPress(KeyCode.VcLeft);
