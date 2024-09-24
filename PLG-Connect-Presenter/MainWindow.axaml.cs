@@ -26,6 +26,8 @@ public partial class MainWindow : Window
         InitializeComponent();
         LoadImage();
 
+        Task.Run(async () => await Analytics.SendEvent("presenter"));
+
         Start();
         PLGServer server = new PLGServer();
 
