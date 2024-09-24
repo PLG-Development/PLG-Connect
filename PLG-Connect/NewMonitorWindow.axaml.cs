@@ -32,7 +32,7 @@ public partial class NewMonitorWindow : Window
 
     private async void PingButtonClick(object sender, RoutedEventArgs e)
     {
-        PLGClient client = new PLGClient(IpTextBox.Text, MacTextBox.Text, ""); // error
+        PLGClient client = new PLGClient(IpTextBox.Text, MacTextBox.Text); // error
         bool success = await client.Ping();
     }
 
