@@ -23,21 +23,32 @@ public class PLGClient
             throw new ArgumentException("Invalid MAC address format");
         }
 
-        Password = password;
+
+        Password = password; Console.WriteLine(Password);
         Address = ipAddress + ":" + port;
         MacAddress = macAddress.Replace(":", "-");
     }
 
     private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
-        string json = JsonConvert.SerializeObject(message);
-        StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-        string response = await sendRequest(path, content, HttpMethod.Post);
+        try
+        {
+            string json = JsonConvert.SerializeObject(message);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            string response = await sendRequest(path, content, HttpMethod.Post);
 
-        // only return an object if we got content from the server
-        if (response == null) return default!;
-        ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
-        return result;
+            // only return an object if we got content from the server
+            if (response == null) return default!;
+            ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+            return result;
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
+        }
+
+
+
     }
 
     private async Task<string> sendRequest(string path, HttpContent? content, HttpMethod method)
@@ -47,8 +58,11 @@ public class PLGClient
             var request = new HttpRequestMessage(method, "http://" + Address + path);
             request.Content = content;
 
+            Console.WriteLine(Password);
+            string header = "Bearer " + Password;
+            Console.WriteLine(header);
             // request.Content = new ByteArrayContent()
-            request.Headers.Add("Authorization", "Bearer " + Password);
+            request.Headers.Add("Authorization", header);
 
             var response = await client.SendAsync(request);
 
@@ -92,9 +106,17 @@ public class PLGClient
 
     public async Task DisplayText(string text)
     {
-        if (text == null || text.Length == 0) throw new ArgumentException("Text cannot be null or empty");
-        var message = new DisplayTextMessage { Text = text };
-        await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
+        try
+        {
+            if (text == null || text.Length == 0) throw new ArgumentException("Text cannot be null or empty");
+            var message = new DisplayTextMessage { Text = text };
+            await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Unknown error for {Address}: {e.Message}");
+        }
+
     }
 
     public async Task<bool> ToggleBlackScreen()
