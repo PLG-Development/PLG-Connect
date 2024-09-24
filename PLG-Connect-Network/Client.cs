@@ -15,7 +15,7 @@ public class PLGClient
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public PLGClient(string ipAddress, string macAddress, string password, int port = 8080)
+    public PLGClient(string ipAddress, string macAddress, string password = "0", int port = 8080)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if (!Regex.IsMatch(macAddress, macAddressPattern))
