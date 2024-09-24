@@ -28,10 +28,10 @@ partial class MainWindow : Window
 
     public MainWindow()
     {
-
-        // Debuggers.Launch();
         InitializeComponent();
         this.KeyDown += Handle_Keyboard_KeyDown;
+
+        Task.Run(async () => await Analytics.SendEvent("connect"));
 
         // ConfigPath is just for Settings
         ConfigPath = Path.Combine(
