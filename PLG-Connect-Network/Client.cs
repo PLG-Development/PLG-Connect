@@ -83,6 +83,7 @@ public class PLGClient
 
     public async Task DisplayText(string text)
     {
+        if (text == null || text.Length == 0) throw new ArgumentException("Text cannot be null or empty");
         var message = new DisplayTextMessage { Text = text };
         await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
     }
@@ -96,12 +97,14 @@ public class PLGClient
 
     public async Task RunCommand(string command)
     {
+        if (command == null || command.Length == 0) throw new ArgumentException("Command cannot be null or empty");
         var message = new RunCommandMessage { Command = command };
         await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
     }
 
     public async Task OpenFile(string path)
     {
+        if (path == null) throw new ArgumentException("Path cannot be null");
         string extension = Path.GetExtension(path).TrimStart('.').ToLower();
 
         byte[] fileBytes = File.ReadAllBytes(path);
