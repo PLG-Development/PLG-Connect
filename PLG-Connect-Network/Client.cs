@@ -24,7 +24,7 @@ public class PLGClient
         }
 
         Password = password;
-        Address = ipAddress+":"+port;
+        Address = ipAddress + ":" + port;
         MacAddress = macAddress.Replace(":", "-");
     }
 
@@ -59,8 +59,14 @@ public class PLGClient
         catch (HttpRequestException e)
         {
             throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
-        } catch (TaskCanceledException e) {
+        }
+        catch (TaskCanceledException e)
+        {
             throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
         }
     }
 
@@ -72,9 +78,12 @@ public class PLGClient
     public async Task<bool> Ping()
     {
         string response = "";
-        try {
+        try
+        {
             response = await sendRequest("/ping", null, HttpMethod.Get);
-        } catch (Exception) {
+        }
+        catch (Exception)
+        {
             return false;
         }
         if (response == "pong") return true;
