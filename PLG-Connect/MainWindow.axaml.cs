@@ -427,17 +427,33 @@ partial class MainWindow : Window
             b.Content = "Display Text";
             b.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                await disp.DisplayText(TbContent.Text);
-                disp.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
-                TbContent.Text = "";
+                try
+                {
+                    await disp.DisplayText(TbContent.Text);
+                    disp.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
+                    TbContent.Text = "";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
             };
             Button b2 = new Button();
             b2.Margin = new Thickness(5);
             b2.Content = "Next Image";
             b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                await disp.NextSlide();
-                disp.Messages += "\n\n" + DateTime.Now + " - Image: next";
+
+                try
+                {
+                    await disp.NextSlide();
+                    disp.Messages += "\n\n" + DateTime.Now + " - Image: next";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             };
 
             Button b3 = new Button();
@@ -445,8 +461,16 @@ partial class MainWindow : Window
             b3.Content = "Prevoius Image";
             b3.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                await disp.PreviousSlide();
-                disp.Messages += "\n\n" + DateTime.Now + " - Image: previous";
+                try
+                {
+                    await disp.PreviousSlide();
+                    disp.Messages += "\n\n" + DateTime.Now + " - Image: previous";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
             };
 
             Button b4 = new Button();
@@ -463,18 +487,26 @@ partial class MainWindow : Window
             }
             b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                await disp.ToggleBlackScreen();
-                disp.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
-                bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
+                try
+                {
+                    await disp.ToggleBlackScreen();
+                    disp.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
+                    bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
 
-                if (blackout)
-                {
-                    (sender as Button).Background = new SolidColorBrush(Color.Parse("#772327"));
+                    if (blackout)
+                    {
+                        (sender as Button).Background = new SolidColorBrush(Color.Parse("#772327"));
+                    }
+                    else
+                    {
+                        (sender as Button).Background = new SolidColorBrush(Color.Parse("#545458"));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    (sender as Button).Background = new SolidColorBrush(Color.Parse("#545458"));
+                    Console.WriteLine(ex.Message);
                 }
+
             };
 
             Button b5 = new Button();
@@ -597,6 +629,14 @@ public struct DisplaySettings
     public string IPAddress;
     public string MacAddress;
     public string Password;
+
+    public DisplaySettings()
+    {
+        if (Password == null)
+        {
+            Password = "0";
+        }
+    }
 }
 
 public enum DisplayMode
