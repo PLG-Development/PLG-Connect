@@ -19,7 +19,7 @@ partial class MainWindow : Window
 {
     public List<Display> Displays = new();
 
-    public Settings Settings;
+    public Config.Settings Settings;
     public string SettingsPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "PLG-Development",
@@ -263,7 +263,6 @@ partial class MainWindow : Window
                     Margin = new Thickness(5),
                     Children = {
                         new Label() { Content = "Name: " + disp.Settings.Name },
-                        new Label() { Content = disp.Current_Mode },
                         new Label() { Content = disp.Settings.IPAddress },
                         TbContent2,
                         buttons2,
@@ -401,7 +400,6 @@ partial class MainWindow : Window
                 Margin = new Thickness(5),
                 Children = {
                     new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Current_Mode },
                     new Label() { Content = disp.Settings.IPAddress },
                     TbContent,
                     buttons,
@@ -453,7 +451,6 @@ partial class MainWindow : Window
                 Margin = new Thickness(5),
                 Children = {
                     new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Current_Mode },
                     new Label() { Content = disp.Settings.IPAddress },
                     buttons,
                 },
@@ -471,7 +468,6 @@ public class Display : PLGClient
 {
     public Config.DisplaySettings Settings;
     public string Messages;
-    public DisplayMode Current_Mode;
     public bool isLocked = false;
 
     public Display(Config.DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
