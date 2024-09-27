@@ -8,6 +8,7 @@ using System;
 using Avalonia.Media;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Avalonia.Threading;
 
 
 namespace PLG_Connect;
@@ -27,9 +28,9 @@ partial class MainWindow : Window
     }
 
     // SaveAs
-    public void MenuOpenSettingsSaveAsDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    public void MenuSaveSettingsAsClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Task.Run(async () => await OpenSettingsSaveAsDialog());
+        Dispatcher.UIThread.InvokeAsync(OpenSettingsSaveAsDialog);
     }
     private async Task OpenSettingsSaveAsDialog()
     {
@@ -61,9 +62,9 @@ partial class MainWindow : Window
     }
 
     // Load
-    public void MenuOpenSettingsLoadDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    public void MenuLoadSettingsClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Task.Run(async () => await OpenSettingsLoadDialog());
+        Dispatcher.UIThread.InvokeAsync(OpenSettingsLoadDialog);
     }
     public async Task OpenSettingsLoadDialog()
     {
@@ -80,31 +81,31 @@ partial class MainWindow : Window
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.O)
         {
-            OpenSettingsLoadDialog();
+            Dispatcher.UIThread.InvokeAsync(OpenSettingsLoadDialog);
             return;
         }
     }
 
-    // global internal properties
-    private bool isSaved = true; // updates the saved-status of the current project, e.g. adding a new monitor
-    private string filepath = null; // filepath of the currently loaded project, e.g. /home/tag/connect-projects/aula-main.pcnt
-    private static string projectFileExtension = "pcnt"; // file extension for project-files (currently: pcnt - Plg CoNnecT)
     // Menu Structure variables
     private bool delete = false;
 
-    private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        OpenSettingsLoadDialog();
-    }
-
-    private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuAddMonitorClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         AddMonitor();
     }
-
-    private async void Mnu_Edit_DeleteMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void AddMonitorClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (delete == true)
+        AddMonitor();
+    }
+    private void AddMonitor()
+    {
+        NewMonitorWindow w = new NewMonitorWindow(this);
+        w.Show();
+    }
+
+    private async void MenuDeleteMonitorClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (delete)
         {
             delete = false;
             Mnu_Edit_DeleteMonitor.Header = "Activate Deletion Mode";
@@ -124,7 +125,7 @@ partial class MainWindow : Window
         RefreshGUI();
     }
 
-    private void Mnu_Edit_ClearAllMonitors_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuClearAllMonitorsClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         foreach (Display d in SettingsManager.Settings.Displays)
         {
@@ -132,17 +133,12 @@ partial class MainWindow : Window
         }
     }
 
-    private void Mnu_Edit_ClearAllDevices_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        // remove all mobile camera-devices
-    }
-
-    private void Mnu_Edit_Preferences_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuPreferencesClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         new WndPreferences().Show();
     }
 
-    private void Mnu_Help_Online_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuHelpOnlineClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
         {
@@ -151,7 +147,7 @@ partial class MainWindow : Window
         });
     }
 
-    private void Mnu_Help_Github_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuGithubClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
         {
@@ -160,34 +156,13 @@ partial class MainWindow : Window
         });
     }
 
-    private void Mnu_Help_Homepage_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void MenuHomepageClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
         {
             FileName = "https://www.plg-berlin.de/technik/plg_connect",
             UseShellExecute = true
         });
-    }
-
-    private void Mnu_Help_Updates_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-
-    }
-
-    private void Mnu_Help_Info_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-
-    }
-
-    private void BtnAddNewMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        AddMonitor();
-    }
-
-    private void AddMonitor()
-    {
-        NewMonitorWindow w = new NewMonitorWindow(this);
-        w.Show();
     }
 
     ///<summary>
