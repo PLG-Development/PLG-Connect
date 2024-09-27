@@ -6,7 +6,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using System.Linq;
 using PLG_Connect_Network;
-using PLG_Connect.SettingsManager;
 
 
 namespace PLG_Connect;
@@ -153,13 +152,13 @@ public partial class NewMonitorWindow : Window
     private void AddButtonClick(object sender, RoutedEventArgs e)
     {
         // Check if mac already exists
-        if (mainWindow.Displays.Where(d => d.Settings.MacAddress == DisplayMac).Count() > 0)
+        if (mainWindow.SettingsManager.Settings.Displays.Where(d => d.MacAddress == DisplayMac).Count() > 0)
         {
             PLG_Connect.MessageBox.Show(this, "This MAC-Address is already configured", "MAC-Adress already found");
             return;
         }
 
-        mainWindow.Displays.Add(new Display(new SettingsManager.DisplaySettings { IPAddress = DisplayIp, MacAddress = DisplayMac, Name = DisplayName }));
+        mainWindow.SettingsManager.Settings.Displays.Add(new Display(DisplayName, DisplayIp, DisplayMac));
         mainWindow.RefreshGUI();
 
         Close();

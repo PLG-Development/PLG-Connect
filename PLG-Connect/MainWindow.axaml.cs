@@ -15,13 +15,15 @@ namespace PLG_Connect;
 
 partial class MainWindow : Window
 {
-    private SettingsManager SettingsManager = new();
+    public SettingsManager SettingsManager = new();
     public MainWindow()
     {
         InitializeComponent();
         this.KeyDown += HandleKeyboardKeyDown;
-        SettingsManager.Load();
         Task.Run(async () => await Analytics.SendEvent("connect"));
+
+        SettingsManager.Load();
+        RefreshGUI();
     }
 
     // SaveAs
