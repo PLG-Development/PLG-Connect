@@ -1,22 +1,13 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Controls.Platform;
-using Avalonia.Interactivity;
-using Newtonsoft.Json;
-using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Markup;
 using System;
-using System.Linq;
 using Avalonia.Media;
-using System.Diagnostics;
-using PLG_Connect;
 using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
+using System.Diagnostics;
 
 
 namespace PLG_Connect;
@@ -24,73 +15,76 @@ namespace PLG_Connect;
 
 partial class MainWindow : Window
 {
-    public List<Display> Displays = new();
-
+    public SettingsManager SettingsManager = new();
     public MainWindow()
     {
         InitializeComponent();
-        this.KeyDown += Handle_Keyboard_KeyDown;
-
+        this.KeyDown += HandleKeyboardKeyDown;
         Task.Run(async () => await Analytics.SendEvent("connect"));
 
-        // ConfigPath is just for Settings
-        ConfigPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "PLG Development",
-            "PLG Connect",
-            "config.json"
-        );
-        LoadConfig();
+        SettingsManager.Load();
+        RefreshGUI();
     }
 
-    public void Handle_Keyboard_KeyDown(object sender, KeyEventArgs e)
+    // SaveAs
+    public void MenuOpenSettingsSaveAsDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Task.Run(async () => await OpenSettingsSaveAsDialog());
+    }
+    private async Task OpenSettingsSaveAsDialog()
+    {
+        var settingsFileName = "PLG-Connect-Project";
+
+        try
+        {
+
+            var filePicker = new SaveFileDialog
+            {
+                Title = "Save file...",
+                InitialFileName = $"{settingsFileName}.pcnt",
+                DefaultExtension = ".pcnt",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
+                }
+            };
+
+            var settingsSavePath = await filePicker.ShowAsync(this);
+            if (settingsSavePath == null) { return; }
+
+            SettingsManager.Save(settingsSavePath);
+        }
+        catch (Exception ex)
+        {
+            await MessageBox.Show(this, ex.Message, "Fehler beim Speichern der Datei");
+        }
+    }
+
+    // Load
+    public void MenuOpenSettingsLoadDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Task.Run(async () => await OpenSettingsLoadDialog());
+    }
+    public async Task OpenSettingsLoadDialog()
+    {
+        await MessageBox.Show(this, "Macht Nichts", "Macht Nichts");
+    }
+
+    public void HandleKeyboardKeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S)
         {
-            SaveAs();
-            return;
-        }
-
-        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.S)
-        {
-            Save();
+            Task.Run(async () => await OpenSettingsSaveAsDialog());
             return;
         }
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.O)
         {
-            Open();
-            return;
-        }
-
-        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.N)
-        {
-            New();
+            OpenSettingsLoadDialog();
             return;
         }
     }
 
-    private string ConfigPath;
-
-    private void SaveConfig(string path)
-    {
-        DisplaySettings[] settings = Displays.Select(d => d.Settings).ToArray();
-        string json = JsonConvert.SerializeObject(settings);
-        File.WriteAllText(path, json);
-    }
-
-    private void LoadConfig()
-    {
-        if (!File.Exists(ConfigPath))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
-            File.WriteAllText(ConfigPath, "[]");
-        }
-
-        string json = File.ReadAllText(ConfigPath);
-        //Displays = JsonSerializer.Deserialize<List<Display>>(json)!;
-        //Settings-Class needed
-    }
     // global internal properties
     private bool isSaved = true; // updates the saved-status of the current project, e.g. adding a new monitor
     private string filepath = null; // filepath of the currently loaded project, e.g. /home/tag/connect-projects/aula-main.pcnt
@@ -98,32 +92,9 @@ partial class MainWindow : Window
     // Menu Structure variables
     private bool delete = false;
 
-    private void Mnu_File_Exit_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        Close();
-    }
-
-    private void Mnu_File_New_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        New();
-    }
-
     private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Open();
-    }
-
-    private void Mnu_File_Save_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (!Save())
-        {
-            MessageBox.Show(this, "Error while saving file", "Error", MessageBoxButton.Ok);
-        }
-    }
-
-    private void Mnu_File_SaveAs_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        SaveAs();
+        OpenSettingsLoadDialog();
     }
 
     private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -155,7 +126,7 @@ partial class MainWindow : Window
 
     private void Mnu_Edit_ClearAllMonitors_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        foreach (Display d in Displays)
+        foreach (Display d in SettingsManager.Settings.Displays)
         {
             d.DisplayText("");
         }
@@ -213,129 +184,6 @@ partial class MainWindow : Window
         AddMonitor();
     }
 
-    private void New()
-    {
-        if (isSaved)
-        {
-            // create new
-        }
-        else
-        {
-            // Request answer: Save?
-        }
-    }
-
-    private void Load(string path)
-    {
-        try
-        {
-            //string result = File.ReadAllText(path);
-            //Displays = JsonSerializer.Deserialize<List<Display>>(result);
-
-
-
-            string json = File.ReadAllText(path);
-            Displays = JsonConvert.DeserializeObject<List<Display>>(json)!;
-            RefreshGUI();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, ex.Message, "Error while reading");
-        }
-    }
-
-    private async void Open()
-    {
-        try
-        {
-
-            var filePicker = new OpenFileDialog
-            {
-                Title = "Open file...",
-                Filters = new List<FileDialogFilter>
-                {
-                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
-                }
-            };
-
-            var result = await filePicker.ShowAsync(this);
-
-            if (result != null)
-            {
-                filepath = result[0];
-                Load(filepath);
-            }
-        }
-        catch
-        {
-
-        }
-    }
-    private bool Save()
-    {
-        if (filepath != null)
-        {
-            try
-            {
-                SaveConfig(filepath);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, ex.Message, "Error while writing");
-            }
-        }
-        else
-        {
-            SaveAs(true);
-            return true;
-        }
-        return false;
-    }
-    public async void SaveAs(bool fromsave = false)
-    {
-        try
-        {
-            string path, name;
-            path = Path.GetDirectoryName(filepath);
-            if (fromsave)
-            {
-                name = "New PLG-Connect Project";
-            }
-            else
-            {
-                name = Path.GetFileNameWithoutExtension(filepath) + "-copy";
-            }
-
-
-
-            var filePicker = new SaveFileDialog
-            {
-                Title = "Save file...",
-                InitialFileName = name + ".pcnt",
-                DefaultExtension = ".pcnt",
-                Filters = new List<FileDialogFilter>
-                {
-                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
-                }
-            };
-
-            var result = await filePicker.ShowAsync(this);
-
-            if (result != null)
-            {
-                filepath = result;
-                Save();
-            }
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fehler beim Speichern der Datei: {ex.Message}");
-            //return false;
-        }
-    }
-
     private void AddMonitor()
     {
         NewMonitorWindow w = new NewMonitorWindow(this);
@@ -347,6 +195,8 @@ partial class MainWindow : Window
     ///</summary>
     public void RefreshGUI()
     {
+        SettingsManager.Save();
+
         if (delete)
         {
             RefreshDisplaysDeletion();
@@ -362,10 +212,9 @@ partial class MainWindow : Window
     {
         var bc = new BrushConverter();
         StpScreens.Children.Clear();
-        foreach (Display disp in Displays)
+        foreach (Display display in SettingsManager.Settings.Displays)
         {
-
-            if (disp.isLocked)
+            if (display.isLocked)
             {
                 TextBox TbContent2 = new TextBox();
                 TbContent2.Margin = new Thickness(5);
@@ -374,9 +223,9 @@ partial class MainWindow : Window
                 ba.Content = "Unlock";
                 ba.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
                 {
-                    if (new WndEnterPassword(disp.Password).ShowDialogWithResult(this).Result == true)
+                    if (new WndEnterPassword(display.Password).ShowDialogWithResult(this).Result == true)
                     {
-                        disp.isLocked = false;
+                        display.isLocked = false;
                         RefreshGUI();
                     }
 
@@ -387,7 +236,7 @@ partial class MainWindow : Window
                 ba6.Content = "View log";
                 ba6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
                 {
-                    new WndLog(disp.Messages).Show();
+                    new WndLog(display.Messages).Show();
                 };
 
                 StackPanel buttons2 = new StackPanel()
@@ -404,12 +253,11 @@ partial class MainWindow : Window
 
                     Margin = new Thickness(5),
                     Children = {
-                        new Label() { Content = "Name: " + disp.Settings.Name },
-                        new Label() { Content = disp.Current_Mode },
-                        new Label() { Content = disp.Settings.IPAddress },
+                        new Label() { Content = "Name: " + display.Name },
+                        new Label() { Content = display.IPAddress},
                         TbContent2,
                         buttons2,
-                        new Label() { Content = disp.Messages },
+                        new Label() { Content = display.Messages },
                     },
                     Background = new SolidColorBrush(Color.Parse("#545457"))
                 };
@@ -429,8 +277,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.DisplayText(TbContent.Text);
-                    disp.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
+                    await display.DisplayText(TbContent.Text);
+                    display.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
                     TbContent.Text = "";
                 }
                 catch (Exception ex)
@@ -447,8 +295,8 @@ partial class MainWindow : Window
 
                 try
                 {
-                    await disp.NextSlide();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Image: next";
+                    await display.NextSlide();
+                    display.Messages += "\n\n" + DateTime.Now + " - Image: next";
                 }
                 catch (Exception ex)
                 {
@@ -463,8 +311,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.PreviousSlide();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Image: previous";
+                    await display.PreviousSlide();
+                    display.Messages += "\n\n" + DateTime.Now + " - Image: previous";
                 }
                 catch (Exception ex)
                 {
@@ -489,8 +337,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.ToggleBlackScreen();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
+                    await display.ToggleBlackScreen();
+                    display.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
                     bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
 
                     if (blackout)
@@ -514,7 +362,7 @@ partial class MainWindow : Window
             b5.Content = "Load Content";
             b5.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                new WndSelectFileType(disp).Show();
+                new WndSelectFileType(display).Show();
             };
 
             Button b6 = new Button();
@@ -522,7 +370,7 @@ partial class MainWindow : Window
             b6.Content = "View log";
             b6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                new WndLog(disp.Messages).Show();
+                new WndLog(display.Messages).Show();
             };
 
             StackPanel buttons = new StackPanel()
@@ -542,12 +390,11 @@ partial class MainWindow : Window
 
                 Margin = new Thickness(5),
                 Children = {
-                    new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Current_Mode },
-                    new Label() { Content = disp.Settings.IPAddress },
+                    new Label() { Content = "Name: " + display.Name },
+                    new Label() { Content = display.IPAddress },
                     TbContent,
                     buttons,
-                    new Label() { Content = disp.Messages },
+                    new Label() { Content = display.Messages },
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
@@ -561,7 +408,7 @@ partial class MainWindow : Window
     {
         var bc = new BrushConverter();
         StpScreens.Children.Clear();
-        foreach (Display disp in Displays)
+        foreach (Display disp in SettingsManager.Settings.Displays)
         {
 
             Button b2 = new Button();
@@ -570,11 +417,11 @@ partial class MainWindow : Window
             b2.Background = new SolidColorBrush(Color.Parse("#772327"));
             b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                foreach (Display d in Displays)
+                foreach (Display d in SettingsManager.Settings.Displays)
                 {
                     if (d.Address == disp.Address)
                     {
-                        Displays.Remove(d);
+                        SettingsManager.Settings.Displays.Remove(d);
                         RefreshGUI();
                         break;
                     }
@@ -594,9 +441,8 @@ partial class MainWindow : Window
 
                 Margin = new Thickness(5),
                 Children = {
-                    new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Current_Mode },
-                    new Label() { Content = disp.Settings.IPAddress },
+                    new Label() { Content = "Name: " + disp.Name },
+                    new Label() { Content = disp.IPAddress },
                     buttons,
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
@@ -607,45 +453,4 @@ partial class MainWindow : Window
         }
     }
 
-}
-
-public class Display : PLGClient
-{
-    public DisplaySettings Settings;
-    public string Messages;
-    public DisplayMode Current_Mode;
-    public bool isLocked = false;
-
-    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
-    {
-        Settings = settings;
-    }
-}
-
-
-public struct DisplaySettings
-{
-    public string Name;
-    public string IPAddress;
-    public string MacAddress;
-    public string Password;
-
-    public DisplaySettings()
-    {
-        if (Password == null)
-        {
-            Password = "0";
-        }
-    }
-}
-
-public enum DisplayMode
-{
-    None,
-    Text,
-    Image,
-    Combined,
-    External,
-    Slideshow,
-    Animation
 }
