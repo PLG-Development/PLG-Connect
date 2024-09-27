@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
-using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
 using Avalonia;
@@ -9,7 +8,6 @@ using System;
 using Avalonia.Media;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using PLG_Connect.Config;
 
 
 namespace PLG_Connect;
@@ -17,20 +15,12 @@ namespace PLG_Connect;
 
 partial class MainWindow : Window
 {
-    public List<Display> Displays = new();
-
-    public Config.Settings Settings;
-    public string SettingsPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "PLG-Development",
-        "PLG-Connect",
-        "config.json"
-    );
+    private SettingsManager SettingsManager = new();
     public MainWindow()
     {
         InitializeComponent();
         this.KeyDown += HandleKeyboardKeyDown;
-        Settings = Config.Config.Load(SettingsPath);
+        SettingsManager.Load();
         Task.Run(async () => await Analytics.SendEvent("connect"));
     }
 
@@ -60,7 +50,7 @@ partial class MainWindow : Window
             var settingsSavePath = await filePicker.ShowAsync(this);
             if (settingsSavePath == null) { return; }
 
-            Config.Config.Save(Settings, settingsSavePath);
+            SettingsManager.Save(settingsSavePath);
         }
         catch (Exception ex)
         {
@@ -134,7 +124,7 @@ partial class MainWindow : Window
 
     private void Mnu_Edit_ClearAllMonitors_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        foreach (Display d in Displays)
+        foreach (Display d in SettingsManager.Settings.Displays)
         {
             d.DisplayText("");
         }
@@ -203,7 +193,7 @@ partial class MainWindow : Window
     ///</summary>
     public void RefreshGUI()
     {
-        Config.Config.Save(Settings, SettingsPath);
+        SettingsManager.Save();
 
         if (delete)
         {
@@ -220,10 +210,9 @@ partial class MainWindow : Window
     {
         var bc = new BrushConverter();
         StpScreens.Children.Clear();
-        foreach (Display disp in Displays)
+        foreach (Display display in SettingsManager.Settings.Displays)
         {
-
-            if (disp.isLocked)
+            if (display.isLocked)
             {
                 TextBox TbContent2 = new TextBox();
                 TbContent2.Margin = new Thickness(5);
@@ -232,9 +221,9 @@ partial class MainWindow : Window
                 ba.Content = "Unlock";
                 ba.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
                 {
-                    if (new WndEnterPassword(disp.Password).ShowDialogWithResult(this).Result == true)
+                    if (new WndEnterPassword(display.Password).ShowDialogWithResult(this).Result == true)
                     {
-                        disp.isLocked = false;
+                        display.isLocked = false;
                         RefreshGUI();
                     }
 
@@ -245,7 +234,7 @@ partial class MainWindow : Window
                 ba6.Content = "View log";
                 ba6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
                 {
-                    new WndLog(disp.Messages).Show();
+                    new WndLog(display.Messages).Show();
                 };
 
                 StackPanel buttons2 = new StackPanel()
@@ -262,11 +251,11 @@ partial class MainWindow : Window
 
                     Margin = new Thickness(5),
                     Children = {
-                        new Label() { Content = "Name: " + disp.Settings.Name },
-                        new Label() { Content = disp.Settings.IPAddress },
+                        new Label() { Content = "Name: " + display.Name },
+                        new Label() { Content = display.IPAddress},
                         TbContent2,
                         buttons2,
-                        new Label() { Content = disp.Messages },
+                        new Label() { Content = display.Messages },
                     },
                     Background = new SolidColorBrush(Color.Parse("#545457"))
                 };
@@ -286,8 +275,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.DisplayText(TbContent.Text);
-                    disp.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
+                    await display.DisplayText(TbContent.Text);
+                    display.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
                     TbContent.Text = "";
                 }
                 catch (Exception ex)
@@ -304,8 +293,8 @@ partial class MainWindow : Window
 
                 try
                 {
-                    await disp.NextSlide();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Image: next";
+                    await display.NextSlide();
+                    display.Messages += "\n\n" + DateTime.Now + " - Image: next";
                 }
                 catch (Exception ex)
                 {
@@ -320,8 +309,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.PreviousSlide();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Image: previous";
+                    await display.PreviousSlide();
+                    display.Messages += "\n\n" + DateTime.Now + " - Image: previous";
                 }
                 catch (Exception ex)
                 {
@@ -346,8 +335,8 @@ partial class MainWindow : Window
             {
                 try
                 {
-                    await disp.ToggleBlackScreen();
-                    disp.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
+                    await display.ToggleBlackScreen();
+                    display.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
                     bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
 
                     if (blackout)
@@ -371,7 +360,7 @@ partial class MainWindow : Window
             b5.Content = "Load Content";
             b5.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                new WndSelectFileType(disp).Show();
+                new WndSelectFileType(display).Show();
             };
 
             Button b6 = new Button();
@@ -379,7 +368,7 @@ partial class MainWindow : Window
             b6.Content = "View log";
             b6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                new WndLog(disp.Messages).Show();
+                new WndLog(display.Messages).Show();
             };
 
             StackPanel buttons = new StackPanel()
@@ -399,11 +388,11 @@ partial class MainWindow : Window
 
                 Margin = new Thickness(5),
                 Children = {
-                    new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Settings.IPAddress },
+                    new Label() { Content = "Name: " + display.Name },
+                    new Label() { Content = display.IPAddress },
                     TbContent,
                     buttons,
-                    new Label() { Content = disp.Messages },
+                    new Label() { Content = display.Messages },
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
@@ -417,7 +406,7 @@ partial class MainWindow : Window
     {
         var bc = new BrushConverter();
         StpScreens.Children.Clear();
-        foreach (Display disp in Displays)
+        foreach (Display disp in SettingsManager.Settings.Displays)
         {
 
             Button b2 = new Button();
@@ -426,11 +415,11 @@ partial class MainWindow : Window
             b2.Background = new SolidColorBrush(Color.Parse("#772327"));
             b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                foreach (Display d in Displays)
+                foreach (Display d in SettingsManager.Settings.Displays)
                 {
                     if (d.Address == disp.Address)
                     {
-                        Displays.Remove(d);
+                        SettingsManager.Settings.Displays.Remove(d);
                         RefreshGUI();
                         break;
                     }
@@ -450,8 +439,8 @@ partial class MainWindow : Window
 
                 Margin = new Thickness(5),
                 Children = {
-                    new Label() { Content = "Name: " + disp.Settings.Name },
-                    new Label() { Content = disp.Settings.IPAddress },
+                    new Label() { Content = "Name: " + disp.Name },
+                    new Label() { Content = disp.IPAddress },
                     buttons,
                 },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
@@ -462,16 +451,4 @@ partial class MainWindow : Window
         }
     }
 
-}
-
-public class Display : PLGClient
-{
-    public Config.DisplaySettings Settings;
-    public string Messages;
-    public bool isLocked = false;
-
-    public Display(Config.DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
-    {
-        Settings = settings;
-    }
 }
