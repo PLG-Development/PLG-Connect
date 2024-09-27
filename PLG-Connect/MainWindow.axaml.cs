@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Avalonia.Controls;
-using Newtonsoft.Json;
 using System.IO;
 using PLG_Connect_Network;
 using Avalonia.Layout;
@@ -8,6 +7,7 @@ using Avalonia;
 using Avalonia.Input;
 using System;
 using Avalonia.Media;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using PLG_Connect.Config;
 
@@ -29,46 +29,66 @@ partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        this.KeyDown += Handle_Keyboard_KeyDown;
+        this.KeyDown += HandleKeyboardKeyDown;
         Settings = Config.Config.Load(SettingsPath);
         Task.Run(async () => await Analytics.SendEvent("connect"));
     }
 
-    public void SettingsSaveDialog()
-    {}
+    // SaveAs
+    public void MenuOpenSettingsSaveAsDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Task.Run(async () => await OpenSettingsSaveAsDialog());
+    }
+    private async Task OpenSettingsSaveAsDialog()
+    {
+        var settingsFileName = "PLG-Connect-Project";
 
-    public void SettingsSaveAsDialog()
-    {}
+        try
+        {
 
-    public void SettingsOpenDialog()
-    {}
+            var filePicker = new SaveFileDialog
+            {
+                Title = "Save file...",
+                InitialFileName = $"{settingsFileName}.pcnt",
+                DefaultExtension = ".pcnt",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "PLG-Connect-Projects", Extensions = { "pcnt" } }
+                }
+            };
 
-    public void SettingsNewDialog()
-    {}
+            var settingsSavePath = await filePicker.ShowAsync(this);
+            if (settingsSavePath == null) { return; }
 
-    public void Handle_Keyboard_KeyDown(object sender, KeyEventArgs e)
+            Config.Config.Save(Settings, settingsSavePath);
+        }
+        catch (Exception ex)
+        {
+            await MessageBox.Show(this, ex.Message, "Fehler beim Speichern der Datei");
+        }
+    }
+
+    // Load
+    public void MenuOpenSettingsLoadDialog(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Task.Run(async () => await OpenSettingsLoadDialog());
+    }
+    public async Task OpenSettingsLoadDialog()
+    {
+        await MessageBox.Show(this, "Macht Nichts", "Macht Nichts");
+    }
+
+    public void HandleKeyboardKeyDown(object sender, KeyEventArgs e)
     {
         if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S)
         {
-            SettingsSaveAsDialog();
-            return;
-        }
-
-        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.S)
-        {
-            SettingsSaveDialog();
+            Task.Run(async () => await OpenSettingsSaveAsDialog());
             return;
         }
 
         if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.O)
         {
-            SettingsOpenDialog();
-            return;
-        }
-
-        if (e.KeyModifiers == KeyModifiers.Control && e.Key == Key.N)
-        {
-            SettingsNewDialog();
+            OpenSettingsLoadDialog();
             return;
         }
     }
@@ -80,32 +100,9 @@ partial class MainWindow : Window
     // Menu Structure variables
     private bool delete = false;
 
-    private void Mnu_File_Exit_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        Close();
-    }
-
-    private void Mnu_File_New_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        SettingsNewDialog();
-    }
-
     private void Mnu_File_Open_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        SettingsOpenDialog();
-    }
-
-    private void Mnu_File_Save_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (!Save())
-        {
-            MessageBox.Show(this, "Error while saving file", "Error", MessageBoxButton.Ok);
-        }
-    }
-
-    private void Mnu_File_SaveAs_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        SettingsSaveAsDialog();
+        OpenSettingsLoadDialog();
     }
 
     private void Mnu_Edit_AddMonitor_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -206,6 +203,8 @@ partial class MainWindow : Window
     ///</summary>
     public void RefreshGUI()
     {
+        Config.Config.Save(Settings, SettingsPath);
+
         if (delete)
         {
             RefreshDisplaysDeletion();
@@ -470,25 +469,13 @@ partial class MainWindow : Window
 
 public class Display : PLGClient
 {
-    public DisplaySettings Settings;
+    public Config.DisplaySettings Settings;
     public string Messages;
     public DisplayMode Current_Mode;
     public bool isLocked = false;
 
-    public Display(DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
+    public Display(Config.DisplaySettings settings) : base(settings.IPAddress, settings.MacAddress, settings.Password)
     {
         Settings = settings;
     }
-}
-
-
-public enum DisplayMode
-{
-    None,
-    Text,
-    Image,
-    Combined,
-    External,
-    Slideshow,
-    Animation
 }

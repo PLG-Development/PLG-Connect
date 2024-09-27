@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using System.Linq;
 using PLG_Connect_Network;
+using PLG_Connect.Config;
 
 
 namespace PLG_Connect;
@@ -158,7 +159,7 @@ public partial class NewMonitorWindow : Window
             return;
         }
 
-        mainWindow.Displays.Add(new Display(new DisplaySettings { IPAddress = DisplayIp, MacAddress = DisplayMac, Name = DisplayName }));
+        mainWindow.Displays.Add(new Display(new Config.DisplaySettings { IPAddress = DisplayIp, MacAddress = DisplayMac, Name = DisplayName }));
         mainWindow.RefreshGUI();
 
         Close();

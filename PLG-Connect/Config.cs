@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -13,7 +12,7 @@ static class Config
         if (!File.Exists(filePath))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-            File.WriteAllText(filePath, "[]");
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(new Settings()));
         }
 
         string json = File.ReadAllText(filePath);
