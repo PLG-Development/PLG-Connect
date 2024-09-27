@@ -15,6 +15,7 @@
     devShells."x86_64-linux".default = pkgs.mkShell {
       packages = with pkgs; [
         dotnet-sdk_8
+        wmctrl
       ];
 
       LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
