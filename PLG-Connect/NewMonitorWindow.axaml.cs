@@ -133,7 +133,7 @@ public partial class NewMonitorWindow : Window
     public void ButtonCheck()
     {
 
-        if (macValid && ipValid)
+        if (ipValid)
         {
             AddButton.IsEnabled = true;
             PingButton.IsEnabled = true;
