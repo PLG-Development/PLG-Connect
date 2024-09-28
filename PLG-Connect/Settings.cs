@@ -76,9 +76,5 @@ public class Display : PLGClient
     IPAddress = ipAddress;
     MacAddress = macAddress;
     Password = password;
-    Messages = "";
   }
-
-  public string Messages;
-  public bool isLocked = false;
 }

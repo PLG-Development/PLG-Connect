@@ -22,9 +22,6 @@
                 <MenuItem Header="Edit">
                     <MenuItem Header="Add Monitor"
                               Click="MenuAddMonitorClick" />
-                    <MenuItem Header="Activate Deletion Mode"
-                              x:Name="Mnu_Edit_DeleteMonitor"
-                              Click="MenuDeleteMonitorClick" />
                     <MenuItem Header="Clear All Monitors"
                               Click="MenuClearAllMonitorsClick" />
                     <Separator />
@@ -82,7 +79,7 @@
                             BorderThickness="2"
                             x:Name="BrdMonitors"
                             BorderBrush="#545458">
-                        <StackPanel x:Name="StpScreens"
+                        <StackPanel x:Name="UIDisplays"
                                     Orientation="Vertical" />
                     </Border>
                 </DockPanel>

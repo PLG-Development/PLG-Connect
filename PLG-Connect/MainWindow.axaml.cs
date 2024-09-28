@@ -86,9 +86,6 @@ partial class MainWindow : Window
         }
     }
 
-    // Menu Structure variables
-    private bool delete = false;
-
     private void MenuAddMonitorClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         AddMonitor();
@@ -101,28 +98,6 @@ partial class MainWindow : Window
     {
         NewMonitorWindow w = new NewMonitorWindow(this);
         w.Show();
-    }
-
-    private async void MenuDeleteMonitorClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (delete)
-        {
-            delete = false;
-            Mnu_Edit_DeleteMonitor.Header = "Activate Deletion Mode";
-            BrdMonitors.Background = new SolidColorBrush(Color.Parse("#232327"));
-        }
-        else
-        {
-            var res = await MessageBox.Show(this, "Do you really want to activate deletion mode? Deleting a monitor by clicking the delete-button will delete\nit permanentely and non-recoverable.", "Turn on deletion-mode?", MessageBoxButton.YesNo);
-            if (res == MessageBoxResult.Yes)
-            {
-                delete = true;
-                Mnu_Edit_DeleteMonitor.Header = "Deactivate Deletion Mode";
-                BrdMonitors.Background = new SolidColorBrush(Color.Parse("#552327"));
-
-            }
-        }
-        RefreshGUI();
     }
 
     private void MenuClearAllMonitorsClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -172,260 +147,89 @@ partial class MainWindow : Window
     {
         SettingsManager.Save();
 
-        if (delete)
-        {
-            RefreshDisplaysDeletion();
-        }
-        else
-        {
-            RefreshDisplaysDefault();
-        }
+        UIDisplays.Children.Clear();
 
-    }
-
-    public void RefreshDisplaysDefault()
-    {
-        var bc = new BrushConverter();
-        StpScreens.Children.Clear();
         foreach (Display display in SettingsManager.Settings.Displays)
         {
-            if (display.isLocked)
+            Button openFileButton = new Button()
             {
-                TextBox TbContent2 = new TextBox();
-                TbContent2.Margin = new Thickness(5);
-                Button ba = new Button();
-                ba.Margin = new Thickness(5);
-                ba.Content = "Unlock";
-                ba.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+                Margin = new Thickness(5),
+                Content = "Open File",
+            };
+            openFileButton.Click += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { new WndSelectFileType(display).Show(); };
+
+            Button toggleBlackscreenButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Toggle Blackscreen",
+            };
+            toggleBlackscreenButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.ToggleBlackScreen(); };
+
+            Button previousButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Previous",
+            };
+            previousButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.PreviousSlide(); };
+
+            Button nextButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Next",
+            };
+            nextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.NextSlide(); };
+
+            Button deleteDisplayButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Delete This Display",
+                // make button red
+                Background = new SolidColorBrush(Color.Parse("#FF3333"))
+            };
+            deleteDisplayButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
+                var res = await MessageBox.Show(this, "Do you really want to delete this display? Deleting a display by clicking the delete-button will delete\nit permanentely and non-recoverable.", "Delete this display?", MessageBoxButton.YesNo);
+                if (res == MessageBoxResult.Yes)
                 {
-                    if (new WndEnterPassword(display.Password).ShowDialogWithResult(this).Result == true)
-                    {
-                        display.isLocked = false;
-                        RefreshGUI();
-                    }
+                    SettingsManager.Settings.Displays.Remove(display);
+                    RefreshGUI();
+                }
+            };
 
-                };
+            TextBox displayTextTextInput = new TextBox();
+            Button displayTextButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Display Text",
+            };
+            displayTextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.DisplayText(displayTextTextInput.Text ?? ""); };
 
-                Button ba6 = new Button();
-                ba6.Margin = new Thickness(5);
-                ba6.Content = "View log";
-                ba6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-                {
-                    new WndLog(display.Messages).Show();
-                };
+            StackPanel buttons = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Children = {
+                    toggleBlackscreenButton,
+                    openFileButton,
+                    previousButton,
+                    nextButton,
+                }
+            };
 
-                StackPanel buttons2 = new StackPanel()
-                {
-                    Orientation = Orientation.Horizontal,
-                    Children = {
-                        ba,
-                        ba6,
+            StackPanel displayControllElement = new StackPanel()
+            {
 
-                    }
-                };
-                StackPanel p2 = new StackPanel()
-                {
-
-                    Margin = new Thickness(5),
-                    Children = {
-                        new Label() { Content = "Name: " + display.Name },
+                Margin = new Thickness(5),
+                Children = {
+                        new Label() { Content = display.Name },
                         new Label() { Content = display.IPAddress},
-                        TbContent2,
-                        buttons2,
-                        new Label() { Content = display.Messages },
+                        displayTextTextInput,
+                        buttons,
+                        deleteDisplayButton,
                     },
-                    Background = new SolidColorBrush(Color.Parse("#545457"))
-                };
-
-
-                StpScreens.Children.Add(p2);
-
-                continue;
-            }
-
-            TextBox TbContent = new TextBox();
-            TbContent.Margin = new Thickness(5);
-            Button b = new Button();
-            b.Margin = new Thickness(5);
-            b.Content = "Display Text";
-            b.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                try
-                {
-                    await display.DisplayText(TbContent.Text);
-                    display.Messages += "\n\n" + DateTime.Now + " - Displayed text on screen: " + TbContent.Text;
-                    TbContent.Text = "";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            };
-            Button b2 = new Button();
-            b2.Margin = new Thickness(5);
-            b2.Content = "Next Image";
-            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-
-                try
-                {
-                    await display.NextSlide();
-                    display.Messages += "\n\n" + DateTime.Now + " - Image: next";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            };
-
-            Button b3 = new Button();
-            b3.Margin = new Thickness(5);
-            b3.Content = "Prevoius Image";
-            b3.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                try
-                {
-                    await display.PreviousSlide();
-                    display.Messages += "\n\n" + DateTime.Now + " - Image: previous";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            };
-
-            Button b4 = new Button();
-            b4.Margin = new Thickness(5);
-            b4.Content = "Blackout";
-            bool blackout = true; // Check if blackout is active or not
-            if (blackout)
-            {
-                b4.Background = new SolidColorBrush(Color.Parse("#772327"));
-            }
-            else
-            {
-                b4.Background = new SolidColorBrush(Color.Parse("#545458"));
-            }
-            b4.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                try
-                {
-                    await display.ToggleBlackScreen();
-                    display.Messages += "\n\n" + DateTime.Now + " - Toggled Blackout";
-                    bool blackout = true; // = true ?? "black" || false; (Keine Ahnung, wie die Syntax exakt funktioniert)
-
-                    if (blackout)
-                    {
-                        (sender as Button).Background = new SolidColorBrush(Color.Parse("#772327"));
-                    }
-                    else
-                    {
-                        (sender as Button).Background = new SolidColorBrush(Color.Parse("#545458"));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-            };
-
-            Button b5 = new Button();
-            b5.Margin = new Thickness(5);
-            b5.Content = "Load Content";
-            b5.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                new WndSelectFileType(display).Show();
-            };
-
-            Button b6 = new Button();
-            b6.Margin = new Thickness(5);
-            b6.Content = "View log";
-            b6.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                new WndLog(display.Messages).Show();
-            };
-
-            StackPanel buttons = new StackPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Children = {
-                    b,
-                    b2,
-                    b3,
-                    b4,
-                    b5,
-                    b6,
-                }
-            };
-            StackPanel p = new StackPanel()
-            {
-
-                Margin = new Thickness(5),
-                Children = {
-                    new Label() { Content = "Name: " + display.Name },
-                    new Label() { Content = display.IPAddress },
-                    TbContent,
-                    buttons,
-                    new Label() { Content = display.Messages },
-                },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
 
-
-            StpScreens.Children.Add(p);
+            UIDisplays.Children.Add(displayControllElement);
         }
     }
-
-    public void RefreshDisplaysDeletion()
-    {
-        var bc = new BrushConverter();
-        StpScreens.Children.Clear();
-        foreach (Display disp in SettingsManager.Settings.Displays)
-        {
-
-            Button b2 = new Button();
-            b2.Margin = new Thickness(5);
-            b2.Content = "Delete";
-            b2.Background = new SolidColorBrush(Color.Parse("#772327"));
-            b2.Click += async (object sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                foreach (Display d in SettingsManager.Settings.Displays)
-                {
-                    if (d.Address == disp.Address)
-                    {
-                        SettingsManager.Settings.Displays.Remove(d);
-                        RefreshGUI();
-                        break;
-                    }
-                }
-            };
-
-            StackPanel buttons = new StackPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Children = {
-                    b2,
-
-                }
-            };
-            StackPanel p = new StackPanel()
-            {
-
-                Margin = new Thickness(5),
-                Children = {
-                    new Label() { Content = "Name: " + disp.Name },
-                    new Label() { Content = disp.IPAddress },
-                    buttons,
-                },
-                Background = new SolidColorBrush(Color.Parse("#545457"))
-            };
-
-
-            StpScreens.Children.Add(p);
-        }
-    }
-
 }
