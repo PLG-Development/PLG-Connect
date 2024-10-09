@@ -54,7 +54,7 @@
                         IsEnabled="False"
                         Click="PingButtonClick" />
                 <Button x:Name="AddButton"
-                        Content="Add"
+                        Content="Add" IsEnabled="False"
                         Click="AddButtonClick" />
                 <Button x:Name="CancelButton"
                         Content="Cancel"

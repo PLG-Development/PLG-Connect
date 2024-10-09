@@ -27,7 +27,7 @@
                     <Separator />
                     <MenuItem Header="Clear all Devices" />
                     <Separator />
-                    <MenuItem Header="Preferences"
+                    <MenuItem Header="Preferences" IsEnabled="False"
                               Click="MenuPreferencesClick" />
                 </MenuItem>
                 <MenuItem Header="Help">

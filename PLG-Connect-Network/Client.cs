@@ -11,14 +11,14 @@ namespace PLG_Connect_Network;
 public class PLGClient
 {
     public string Address { get; set; }
-    public string MacAddress { get; set; }
+    public string? MacAddress { get; set; }
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
     public PLGClient(string ipAddress, string macAddress, string password = "0", int port = 8080)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
-        if (!Regex.IsMatch(macAddress, macAddressPattern))
+        if (!Regex.IsMatch(macAddress, macAddressPattern) && macAddress != null)
         {
             throw new ArgumentException("Invalid MAC address format");
         }
@@ -26,7 +26,15 @@ public class PLGClient
 
         Password = password; Console.WriteLine(Password);
         Address = ipAddress + ":" + port;
-        MacAddress = macAddress.Replace(":", "-");
+        if (macAddress != null)
+        {
+            MacAddress = macAddress.Replace(":", "-");
+        }
+        else
+        {
+            MacAddress = null;
+        }
+
     }
 
     private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
@@ -86,6 +94,11 @@ public class PLGClient
 
     public void SendWakeOnLAN()
     {
+        if (MacAddress == null)
+        {
+            Console.WriteLine("No MAC configured :/");
+            return;
+        }
         PhysicalAddress.Parse(MacAddress).SendWol();
     }
 

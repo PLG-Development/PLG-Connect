@@ -54,11 +54,11 @@ public partial class NewMonitorWindow : Window
         }
     }
 
-    private bool macValid = false;
+    private bool macValid = true;
     private void MacTextBoxTextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
-        if (!Regex.IsMatch(MacTextBox.Text, macAddressPattern))
+        if (!Regex.IsMatch(MacTextBox.Text, macAddressPattern) && MacTextBox.Text != "")
         {
             MacLabel.Foreground = new SolidColorBrush(Color.Parse("#FF3333"));
             MacLabel.Content = "MAC - Invalid";
@@ -81,6 +81,7 @@ public partial class NewMonitorWindow : Window
             DisplayMac = MacTextBox.Text;
 
         }
+
         ButtonCheck();
     }
 
@@ -133,7 +134,7 @@ public partial class NewMonitorWindow : Window
     public void ButtonCheck()
     {
 
-        if (ipValid)
+        if (ipValid && macValid)
         {
             AddButton.IsEnabled = true;
             PingButton.IsEnabled = true;
@@ -158,6 +159,10 @@ public partial class NewMonitorWindow : Window
             return;
         }
 
+        if (DisplayMac == "")
+        {
+            DisplayMac = null;
+        }
         mainWindow.SettingsManager.Settings.Displays.Add(new Display(DisplayName, DisplayIp, DisplayMac));
         mainWindow.RefreshGUI();
 
