@@ -9,7 +9,13 @@ Open source multi-platform solution for advanced remote control and coordination
 - Linux
 - X11 Display Server
 - `wmctrl` library
+- Local Network Connection
+
+### PLG Connect
+ - Linux, Windows, MAC, (untested: Android, iOS)
+ - Local Network Connection
 
 ## Development Setup
 
-Install .NET 8.0 SDK and AvaloniaUI to execute `dotnet run` in your terminal to start the downloaded source code.
+Install .NET 8.0 SDK and avaloniaui.templates to execute `dotnet run` in your terminal to start the downloaded source code. 
+After publishing the first release, you will be able to download executable files.
