@@ -15,13 +15,16 @@ public class PLGClient
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public PLGClient(string ipAddress, string macAddress, string password = "0", int port = 8080)
+    public PLGClient(string ipAddress, string macAddress = null, string password = "0", int port = 8080)
     {
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
-        if (!Regex.IsMatch(macAddress, macAddressPattern) && macAddress != null)
-        {
-            throw new ArgumentException("Invalid MAC address format");
+        if(macAddress != null){
+            if (!Regex.IsMatch(macAddress, macAddressPattern))
+            {
+                throw new ArgumentException("Invalid MAC address format");
+            }
         }
+        
 
 
         Password = password; Console.WriteLine(Password);
