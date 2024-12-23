@@ -42,11 +42,13 @@ public partial class WndEnterPassword : Window
 
         if (VerifyPasswordHash(enteredPassword, _hash))
         {
+            Logger.Log("Monitor unlocked!");
             _tcs.TrySetResult(true);
             this.Close();
         }
         else
         {
+            Logger.Log("Wrong password...");
             Console.WriteLine("Passwort falsch");
             _passwordBox.Clear();
         }

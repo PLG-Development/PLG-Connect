@@ -17,6 +17,8 @@ public class PLGClient
 
     public PLGClient(string ipAddress, string macAddress = null, string password = "0", int port = 8080)
     {
+        Logger.Log("Welcome to PLG Connect Network Client!");
+        Logger.Log("Starting up...");
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
         if(macAddress != null){
             if (!Regex.IsMatch(macAddress, macAddressPattern))
@@ -38,6 +40,8 @@ public class PLGClient
             MacAddress = null;
         }
 
+        Logger.Log("Successfully initialized client network");
+
     }
 
     private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
@@ -51,13 +55,15 @@ public class PLGClient
             // only return an object if we got content from the server
             if (response == null) return default!;
             ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+            Logger.Log($"Sent JSONPostRequest to {Address}{path}: {message}");
             return result;
         }
         catch (Exception e)
         {
+            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
         }
-
+        
 
 
     }
@@ -69,9 +75,9 @@ public class PLGClient
             var request = new HttpRequestMessage(method, "http://" + Address + path);
             request.Content = content;
 
-            Console.WriteLine(Password);
+            //Console.WriteLine(Password);
             string header = "Bearer " + Password;
-            Console.WriteLine(header);
+            //Console.WriteLine(header);
             // request.Content = new ByteArrayContent()
             request.Headers.Add("Authorization", header);
 
@@ -83,14 +89,17 @@ public class PLGClient
         }
         catch (HttpRequestException e)
         {
+            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         }
         catch (TaskCanceledException e)
         {
+            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
         }
         catch (Exception e)
         {
+            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
         }
     }
@@ -103,6 +112,7 @@ public class PLGClient
             return;
         }
         PhysicalAddress.Parse(MacAddress).SendWol();
+        Logger.Log("WOL sent to " + MacAddress);
     }
 
     public async Task<bool> Ping()
@@ -112,8 +122,9 @@ public class PLGClient
         {
             response = await sendRequest("/ping", null, HttpMethod.Get);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Logger.Log($"Unknown error at {Address} while pinging: {ex.Message}", Logger.LogType.Error);
             return false;
         }
         if (response == "pong") return true;
@@ -124,12 +135,17 @@ public class PLGClient
     {
         try
         {
-            if (text == null || text.Length == 0) throw new ArgumentException("Text cannot be null or empty");
+            if (text == null || text.Length == 0){
+                Logger.Log($"Error at {Address} while displaying text: Text cannot be null or empty", Logger.LogType.Error);
+                throw new ArgumentException("Text cannot be null or empty");
+            }
             var message = new DisplayTextMessage { Text = text };
             await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
+            Logger.Log($"Displayed text to {Address}: {text}");
         }
         catch (Exception e)
         {
+            Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Unknown error for {Address}: {e.Message}");
         }
 
@@ -139,35 +155,47 @@ public class PLGClient
     {
         var message = new object();
         ToggleBlackScreenReturnMessage result = await sendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
+        Logger.Log($"Toggled blackscreen at {Address}");
         return result.BlackScreenEnabled;
     }
 
     public async Task RunCommand(string command)
     {
-        if (command == null || command.Length == 0) throw new ArgumentException("Command cannot be null or empty");
+        if (command == null || command.Length == 0){
+            Logger.Log($"Error at {Address} while running command: Command cannot be null or empty", Logger.LogType.Error);
+            throw new ArgumentException("Command cannot be null or empty");
+        } 
         var message = new RunCommandMessage { Command = command };
         await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
+        Logger.Log($"Ran command at {Address}: {command}");
     }
 
     public async Task OpenFile(string path)
     {
-        if (path == null) throw new ArgumentException("Path cannot be null");
+        if (path == null){
+            Logger.Log($"Error at {Address} while opening file: Path cannot be null or empty", Logger.LogType.Error);
+            throw new ArgumentException("Path cannot be null");
+             
+        } 
         string extension = Path.GetExtension(path).TrimStart('.').ToLower();
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
         await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post);
+        Logger.Log($"Opened file at {Address}: {path}");
     }
 
     public async Task NextSlide()
     {
         var message = new object();
         await sendJsonPostRequest<object, object>("/nextSlide", message);
+        Logger.Log($"Invoked next slide at {Address}");
     }
 
     public async Task PreviousSlide()
     {
         var message = new object();
         await sendJsonPostRequest<object, object>("/previousSlide", message);
+        Logger.Log($"Invoked previous slide at {Address}");
     }
 }

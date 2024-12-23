@@ -36,10 +36,12 @@ public partial class NewMonitorWindow : Window
         bool success = await client.Ping();
         if (success)
         {
+            Logger.Log("Ping to " + IpTextBox.Text + "successfull");
             await MessageBox.Show(this, "Ping successful", "Your display answered!");
         }
         else
         {
+            Logger.Log("Ping to " + IpTextBox.Text + "didn't answer", Logger.LogType.Warning);
             await MessageBox.Show(this, "No answer", "Your display did not reply. :(");
         }
 
@@ -166,6 +168,7 @@ public partial class NewMonitorWindow : Window
         mainWindow.SettingsManager.Settings.Displays.Add(new Display(DisplayName, DisplayIp, DisplayMac));
         mainWindow.RefreshGUI();
 
+        Logger.Log("Added monitor: " + DisplayIp);
         Close();
     }
 }

@@ -20,11 +20,14 @@ partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Logger.Log("Welcome to PLG Connect!");
+        Logger.Log("Starting up...");
         this.KeyDown += HandleKeyboardKeyDown;
         Task.Run(async () => await Analytics.SendEvent("connect"));
 
         SettingsManager.Load();
         RefreshGUI();
+        Logger.Log("GUI initialized!");
     }
 
     // SaveAs
@@ -54,9 +57,11 @@ partial class MainWindow : Window
             if (settingsSavePath == null) { return; }
 
             SettingsManager.Save(settingsSavePath);
+            Logger.Log("Settings saved at " + settingsSavePath);
         }
         catch (Exception ex)
         {
+            Logger.Log("Saving file not successfull: " + ex.Message, Logger.LogType.Error);
             await MessageBox.Show(this, ex.Message, "Fehler beim Speichern der Datei");
         }
     }
@@ -106,6 +111,8 @@ partial class MainWindow : Window
         {
             d.DisplayText("");
         }
+
+        Logger.Log("Cleared all monitors");
     }
 
     private void MenuPreferencesClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -231,5 +238,7 @@ partial class MainWindow : Window
 
             UIDisplays.Children.Add(displayControllElement);
         }
+
+        Logger.Log("Successfully refreshed GUI");
     }
 }

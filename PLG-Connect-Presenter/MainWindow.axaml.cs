@@ -24,6 +24,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Logger.Log("Welcome to PLG Connect Presenter!");
+        Logger.Log("Starting up...");
         LoadImage();
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
@@ -39,6 +41,7 @@ public partial class MainWindow : Window
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
+        Logger.Log("Successfully initialized GUI!");
     }
 
 
@@ -103,11 +106,13 @@ public partial class MainWindow : Window
         if (showBlackScreen && fileWindowOpen)
         {
             WindowManager.FocusWindow(ownWindowId!);
+            Logger.Log("Toggled blackscreen to state: on");
         }
         // focus the opend file window when exiting the black screen
         if (!showBlackScreen && fileWindowOpen)
         {
             WindowManager.FocusWindow(fileWindowId!);
+            Logger.Log("Toggled blackscreen to state: off");
         }
     }
 
@@ -122,24 +127,33 @@ public partial class MainWindow : Window
 
         TextContent.IsVisible = true;
         TextContent.Content = content;
+        Logger.Log("Displayed text: " + content);
     }
 
     public void LoadImage()
     {
-        string theme = Application.Current!.ActualThemeVariant.ToString();
-        if (theme == "Light")
-        {
-            ImgLoading.Source = new Bitmap("LOGO_white.png");
-        }
-        else if (theme == "Dark")
-        {
-            ImgLoading.Source = new Bitmap("LOGO_white.png");
-        }
-        else
-        {
-            ImgLoading.Source = new Bitmap("LOGO_white.png");
+        try{
+            string theme = Application.Current!.ActualThemeVariant.ToString();
+            if (theme == "Light")
+            {
+                ImgLoading.Source = new Bitmap("LOGO_white.png");
+            }
+            else if (theme == "Dark")
+            {
+                ImgLoading.Source = new Bitmap("LOGO_white.png");
+            }
+            else
+            {
+                ImgLoading.Source = new Bitmap("LOGO_white.png");
+            }
+
+            Logger.Log("Loaded image");
+            
+        } catch (Exception ex){
+            Logger.Log("Error while loading image: " + ex.Message, Logger.LogType.Error);
         }
     }
+        
 
     private async void NextSlide()
     {
@@ -148,6 +162,7 @@ public partial class MainWindow : Window
         simulator.SimulateKeyPress(KeyCode.VcRight);
         await Task.Delay(100);
         simulator.SimulateKeyRelease(KeyCode.VcRight);
+        Logger.Log("Went to next slide");
     }
 
     private async void PreviousSlide()
@@ -157,6 +172,7 @@ public partial class MainWindow : Window
         simulator.SimulateKeyPress(KeyCode.VcLeft);
         await Task.Delay(100);
         simulator.SimulateKeyRelease(KeyCode.VcLeft);
+        Logger.Log("Went to prevoius slide");
     }
 
 
@@ -178,18 +194,20 @@ public partial class MainWindow : Window
             {
                 case 0:
                     TbStartupInformation.Text = "Loading IP Address...\n\n";
-                    count = 1;
+                    Logger.Log("Loading IP Adress...");
+                    count++;
                     break;
                 case 1:
                     TbStartupInformation.Text = "Start Listening...\n\n";
-                    count = 2;
+                    Logger.Log("Start listening...");
+                    count++;
                     break;
                 case 2:
-                    count = 3;
+                    count++;
                     TbStartupInformation.Text = $"Welcome to PLG Connect Presenter!\n{ipAddress}\n{macAddress}";
                     break;
                 case 3:
-                    count = 2;
+                    count--;
                     TbStartupInformation.Text = $"Ready to Connect\n{ipAddress}\n{macAddress}";
                     break;
             }
@@ -212,6 +230,8 @@ public partial class MainWindow : Window
             }
         }
 
+        Logger.Log("No MAC Address found - maybe there is no network interface available", Logger.LogType.Error);
+        
         throw new Exception("No MAC Address found");
     }
 }

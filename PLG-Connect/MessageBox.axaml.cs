@@ -54,6 +54,8 @@ public partial class MessageBox : Window
         if (parent != null)
             msgbox.ShowDialog(parent);
         else msgbox.Show();
+
+        Logger.Log("MessageBox shown: " + title);
         return tcs.Task;
     }
 }

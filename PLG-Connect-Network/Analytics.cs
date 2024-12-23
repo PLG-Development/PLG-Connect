@@ -11,8 +11,10 @@ public static class Analytics
         try {
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+            // No logging because ANALYTICS SPYWARE :eyes:
         } catch (Exception e) {
-            Console.WriteLine($"Error sending analytics: {e.Message}");
+            // Console.WriteLine($"Error sending analytics: {e.Message}");
+            // ...
         }
     }
 }

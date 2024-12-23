@@ -23,6 +23,7 @@ class SettingsManager
   /// </summary>
   public void Load(string? filePath = null)
   {
+    Logger.Log("Loading settings...");
     filePath ??= SettingsPath;
 
     if (!File.Exists(filePath))
@@ -33,6 +34,7 @@ class SettingsManager
 
     string json = File.ReadAllText(filePath);
     Settings = JsonConvert.DeserializeObject<Settings>(json)!;
+    Logger.Log("Settings loaded!");
   }
 
   /// <summary>
@@ -40,9 +42,11 @@ class SettingsManager
   /// </summary>
   public void Save(string? filePath = null)
   {
+    Logger.Log("Saving settings...");
     filePath ??= SettingsPath;
     string json = JsonConvert.SerializeObject(Settings);
     File.WriteAllText(filePath, json);
+    
   }
 }
 

@@ -25,6 +25,8 @@ public class PLGServer
     private Webserver server;
     public PLGServer(string password = "0", int port = 8080)
     {
+        Logger.Log("Welcome to PLG Connect Network Server!");
+        Logger.Log("Starting up...");
         Password = password;
 
         WebserverSettings settings = new()
@@ -37,7 +39,7 @@ public class PLGServer
         server.Routes.PreAuthentication.Static.Add(WatsonHttpMethod.GET, "/ping", PingRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/changePassword", ChangePasswordRoute);
 
-        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplyTextRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/displayText", DisplayTextRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/toggleBlackScreen", ToggleBlackScreenRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
@@ -48,11 +50,14 @@ public class PLGServer
         server.Routes.AuthenticateRequest = AuthenticateRequest;
 
         server.StartAsync();
+
+        Logger.Log("Successfully initialized server network");
     }
 
     public void Stop()
     {
         server.Stop();
+        Logger.Log("Server stopped");
     }
 
     bool firstRequestHappend = false;
@@ -90,7 +95,7 @@ public class PLGServer
             await ctx.Response.Send("Unauthorized");
             return false;
         }
-
+        Logger.Log("Successfully Authenticated!");
         return true;
     }
 
@@ -101,7 +106,7 @@ public class PLGServer
         {
             throw new Exception("Invalid JSON");
         }
-
+        Logger.Log("JSON Object from HttpContextBase extracted");
         return result;
     }
 
@@ -115,12 +120,14 @@ public class PLGServer
         }
         catch (Exception e)
         {
+            Logger.Log("Error while changing password: " + e.Message, Logger.LogType.Error);
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             await ctx.Response.Send($"ERROR: {e.Message}");
             return;
         }
 
         Password = result.NewPassword;
+        Logger.Log("Successfully changed password");
         await ctx.Response.Send("");
 
     }
@@ -134,10 +141,11 @@ public class PLGServer
     static async Task PingRoute(HttpContextBase ctx)
     {
         await ctx.Response.Send("pong");
+        Logger.Log("Ping answered: pong! |   o|");
     }
 
     // General purpose routes
-    async Task DisplyTextRoute(HttpContextBase ctx)
+    async Task DisplayTextRoute(HttpContextBase ctx)
     {
         DisplayTextMessage result;
 
@@ -148,6 +156,7 @@ public class PLGServer
         catch (Exception e)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("Error while displaying text: " + e.Message, Logger.LogType.Error);
             await ctx.Response.Send($"ERROR: {e.Message}");
             return;
         }
@@ -157,6 +166,7 @@ public class PLGServer
             handler(result.Text);
         }
         await ctx.Response.Send("");
+        Logger.Log("Displayed text: " + result);
     }
 
     // note: this function handels the black screen state paralel to the actual presenter logic which duplicats the code and is not ideal
@@ -170,6 +180,7 @@ public class PLGServer
         }
         blackScreenEnabled = !blackScreenEnabled;
         await ctx.Response.Send(JsonConvert.SerializeObject(new ToggleBlackScreenReturnMessage { BlackScreenEnabled = blackScreenEnabled }));
+        Logger.Log("Toggled blackscreen");
     }
     async Task RunCommandRoute(HttpContextBase ctx)
     {
@@ -182,6 +193,7 @@ public class PLGServer
         catch (Exception e)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("Error while running command: " + e.Message, Logger.LogType.Error);
             await ctx.Response.Send($"ERROR: {e.Message}");
             return;
         }
@@ -191,6 +203,7 @@ public class PLGServer
             handler(result.Command);
         }
         await ctx.Response.Send("");
+        Logger.Log("Ran command");
     }
 
     async Task OpenFileRoute(HttpContextBase ctx)
@@ -199,6 +212,7 @@ public class PLGServer
         if (fileEnding == null)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("Error while opening file: No file ending found", Logger.LogType.Error);
             await ctx.Response.Send("Missing fileEnding");
             return;
         }
@@ -217,10 +231,12 @@ public class PLGServer
 
         string filePath = Path.Combine(folderPath, fileHash) + $".{fileEnding}";
 
-        // Only donwload file if it doesn't exist
+        // Only donwload file if it doesn't exist - NONSENS, hier muss noch was hin, irgendne Rückmeldung. Könnte ja ne neue Version sein
         if (!File.Exists(filePath))
         {
             await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+        } else {
+            // ????
         }
 
         foreach (var handler in openFileHandlers)
@@ -229,6 +245,7 @@ public class PLGServer
         }
 
         await ctx.Response.Send("");
+        Logger.Log("Opened file");
     }
 
     async Task NextSlideRoute(HttpContextBase ctx)
@@ -238,6 +255,7 @@ public class PLGServer
             handler();
         }
         await ctx.Response.Send("");
+        Logger.Log("Invoked next slide");
     }
 
     async Task PreviousSlideRoute(HttpContextBase ctx)
@@ -247,5 +265,6 @@ public class PLGServer
             handler();
         }
         await ctx.Response.Send("");
+        Logger.Log("Invoked previous slide");
     }
 }
