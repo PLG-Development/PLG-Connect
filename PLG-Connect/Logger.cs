@@ -7,10 +7,14 @@ namespace PLG_Connect;
 
 public static class Logger
 {
-    private readonly static string LogPath = Path.Combine(
+     private readonly static string LogDirectory = Path.Combine(
       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
       "PLG-Development",
       "PLG-Connect",
+      "log.txt"
+    );
+    private readonly static string LogPath = Path.Combine(
+      LogDirectory,
       "log.txt"
     );
 
@@ -39,6 +43,14 @@ public static class Logger
 
     public static void WriteToLog(string input, string? filePath = null)
     {
+
+        if(!Directory.Exists(LogDirectory)){
+            Directory.CreateDirectory(LogDirectory);
+        }
+
+        if(!File.Exists(LogPath)){
+            File.Create(LogPath);
+        }
         filePath ??= LogPath;
         File.AppendAllText(filePath, input);
     }
