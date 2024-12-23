@@ -10,8 +10,7 @@ public static class Logger
     private readonly static string LogDirectory = Path.Combine(
       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
       "PLG-Development",
-      "PLG-Connect-Network",
-      "log.txt"
+      "PLG-Connect-Network"
     );
     private readonly static string LogPath = Path.Combine(
       LogDirectory,
@@ -31,7 +30,12 @@ public static class Logger
         }
 
         Console.WriteLine(toLog);
-        WriteToLog(toLog);
+        try{
+            WriteToLog(toLog);
+        } catch (Exception ex) {
+            Console.WriteLine(d.ToString() + " - ERROR - unable to Log to file " + LogPath + ": " + ex.Message);
+        }
+        
     }
 
     public enum LogType{
@@ -41,16 +45,22 @@ public static class Logger
         None
     }
 
+    private static readonly object _lock = new();
+
     public static void WriteToLog(string input, string? filePath = null)
     {
-        if(!Directory.Exists(LogDirectory)){
-            Directory.CreateDirectory(LogDirectory);
-        }
+        lock (_lock)
+        {
+            if (!Directory.Exists(LogDirectory))
+            {
+                Directory.CreateDirectory(LogDirectory);
+            }
 
-        if(!File.Exists(LogPath)){
-            File.Create(LogPath);
+            filePath ??= LogPath;
+
+            // File.AppendAllText erstellt die Datei automatisch, wenn sie nicht existiert
+            File.AppendAllText(filePath, "\n" + input);
         }
-        filePath ??= LogPath;
-        File.AppendAllText(filePath, input);
     }
+
 }
