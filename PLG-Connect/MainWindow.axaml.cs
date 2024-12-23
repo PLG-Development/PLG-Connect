@@ -172,6 +172,16 @@ partial class MainWindow : Window
             };
             toggleBlackscreenButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.ToggleBlackScreen(); };
 
+            //
+            // Blackscreen Toggled Information
+            //
+            //if(Blackscreen toggled on){
+                toggleBlackscreenButton.Background = new SolidColorBrush(Color.FromRgb(86,35,39));
+            //} 
+
+
+
+
             Button previousButton = new Button()
             {
                 Margin = new Thickness(5),
