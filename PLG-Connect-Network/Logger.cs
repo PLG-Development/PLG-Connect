@@ -10,7 +10,7 @@ public static class Logger
     private readonly static string LogPath = Path.Combine(
       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
       "PLG-Development",
-      "PLG-Connect",
+      "PLG-Connect-Network",
       "log.txt"
     );
 
