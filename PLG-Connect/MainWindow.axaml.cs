@@ -216,6 +216,7 @@ partial class MainWindow : Window
                 Orientation = Orientation.Horizontal,
                 Children = {
                     toggleBlackscreenButton,
+                    displayTextButton,
                     openFileButton,
                     previousButton,
                     nextButton,
