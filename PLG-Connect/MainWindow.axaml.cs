@@ -196,6 +196,8 @@ partial class MainWindow : Window
             };
             nextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.NextSlide(); };
 
+
+            // Please move this Button to the context menu (via [...]-Button)
             Button deleteDisplayButton = new Button()
             {
                 Margin = new Thickness(5),
@@ -236,18 +238,70 @@ partial class MainWindow : Window
                 }
             };
 
-            StackPanel displayControllElement = new StackPanel()
-            {
+            CheckBox cbSelected = new CheckBox(){
+                IsChecked = display.IsChecked,
+                Margin = new Thickness(5)
+            };
 
+            cbSelected.Checked += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                display.IsChecked = true;
+            };
+
+            cbSelected.Unchecked += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => {
+                display.IsChecked = false;
+            };
+
+
+            StackPanel displayControllElementLeft = new StackPanel(){
+                Children = {
+                    cbSelected
+                }
+            };
+
+
+            Button moreOptionsButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "...",
+            };
+            moreOptionsButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { 
+                // Open Menu (not implemented)
+            };
+
+
+            StackPanel displayControllElementCenter = new StackPanel(){
+                Children = {
+                    new Label() { Content = display.IPAddress + " - " + display.Name, Margin= new Thickness(5), FontWeight = FontWeight.Bold },
+                        buttons,
+                        displayTextTextInput,
+                }
+            };
+
+            StackPanel displayControllElementRight = new StackPanel(){
+                Children={
+                    moreOptionsButton
+                }
+            };
+
+
+            Grid displayControllElement = new Grid()
+            {
                 Margin = new Thickness(5),
                 Children = {
-                        new Label() { Content = display.IPAddress + " - " + display.Name, Margin= new Thickness(5), FontWeight = FontWeight.Bold },
-                        displayTextTextInput,
-                        buttons,
-                        deleteDisplayButton,
+                        displayControllElementLeft,
+                        displayControllElementCenter,
+                        displayControllElementRight,
                     },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
+
+            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+
+            Grid.SetColumn(displayControllElementLeft, 0);
+            Grid.SetColumn(displayControllElementCenter, 1);
+            Grid.SetColumn(displayControllElementRight, 2);
 
             UIDisplays.Children.Add(displayControllElement);
         }
