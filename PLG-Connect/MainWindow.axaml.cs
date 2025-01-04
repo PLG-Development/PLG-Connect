@@ -216,7 +216,7 @@ partial class MainWindow : Window
             };
 
             TextBox displayTextTextInput = new TextBox(){
-                Margin=new Thickness(5,0,5,0),
+                Margin=new Thickness(5,0,5,5),
                 Watermark="Visible Text"
             };
             Button displayTextButton = new Button()
