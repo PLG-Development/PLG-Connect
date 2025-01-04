@@ -152,15 +152,15 @@ public partial class MainWindow : Window
             string theme = Application.Current!.ActualThemeVariant.ToString();
             if (theme == "Light")
             {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
+                ImgLoading.Source = new Bitmap("Assets/LOGO_white.png");
             }
             else if (theme == "Dark")
             {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
+                ImgLoading.Source = new Bitmap("Assets/LOGO_white.png");
             }
             else
             {
-                ImgLoading.Source = new Bitmap("LOGO_white.png");
+                ImgLoading.Source = new Bitmap("Assets/LOGO_white.png");
             }
 
             Logger.Log("Loaded image");
