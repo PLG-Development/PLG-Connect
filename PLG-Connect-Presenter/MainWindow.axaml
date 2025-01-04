@@ -5,7 +5,8 @@
         mc:Ignorable="d"
         d:DesignWidth="800"
         d:DesignHeight="450"
-        WindowState="Maximized"
+        WindowState="FullScreen"
+        
         x:Class="PLG_Connect_Presenter.MainWindow"
         ExtendClientAreaToDecorationsHint="true"
         Title="PLG_Connect_Presenter"
