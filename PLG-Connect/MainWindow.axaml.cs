@@ -213,7 +213,9 @@ partial class MainWindow : Window
                 }
             };
 
-            TextBox displayTextTextInput = new TextBox();
+            TextBox displayTextTextInput = new TextBox(){
+                Margin=new Thickness(5,0,5,0)
+            };
             Button displayTextButton = new Button()
             {
                 Margin = new Thickness(5),
@@ -238,8 +240,7 @@ partial class MainWindow : Window
 
                 Margin = new Thickness(5),
                 Children = {
-                        new Label() { Content = display.Name },
-                        new Label() { Content = display.IPAddress},
+                        new Label() { Content = display.IPAddress + " - " + display.Name },
                         displayTextTextInput,
                         buttons,
                         deleteDisplayButton,
