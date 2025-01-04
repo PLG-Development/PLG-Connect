@@ -31,6 +31,14 @@ public partial class MainWindow : Window
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
         Start();
+
+        this.AddHandler(PointerPressedEvent, (sender, e) =>
+        {
+            ToggleFullscreen();
+        }, handledEventsToo: true);
+
+
+
         PLGServer server = new PLGServer();
 
         server.displayTextHandlers.Add(
@@ -42,6 +50,14 @@ public partial class MainWindow : Window
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
         Logger.Log("Successfully initialized GUI!");
+    }
+
+    public void ToggleFullscreen(){
+        if(this.WindowState == WindowState.FullScreen){
+            this.WindowState = WindowState.Maximized;
+        } else {
+            this.WindowState = WindowState.FullScreen;
+        }
     }
 
 
