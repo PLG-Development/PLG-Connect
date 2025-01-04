@@ -45,9 +45,14 @@
             </Menu>
             <Grid Margin="16"
                   Grid.Row="1"
-                  ColumnDefinitions="*,*">
-                <DockPanel LastChildFill="True"
-                           Margin="0,0,8,0">
+                  >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="350"></ColumnDefinition>
+                    <ColumnDefinition Width="5"></ColumnDefinition>
+                    <ColumnDefinition Width="2*" MinWidth="600"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <DockPanel LastChildFill="True" MinWidth="200"
+                           Margin="0,0,4,0">
                     <TextBlock Text="Connected Devices - Coming Soon"
                                FontSize="18"
                                Margin="0,0,0,4"
@@ -60,9 +65,12 @@
                                     Orientation="Vertical" />
                     </Border>
                 </DockPanel>
+
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+
                 <!-- Right Side -->
-                <DockPanel Grid.Column="1"
-                           LastChildFill="True">
+                <DockPanel Grid.Column="2" MinWidth="350"
+                           LastChildFill="True" Margin="4,0,0,0">
                     <TextBlock Text="Connected Monitors"
                                FontSize="18"
                                Margin="0,0,0,4"
