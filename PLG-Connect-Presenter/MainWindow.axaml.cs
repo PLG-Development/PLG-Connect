@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Net;
@@ -27,6 +28,7 @@ public partial class MainWindow : Window
         Logger.Log("Welcome to PLG Connect Presenter!");
         Logger.Log("Starting up...");
         LoadImage();
+        TempInitialize();
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
@@ -50,6 +52,11 @@ public partial class MainWindow : Window
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
         Logger.Log("Successfully initialized GUI!");
+    }
+
+    private void TempInitialize(){
+        string folderPath = "Assets/";
+        ImageList = new List<string>(Directory.GetFiles(folderPath));
     }
 
     public void ToggleFullscreen(){
@@ -170,25 +177,57 @@ public partial class MainWindow : Window
         }
     }
         
+    
+    private SlideControlType slideControlType = SlideControlType.ImageList;
 
     private async void NextSlide()
     {
-        EventSimulator simulator = new EventSimulator();
-
-        simulator.SimulateKeyPress(KeyCode.VcRight);
-        await Task.Delay(100);
-        simulator.SimulateKeyRelease(KeyCode.VcRight);
-        Logger.Log("Went to next slide");
+        if(slideControlType == SlideControlType.ImageList){
+            LoadNextImage();
+        } else if (slideControlType == SlideControlType.Presentation){
+            KeyControl(KeyCode.VcRight, "next");
+        }
     }
 
     private async void PreviousSlide()
     {
+        if(slideControlType == SlideControlType.ImageList){
+            LoadPreviousImage();
+        } else if (slideControlType == SlideControlType.Presentation){
+            KeyControl(KeyCode.VcLeft, "previous");
+        }
+    }
+
+    private async void KeyControl(KeyCode c, string description){
         EventSimulator simulator = new EventSimulator();
 
-        simulator.SimulateKeyPress(KeyCode.VcLeft);
+        simulator.SimulateKeyPress(c);
         await Task.Delay(100);
-        simulator.SimulateKeyRelease(KeyCode.VcLeft);
-        Logger.Log("Went to prevoius slide");
+        simulator.SimulateKeyRelease(c);
+        Logger.Log($"Went to {description} slide");
+    }
+
+    private List<string> ImageList = new List<string>();
+    private int imageListPosition = 0;
+
+    private async void LoadNextImage(){
+        if(imageListPosition < ImageList.Count-1){
+            imageListPosition++;
+            LoadImageFromList();
+        }
+    }
+
+    private async void LoadPreviousImage(){
+        if(imageListPosition > 0){
+            imageListPosition--;
+            LoadImageFromList();
+        }
+    }
+
+    private async void LoadImageFromList(){
+        if(ImageList.Count >= imageListPosition+1){
+            DisplayText(ImageList[imageListPosition]);
+        }
     }
 
 
@@ -250,4 +289,12 @@ public partial class MainWindow : Window
         
         throw new Exception("No MAC Address found");
     }
+}
+
+
+public enum SlideControlType{
+    ImageList,
+    Presentation,
+    Textfile,
+    PDF
 }
