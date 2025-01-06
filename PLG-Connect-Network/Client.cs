@@ -159,6 +159,18 @@ public class PLGClient
         return result.BlackScreenEnabled;
     }
 
+    public async Task Shutdown()
+    {
+        try{
+             var message = new object();
+            await sendRequest("/shutdown", null, HttpMethod.Get);
+            Logger.Log($"Powered off display at {Address}");
+        } catch (Exception ex){
+            Logger.Log("Unknown error at Shutdown(): " + ex.Message);
+        }
+       
+    }
+
     public async Task RunCommand(string command)
     {
         if (command == null || command.Length == 0){

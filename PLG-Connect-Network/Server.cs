@@ -5,6 +5,9 @@ using WatsonWebserver.Core;
 using System.Text.Json;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System;
 
 
 namespace PLG_Connect_Network;
@@ -20,6 +23,7 @@ public class PLGServer
     public List<Action> firstRequestHandlers = new List<Action>();
     public List<Action> beforeRequestHandlers = new List<Action>();
     public List<Action<string>> openFileHandlers = new List<Action<string>>();
+    public List<Action> shutdownHandlers = new List<Action>();
     public string Password;
 
     private Webserver server;
@@ -45,6 +49,7 @@ public class PLGServer
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openFile", OpenFileRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.GET, "/shutdown", ShutdownRoute);
 
         server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
@@ -201,9 +206,52 @@ public class PLGServer
         foreach (var handler in runCommandHandlers)
         {
             handler(result.Command);
+            Logger.Log("Extracted something from anything: " + result.Command);
         }
         await ctx.Response.Send("");
-        Logger.Log("Ran command");
+        Logger.Log("Ran commands");
+    }
+
+    async Task ShutdownRoute(HttpContextBase etc){
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Windows: shutdown-Befehl
+            ExecuteCommand("shutdown /s /t 0");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // Linux: shutdown-Befehl
+            ExecuteCommand("shutdown -h now");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            // macOS: shutdown-Befehl
+            ExecuteCommand("shutdown -h now");
+        }
+        else
+        {
+            throw new PlatformNotSupportedException("Das Betriebssystem wird nicht unterstützt.");
+        }
+    
+    }
+
+    private static void ExecuteCommand(string command)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "bash", // Für Windows: "cmd.exe"
+                Arguments = $"-c \"{command}\"", // Für Windows: "/c {command}"
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.Log($"Fehler beim Ausführen des Befehls: {ex.Message}");
+        }
     }
 
     async Task OpenFileRoute(HttpContextBase ctx)

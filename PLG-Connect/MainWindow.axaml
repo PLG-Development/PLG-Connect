@@ -93,7 +93,7 @@
                     </Border>
                 </DockPanel>
                 <StackPanel Margin="4,0,4,0" Grid.Column="3">
-                    <Button x:Name="BtnAllPowerOn" Content="&#9212;" Background="#542327" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
+                    <Button Click="BtnAllPowerOn_Click" x:Name="BtnAllPowerOn" Content="&#9212;" Background="#542327" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
                     <Button x:Name="BtnAllNext" Content="&#8667;" Background="#235427" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="26" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
                     <Button x:Name="BtnAllPrevious" Content="&#8666;" Background="#235427" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="26" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
                     <Button x:Name="BtnAllSelect" Content="&#128505;" Background="#232359" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />

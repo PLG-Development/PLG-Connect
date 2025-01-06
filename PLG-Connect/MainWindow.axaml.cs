@@ -147,6 +147,14 @@ partial class MainWindow : Window
         });
     }
 
+    private void BtnAllPowerOn_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach(Display display in SettingsManager.Settings.Displays){
+            //display.Shutdown();
+            display.SendWakeOnLAN();
+        }
+    }
+
     ///<summary>
     /// Goes through every single instance of displays and mobile clients and updates their appearance in the window
     ///</summary>
@@ -219,12 +227,26 @@ partial class MainWindow : Window
                 Margin=new Thickness(5,0,5,5),
                 Watermark="Visible Text"
             };
+
+            TextBox runCommandTextInput = new TextBox(){
+                Margin=new Thickness(5,0,5,5),
+                Watermark="Enter a command..."
+            };
+
             Button displayTextButton = new Button()
             {
                 Margin = new Thickness(5),
                 Content = "Display Text",
             };
             displayTextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.DisplayText(displayTextTextInput.Text ?? ""); };
+
+            Button runCommandButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "Run Command (!)",
+                Background = new SolidColorBrush(Color.FromRgb(86,35,39)),
+            };
+            runCommandButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.RunCommand(runCommandTextInput.Text ?? ""); };
 
             StackPanel buttons = new StackPanel()
             {
@@ -235,6 +257,7 @@ partial class MainWindow : Window
                     openFileButton,
                     previousButton,
                     nextButton,
+                    runCommandButton,
                 }
             };
 
@@ -274,6 +297,7 @@ partial class MainWindow : Window
                     new Label() { Content = display.IPAddress + " - " + display.Name, Margin= new Thickness(5), FontWeight = FontWeight.Bold },
                         buttons,
                         displayTextTextInput,
+                        runCommandTextInput,
                 }
             };
 

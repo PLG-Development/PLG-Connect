@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using System;
+using System.Timers;
 using System.IO;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -9,6 +10,7 @@ using System.Threading;
 using System.Net.NetworkInformation;
 using PLG_Connect_Network;
 using Avalonia;
+using Avalonia.Input;
 using Avalonia.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -22,6 +24,9 @@ namespace PLG_Connect_Presenter;
 public partial class MainWindow : Window
 {
 
+    private System.Timers.Timer _mouseHideTimer;   // Timer, um den Mauszeiger auszublenden
+    private bool _mouseMoved;  
+
     public MainWindow()
     {
         InitializeComponent();
@@ -29,6 +34,16 @@ public partial class MainWindow : Window
         Logger.Log("Starting up...");
         LoadImage();
         TempInitialize();
+
+        _mouseHideTimer = new System.Timers.Timer(1000);
+        _mouseHideTimer.Elapsed += OnMouseHideTimerElapsed;
+        _mouseHideTimer.AutoReset = false;
+
+        _mouseHideTimer.Start();
+
+        // PointerMoved-Event registrieren
+        this.AddHandler(InputElement.PointerMovedEvent, OnMouseMoved, handledEventsToo: true);
+    
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
@@ -52,6 +67,29 @@ public partial class MainWindow : Window
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
         Logger.Log("Successfully initialized GUI!");
+    }
+
+    private void OnMouseMoved(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        this.Cursor = new Cursor(StandardCursorType.Arrow);
+
+        _mouseHideTimer.Stop();
+        _mouseHideTimer.Start();
+
+        _mouseMoved = true;
+    }
+
+    private void OnMouseHideTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        Logger.Log("Hiding cursor...");
+        if (_mouseMoved)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                this.Cursor = new Cursor(StandardCursorType.None);
+            });
+        }
+        _mouseMoved = false;
     }
 
     private void TempInitialize(){
