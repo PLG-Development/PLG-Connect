@@ -147,11 +147,40 @@ partial class MainWindow : Window
         });
     }
 
+    private void BtnAllUnselectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach(Display display in SettingsManager.Settings.Displays){
+            display.IsChecked = false;
+        }
+        RefreshGUI();
+    }
+    private void BtnAllSelectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach(Display display in SettingsManager.Settings.Displays){
+            display.IsChecked = true;
+        }
+        RefreshGUI();
+    }
+
+    private void BtnAllPrevious_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach(Display display in SettingsManager.Settings.Displays){
+            if(display.IsChecked) display.PreviousSlide();
+        }
+    }
+
+    private void BtnAllNext_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach(Display display in SettingsManager.Settings.Displays){
+            if(display.IsChecked) display.NextSlide();
+        }
+    }
+
     private void BtnAllPowerOn_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         foreach(Display display in SettingsManager.Settings.Displays){
             //display.Shutdown();
-            display.SendWakeOnLAN();
+            if(display.IsChecked) display.SendWakeOnLAN();
         }
     }
 
