@@ -33,5 +33,8 @@
                    IsVisible="False"
                    VerticalContentAlignment="Center" />
         </Grid>
+        <Image HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   Margin="0,0,0,0"
+                   x:Name="ImageViewer" IsVisible="False" />
     </Grid>
 </Window>
