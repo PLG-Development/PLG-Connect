@@ -289,7 +289,8 @@ public partial class MainWindow : Window
 
     private async void LoadImageFromList(){
         if(ImageList.Count >= imageListPosition+1){
-            DisplayText(ImageList[imageListPosition]);
+            //DisplayText(ImageList[imageListPosition]);
+            ImageViewer.Source = new Bitmap(ImageList[imageListPosition]);
         }
     }
 
