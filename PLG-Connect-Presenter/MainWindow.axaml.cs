@@ -179,6 +179,7 @@ public partial class MainWindow : Window
 
     private async void DisplayText(string content)
     {
+        SetWorkingMode("text");
         // close additional window if it was opened
         if (fileWindowOpen)
         {
@@ -220,19 +221,43 @@ public partial class MainWindow : Window
 
     private async void NextSlide()
     {
+        
         if(slideControlType == SlideControlType.ImageList){
+            SetWorkingMode("switcher");
             LoadNextImage();
         } else if (slideControlType == SlideControlType.Presentation){
+            SetWorkingMode("external");
             KeyControl(KeyCode.VcRight, "next");
         }
     }
 
     private async void PreviousSlide()
     {
+        
         if(slideControlType == SlideControlType.ImageList){
+            SetWorkingMode("switcher");
             LoadPreviousImage();
         } else if (slideControlType == SlideControlType.Presentation){
+            SetWorkingMode("external");
             KeyControl(KeyCode.VcLeft, "previous");
+        }
+    }
+
+    private async void SetWorkingMode(string mode){ // enum is coming soon :joy:
+        switch(mode){
+            case "switcher":
+                this.Show();
+                ImageViewer.IsVisible = true;
+                break;
+            case "text":
+                this.Show();
+                ImageViewer.IsVisible = false;
+                break;
+            case "external":
+                this.Hide();
+                break;
+            default:
+                break;
         }
     }
 
