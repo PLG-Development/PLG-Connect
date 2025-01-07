@@ -127,12 +127,12 @@ public partial class WndSelectFileType : Window
         if (type == "PDF")
         {
             // Send files to system (currentDisp)
-            // Run PDF Viewer (maybe own implementation with PDF-Library?)
+            // Run PDF Viewer (maybe own implementation with PDF-Library?) yes please cause tat would be INSANE
         }
         else if (type == "PPTX/ODP")
         {
             // Send files to system (currentDisp)
-            // Run LibreOffice and press F5
+            // Run LibreOffice and press F5 (maybe OnlyOffice for .pptx and LibreOffice for .odp)
         }
         else if (type == "Text-File")
         {
