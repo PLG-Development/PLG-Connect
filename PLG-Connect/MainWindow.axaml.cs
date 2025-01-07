@@ -310,14 +310,42 @@ partial class MainWindow : Window
                 }
             };
 
+            // Kontextmenü erstellen
+
+            var powerOnMenuItem = new MenuItem { Header = "Power On" };
+            powerOnMenuItem.Click += (sender, e) =>
+            {
+                display.SendWakeOnLAN();
+            };
+
+            // Menüeintrag "Power Off"
+            var powerOffMenuItem = new MenuItem { Header = "Power Off" };
+            powerOffMenuItem.Click += (sender, e) =>
+            {
+                display.Shutdown();
+            };
 
             Button moreOptionsButton = new Button()
             {
                 Margin = new Thickness(5),
                 Content = "...",
             };
-            moreOptionsButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { 
-                // Open Menu (not implemented)
+            var moreContextMenu = new ContextMenu
+            {
+                ItemsSource = new[] { powerOnMenuItem, powerOffMenuItem }, // ItemsSource verwenden
+                PlacementTarget = moreOptionsButton, // Button als Ziel setzen
+                PlacementMode = PlacementMode.Bottom // Position des Menüs
+            };
+
+            moreOptionsButton.ContextMenu = moreContextMenu;
+
+        
+
+            
+            moreOptionsButton.Click += (sender, e) =>
+            {
+                // Kontextmenü für den Button öffnen
+                moreContextMenu.Open(moreOptionsButton);
             };
 
             Button turnOffButton = new Button()
