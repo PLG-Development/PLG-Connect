@@ -320,6 +320,15 @@ partial class MainWindow : Window
                 // Open Menu (not implemented)
             };
 
+            Button turnOffButton = new Button()
+            {
+                Margin = new Thickness(5),
+                Content = "off",
+            };
+            turnOffButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { 
+                display.Shutdown();
+            };
+
 
             StackPanel displayControllElementCenter = new StackPanel(){
                 Children = {
@@ -332,7 +341,8 @@ partial class MainWindow : Window
 
             StackPanel displayControllElementRight = new StackPanel(){
                 Children={
-                    moreOptionsButton
+                    moreOptionsButton,
+                    turnOffButton
                 }
             };
 
