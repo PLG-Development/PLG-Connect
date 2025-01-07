@@ -212,48 +212,19 @@ public class PLGServer
         Logger.Log("Ran commands");
     }
 
-    async Task ShutdownRoute(HttpContextBase etc){
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            // Windows: shutdown-Befehl
-            ExecuteCommand("shutdown /s /t 0");
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            // Linux: shutdown-Befehl
-            ExecuteCommand("shutdown -h now");
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            // macOS: shutdown-Befehl
-            ExecuteCommand("shutdown -h now");
-        }
-        else
-        {
-            throw new PlatformNotSupportedException("Das Betriebssystem wird nicht unterstützt.");
-        }
-    
-    }
-
-    private static void ExecuteCommand(string command)
+    async Task ShutdownRoute(HttpContextBase ctx)
     {
-        try
+
+        foreach (var handler in shutdownHandlers)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "bash", // Für Windows: "cmd.exe"
-                Arguments = $"-c \"{command}\"", // Für Windows: "/c {command}"
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            });
+            handler();
         }
-        catch (Exception ex)
-        {
-            Logger.Log($"Fehler beim Ausführen des Befehls: {ex.Message}");
-        }
+        await ctx.Response.Send("");
+        Logger.Log("Bye bye display: powered off display");
     }
 
+
+    
     async Task OpenFileRoute(HttpContextBase ctx)
     {
         string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");

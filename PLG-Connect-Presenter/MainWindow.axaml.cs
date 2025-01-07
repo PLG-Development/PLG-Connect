@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using System.Net.NetworkInformation;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Input;
@@ -66,8 +68,51 @@ public partial class MainWindow : Window
         server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
+        server.shutdownHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(Shutdown));
         Logger.Log("Successfully initialized GUI!");
     }
+
+    private void Shutdown(){
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Windows: shutdown-Befehl
+            ExecuteCommand("shutdown /s /t 0");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // Linux: shutdown-Befehl
+            ExecuteCommand("shutdown -h now");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            // macOS: shutdown-Befehl
+            ExecuteCommand("shutdown -h now");
+        }
+        else
+        {
+            throw new PlatformNotSupportedException("Das Betriebssystem wird nicht unterstützt.");
+        }
+    }
+
+    private static void ExecuteCommand(string command)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "bash", // Für Windows: "cmd.exe"
+                Arguments = $"-c \"{command}\"", // Für Windows: "/c {command}"
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.Log($"Fehler beim Ausführen des Befehls: {ex.Message}");
+        }
+    }
+
 
     private void OnMouseMoved(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
