@@ -7,7 +7,7 @@ Open source multi-platform solution for advanced remote control and coordination
 ### PLG Connect Presenter
 
 - Linux
-- X11 Display Server
+- X11 Display Server (Wayland unsupported but seems to work)
 - `wmctrl` library
 - Local Network Connection
 
