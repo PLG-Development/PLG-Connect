@@ -228,6 +228,7 @@ public class PLGServer
     async Task OpenFileRoute(HttpContextBase ctx)
     {
         string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");
+        string? type = ctx.Request.Query.Elements.Get("type");
         if (fileEnding == null)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -236,11 +237,19 @@ public class PLGServer
             return;
         }
 
+        if (type == null){
+            // try getTypeByExtension()
+            // else: error "Missing type"
+        }
+
+
         string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
 
         string folderPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PLG-Connect"
+            "PLG Development"
+            "PLG Connect Presenter",
+            "data"
         );
         // Create folder if it doesn't exist
         if (!Directory.Exists(folderPath))

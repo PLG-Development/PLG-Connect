@@ -182,7 +182,7 @@ public class PLGClient
         Logger.Log($"Ran command at {Address}: {command}");
     }
 
-    public async Task OpenFile(string path)
+    public async Task OpenFile(string path, string type)
     {
         if (path == null){
             Logger.Log($"Error at {Address} while opening file: Path cannot be null or empty", Logger.LogType.Error);
@@ -193,7 +193,7 @@ public class PLGClient
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post);
+        await sendRequest($"/openFile?fileEnding={extension}&type={type}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
         Logger.Log($"Opened file at {Address}: {path}");
     }
 
