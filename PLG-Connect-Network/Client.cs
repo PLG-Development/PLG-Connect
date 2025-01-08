@@ -146,7 +146,8 @@ public class PLGClient
         catch (Exception e)
         {
             Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
-            throw new Exception($"Unknown error for {Address}: {e.Message}");
+            //throw new Exception($"Unknown error for {Address}: {e.Message}");
+            
         }
 
     }
