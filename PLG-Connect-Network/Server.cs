@@ -247,7 +247,7 @@ public class PLGServer
 
         string folderPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PLG Development"
+            "PLG Development",
             "PLG Connect Presenter",
             "data"
         );
