@@ -45,7 +45,6 @@
                     <ColumnDefinition Width="*" MinWidth="50" />
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="2*" MinWidth="600" />
-                    <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
 
                 <DockPanel Margin="0,0,4,0" LastChildFill="True">
@@ -53,13 +52,20 @@
                         Margin="0,0,0,4"
                         DockPanel.Dock="Top"
                         FontSize="18"
-                        Text="Devices" />
+                        Text="Connected Monitors" />
+                    <DockPanel DockPanel.Dock="Bottom">
+                        <Button
+                            Click="AddMonitorClick"
+                            Content="Add Monitor"
+                            DockPanel.Dock="Left" />
+                    </DockPanel>
                     <Border
+                        Margin="0,0,0,4"
                         BorderBrush="#545458"
                         BorderThickness="2"
                         CornerRadius="4"
-                        DockPanel.Dock="Bottom">
-                        <StackPanel x:Name="StpDevices" Orientation="Vertical" />
+                        DockPanel.Dock="Top">
+                        <StackPanel x:Name="UIDisplays" Orientation="Vertical" />
                     </Border>
                 </DockPanel>
 
@@ -77,86 +83,48 @@
                         Margin="0,0,0,4"
                         DockPanel.Dock="Top"
                         FontSize="18"
-                        Text="Connected Monitors" />
-                    <DockPanel DockPanel.Dock="Bottom">
-                        <Button
-                            x:Name="BtnAddNewMonitor"
-                            Click="AddMonitorClick"
-                            Content="Add Monitor"
-                            DockPanel.Dock="Left" />
-                    </DockPanel>
+                        Text="Monitor Controls" />
                     <Border
-                        x:Name="BrdMonitors"
-                        Margin="0,0,0,4"
+                        Padding="8"
                         BorderBrush="#545458"
                         BorderThickness="2"
                         CornerRadius="4"
                         DockPanel.Dock="Top">
-                        <StackPanel x:Name="UIDisplays" Orientation="Vertical" />
+                        <DockPanel>
+                            <StackPanel
+                                DockPanel.Dock="Top"
+                                Orientation="Vertical"
+                                Spacing="16">
+                                <Button Click="BtnToggleBlackscreenClick" Content="Toggle Blackscreen 👁" />
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Click="BtnPreviousClick" Content="← Previous" />
+                                    <Button Click="BtnNextClick" Content="Next →" />
+                                </StackPanel>
+
+                                <Button Click="BtnOpenFileClick" Content="Open File 📂" />
+
+                                <StackPanel Spacing="8">
+                                    <Button Click="BtnDisplayTextClick" Content="Display Text 📄" />
+                                    <TextBox x:Name="DisplayTextTextInput" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <Button Click="BtnRunCommandClick" Content="Run Command »" />
+                                    <TextBox x:Name="CommandInput" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel
+                                DockPanel.Dock="Bottom"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Button Content="Shutdown ⏻" />
+                                <Button Click="BtnDeleteClick" Content="Delete 🗑️" />
+                            </StackPanel>
+                        </DockPanel>
                     </Border>
                 </DockPanel>
-                <StackPanel Grid.Column="3" Margin="4,0,4,0">
-                    <Button
-                        x:Name="BtnAllPowerOn"
-                        Height="42"
-                        Margin="0,0,0,4"
-                        Padding="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Background="#542327"
-                        Click="BtnAllPowerOn_Click"
-                        Content="⏻"
-                        FontSize="22" />
-                    <Button
-                        x:Name="BtnAllNext"
-                        Height="42"
-                        Margin="0,0,0,4"
-                        Padding="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Background="#235427"
-                        Click="BtnAllNext_Click"
-                        Content="→"
-                        FontSize="26" />
-                    <Button
-                        x:Name="BtnAllPrevious"
-                        Height="42"
-                        Margin="0,0,0,4"
-                        Padding="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Background="#235427"
-                        Click="BtnAllPrevious_Click"
-                        Content="←"
-                        FontSize="26" />
-                    <Button
-                        x:Name="BtnAllSelect"
-                        Height="42"
-                        Margin="0,0,0,4"
-                        Padding="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Background="#232359"
-                        Click="BtnAllSelectAll_Click"
-                        Content="☑"
-                        FontSize="22" />
-                    <Button
-                        x:Name="BtnAllUnselect"
-                        Height="42"
-                        Margin="0,0,0,4"
-                        Padding="0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Background="#232359"
-                        Click="BtnAllUnselectAll_Click"
-                        Content="□"
-                        FontSize="22" />
-                </StackPanel>
             </Grid>
         </Grid>
     </Border>

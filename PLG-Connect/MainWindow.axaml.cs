@@ -147,41 +147,71 @@ partial class MainWindow : Window
         });
     }
 
-    private void BtnAllUnselectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnPreviousClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        foreach(Display display in SettingsManager.Settings.Displays){
-            display.IsChecked = false;
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.PreviousSlide();
+        }
+    }
+
+    private async void BtnNextClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.NextSlide();
+        }
+    }
+
+    private async void BtnRunCommandClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.RunCommand(CommandInput.Text);
+        }
+    }
+
+    private async void BtnDisplayTextClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.DisplayText(DisplayTextTextInput.Text);
+        }
+    }
+
+    private async void BtnToggleBlackscreenClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.ToggleBlackScreen();
+        }
+    }
+
+    private async void BtnDeleteClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var res = await MessageBox.Show(this, "Do you really want to delete this display? Deleting a display by clicking the delete-button will delete\nit permanentely and non-recoverable.", "Delete this display?", MessageBoxButton.YesNo);
+        if (res == MessageBoxResult.No) return;
+
+        var displaysToRemove = new List<Display>();
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (display.IsChecked) displaysToRemove.Add(display);
+        }
+        foreach (Display display in displaysToRemove)
+        {
+            SettingsManager.Settings.Displays.Remove(display);
         }
         RefreshGUI();
     }
-    private void BtnAllSelectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        foreach(Display display in SettingsManager.Settings.Displays){
-            display.IsChecked = true;
-        }
-        RefreshGUI();
-    }
 
-    private void BtnAllPrevious_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnOpenFileClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        foreach(Display display in SettingsManager.Settings.Displays){
-            if(display.IsChecked) display.PreviousSlide();
-        }
-    }
-
-    private void BtnAllNext_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        foreach(Display display in SettingsManager.Settings.Displays){
-            if(display.IsChecked) display.NextSlide();
-        }
-    }
-
-    private void BtnAllPowerOn_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        foreach(Display display in SettingsManager.Settings.Displays){
-            //display.Shutdown();
-            if(display.IsChecked) display.SendWakeOnLAN();
-        }
+        Console.WriteLine("Opening file dialog");
     }
 
     ///<summary>
@@ -195,193 +225,36 @@ partial class MainWindow : Window
 
         foreach (Display display in SettingsManager.Settings.Displays)
         {
-            Button openFileButton = new Button()
+            CheckBox selectedCheckBox = new()
             {
-                Margin = new Thickness(5),
-                Content = "Open File",
-            };
-            openFileButton.Click += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { new WndSelectFileType(display).Show(); };
-
-            Button toggleBlackscreenButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Toggle Blackscreen",
-            };
-            toggleBlackscreenButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.ToggleBlackScreen(); };
-
-            //
-            // Blackscreen Toggled Information
-            //
-            //if(Blackscreen toggled on){
-                toggleBlackscreenButton.Background = new SolidColorBrush(Color.FromRgb(86,35,39));
-            //} 
-
-
-
-
-            Button previousButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Previous",
-            };
-            previousButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.PreviousSlide(); };
-
-            Button nextButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Next",
-            };
-            nextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.NextSlide(); };
-
-
-            // Please move this Button to the context menu (via [...]-Button)
-            Button deleteDisplayButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Delete This Display",
-                // make button red
-                Background = new SolidColorBrush(Color.Parse("#FF3333"))
-            };
-            deleteDisplayButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                var res = await MessageBox.Show(this, "Do you really want to delete this display? Deleting a display by clicking the delete-button will delete\nit permanentely and non-recoverable.", "Delete this display?", MessageBoxButton.YesNo);
-                if (res == MessageBoxResult.Yes)
-                {
-                    SettingsManager.Settings.Displays.Remove(display);
-                    RefreshGUI();
-                }
-            };
-
-            TextBox displayTextTextInput = new TextBox(){
-                Margin=new Thickness(5,0,5,5),
-                Watermark="Visible Text"
-            };
-
-            TextBox runCommandTextInput = new TextBox(){
-                Margin=new Thickness(5,0,5,5),
-                Watermark="Enter a command..."
-            };
-
-            Button displayTextButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Display Text",
-            };
-            displayTextButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.DisplayText(displayTextTextInput.Text ?? ""); };
-
-            Button runCommandButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "Run Command (!)",
-                Background = new SolidColorBrush(Color.FromRgb(86,35,39)),
-            };
-            runCommandButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { await display.RunCommand(runCommandTextInput.Text ?? ""); };
-
-            StackPanel buttons = new StackPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Children = {
-                    toggleBlackscreenButton,
-                    displayTextButton,
-                    openFileButton,
-                    previousButton,
-                    nextButton,
-                    runCommandButton,
-                }
-            };
-
-            CheckBox cbSelected = new CheckBox(){
                 IsChecked = display.IsChecked,
                 Margin = new Thickness(5)
             };
-
-            cbSelected.Checked += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => {
-                display.IsChecked = true;
+            selectedCheckBox.IsCheckedChanged += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            {
+                display.IsChecked = selectedCheckBox.IsChecked ?? false;
             };
 
-            cbSelected.Unchecked += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => {
-                display.IsChecked = false;
-            };
-
-
-            StackPanel displayControllElementLeft = new StackPanel(){
+            StackPanel displayControllElementLeft = new()
+            {
                 Children = {
-                    cbSelected
+                    selectedCheckBox
                 }
             };
 
-            // Kontextmenü erstellen
-
-            var powerOnMenuItem = new MenuItem { Header = "Power On" };
-            powerOnMenuItem.Click += (sender, e) =>
+            StackPanel displayControlElementCenter = new()
             {
-                display.SendWakeOnLAN();
-            };
-
-            // Menüeintrag "Power Off"
-            var powerOffMenuItem = new MenuItem { Header = "Power Off" };
-            powerOffMenuItem.Click += (sender, e) =>
-            {
-                display.Shutdown();
-            };
-
-            Button moreOptionsButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "...",
-            };
-            var moreContextMenu = new ContextMenu
-            {
-                ItemsSource = new[] { powerOnMenuItem, powerOffMenuItem }, // ItemsSource verwenden
-                PlacementTarget = moreOptionsButton, // Button als Ziel setzen
-                PlacementMode = PlacementMode.Bottom // Position des Menüs
-            };
-
-            moreOptionsButton.ContextMenu = moreContextMenu;
-
-        
-
-            
-            moreOptionsButton.Click += (sender, e) =>
-            {
-                // Kontextmenü für den Button öffnen
-                moreContextMenu.Open(moreOptionsButton);
-            };
-
-            Button turnOffButton = new Button()
-            {
-                Margin = new Thickness(5),
-                Content = "off",
-            };
-            turnOffButton.Click += async (object? sender, Avalonia.Interactivity.RoutedEventArgs e) => { 
-                display.Shutdown();
-            };
-
-
-            StackPanel displayControllElementCenter = new StackPanel(){
                 Children = {
                     new Label() { Content = display.IPAddress + " - " + display.Name, Margin= new Thickness(5), FontWeight = FontWeight.Bold },
-                        buttons,
-                        displayTextTextInput,
-                        runCommandTextInput,
                 }
             };
-
-            StackPanel displayControllElementRight = new StackPanel(){
-                Children={
-                    moreOptionsButton,
-                    turnOffButton
-                }
-            };
-
 
             Grid displayControllElement = new Grid()
             {
                 Margin = new Thickness(5),
                 Children = {
                         displayControllElementLeft,
-                        displayControllElementCenter,
-                        displayControllElementRight,
+                        displayControlElementCenter,
                     },
                 Background = new SolidColorBrush(Color.Parse("#545457"))
             };
@@ -391,8 +264,7 @@ partial class MainWindow : Window
             displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
 
             Grid.SetColumn(displayControllElementLeft, 0);
-            Grid.SetColumn(displayControllElementCenter, 1);
-            Grid.SetColumn(displayControllElementRight, 2);
+            Grid.SetColumn(displayControlElementCenter, 1);
 
             UIDisplays.Children.Add(displayControllElement);
         }
