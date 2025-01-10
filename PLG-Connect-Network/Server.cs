@@ -224,7 +224,7 @@ public class PLGServer
     }
 
 
-    
+
     async Task OpenFileRoute(HttpContextBase ctx)
     {
         string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");
@@ -247,8 +247,8 @@ public class PLGServer
 
         string folderPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PLG Development",
-            "PLG Connect Presenter",
+            "PLG-Development",
+            "PLG-Connect-Presenter",
             "data"
         );
         // Create folder if it doesn't exist
