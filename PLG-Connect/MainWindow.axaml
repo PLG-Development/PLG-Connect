@@ -1,103 +1,161 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        d:DesignWidth="800"
-        d:DesignHeight="450"
-        WindowState="Maximized"
-        Icon="/Assets/logo-black.ico"
-        x:Class="PLG_Connect.MainWindow"
-        Title="PLG Connect">
+<Window
+    x:Class="PLG_Connect.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="PLG Connect"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Icon="/Assets/logo-black.ico"
+    WindowState="Maximized"
+    mc:Ignorable="d">
     <Border Padding="0">
         <Grid RowDefinitions="30,*">
-            <Menu Grid.Row="0"
-                  Background="#50888888">
+            <Menu Grid.Row="0" Background="#50888888">
                 <MenuItem Header="File">
-                    <MenuItem Header="Open..."
-                              Click="MenuLoadSettingsClick" />
-                    <MenuItem Header="Save as..."
-                              Click="MenuSaveSettingsAsClick" />
+                    <MenuItem Click="MenuLoadSettingsClick" Header="Open..." />
+                    <MenuItem Click="MenuSaveSettingsAsClick" Header="Save as..." />
                 </MenuItem>
                 <MenuItem Header="Edit">
-                    <MenuItem Header="Add Monitor"
-                              Click="MenuAddMonitorClick" />
-                    <MenuItem Header="Clear All Monitors"
-                              Click="MenuClearAllMonitorsClick" />
+                    <MenuItem Click="MenuAddMonitorClick" Header="Add Monitor" />
+                    <MenuItem Click="MenuClearAllMonitorsClick" Header="Clear All Monitors" />
                     <Separator />
                     <MenuItem Header="Clear all Devices" />
                     <Separator />
-                    <MenuItem Header="Preferences" IsEnabled="False"
-                              Click="MenuPreferencesClick" />
+                    <MenuItem
+                        Click="MenuPreferencesClick"
+                        Header="Preferences"
+                        IsEnabled="False" />
                 </MenuItem>
                 <MenuItem Header="Help">
-                    <MenuItem Header="Online Help"
-                              Click="MenuHelpOnlineClick" />
-                    <MenuItem Header="Github"
-                              Click="MenuGithubClick" />
-                    <MenuItem Header="Homepage"
-                              Click="MenuHomepageClick" />
+                    <MenuItem Click="MenuHelpOnlineClick" Header="Online Help" />
+                    <MenuItem Click="MenuGithubClick" Header="Github" />
+                    <MenuItem Click="MenuHomepageClick" Header="Homepage" />
                     <Separator />
                     <MenuItem Header="Check for Updates" />
                     <Separator />
                     <MenuItem Header="Info" />
                 </MenuItem>
             </Menu>
-            <Grid Margin="16"
-                  Grid.Row="1"
-                  >
+
+            <Grid Grid.Row="1" Margin="16">
+                <!--  Defines the width of the columns on the monitor  -->
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="50"></ColumnDefinition>
-                    <ColumnDefinition Width="5"></ColumnDefinition>
-                    <ColumnDefinition Width="2*" MinWidth="600"></ColumnDefinition>
-                    <ColumnDefinition Width="50"></ColumnDefinition>
+                    <ColumnDefinition Width="*" MinWidth="50" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="2*" MinWidth="600" />
+                    <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
-                <DockPanel LastChildFill="True"
-                           Margin="0,0,4,0">
-                    <TextBlock Text="Devices"
-                               FontSize="18"
-                               Margin="0,0,0,4"
-                               DockPanel.Dock="Top" />
-                    <Border DockPanel.Dock="Bottom"
-                            BorderThickness="2"
-                            CornerRadius="4"
-                            BorderBrush="#545458">
-                        <StackPanel x:Name="StpDevices"
-                                    Orientation="Vertical" />
+
+                <DockPanel Margin="0,0,4,0" LastChildFill="True">
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        DockPanel.Dock="Top"
+                        FontSize="18"
+                        Text="Devices" />
+                    <Border
+                        BorderBrush="#545458"
+                        BorderThickness="2"
+                        CornerRadius="4"
+                        DockPanel.Dock="Bottom">
+                        <StackPanel x:Name="StpDevices" Orientation="Vertical" />
                     </Border>
                 </DockPanel>
 
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+                <GridSplitter
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Stretch" />
 
-                <!-- Right Side -->
-                <DockPanel Grid.Column="2"
-                           LastChildFill="True" Margin="4,0,0,0">
-                    <TextBlock Text="Connected Monitors"
-                               FontSize="18"
-                               Margin="0,0,0,4"
-                               DockPanel.Dock="Top" />
+                <!--  Right Side  -->
+                <DockPanel
+                    Grid.Column="2"
+                    Margin="4,0,0,0"
+                    LastChildFill="True">
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        DockPanel.Dock="Top"
+                        FontSize="18"
+                        Text="Connected Monitors" />
                     <DockPanel DockPanel.Dock="Bottom">
-                        <Button DockPanel.Dock="Left"
-                                x:Name="BtnAddNewMonitor"
-                                Click="AddMonitorClick"
-                                Content="Add Monitor" />
+                        <Button
+                            x:Name="BtnAddNewMonitor"
+                            Click="AddMonitorClick"
+                            Content="Add Monitor"
+                            DockPanel.Dock="Left" />
                     </DockPanel>
-                    <Border Margin="0,0,0,4"
-                            DockPanel.Dock="Top"
-                            CornerRadius="4"
-                            BorderThickness="2"
-                            x:Name="BrdMonitors"
-                            BorderBrush="#545458">
-                        <StackPanel x:Name="UIDisplays"
-                                    Orientation="Vertical" />
+                    <Border
+                        x:Name="BrdMonitors"
+                        Margin="0,0,0,4"
+                        BorderBrush="#545458"
+                        BorderThickness="2"
+                        CornerRadius="4"
+                        DockPanel.Dock="Top">
+                        <StackPanel x:Name="UIDisplays" Orientation="Vertical" />
                     </Border>
                 </DockPanel>
-                <StackPanel Margin="4,0,4,0" Grid.Column="3">
-                    <Button Click="BtnAllPowerOn_Click" x:Name="BtnAllPowerOn" Content="⏻" Background="#542327" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
-                    <Button Click="BtnAllNext_Click" x:Name="BtnAllNext" Content="→" Background="#235427" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="26" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
-                    <Button Click="BtnAllPrevious_Click" x:Name="BtnAllPrevious" Content="←" Background="#235427" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="26" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
-                    <Button Click="BtnAllSelectAll_Click" x:Name="BtnAllSelect" Content="☑" Background="#232359" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
-                    <Button Click="BtnAllUnselectAll_Click" x:Name="BtnAllUnselect" Content="□" Background="#232359" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" HorizontalAlignment="Stretch" Height="42" Margin="0,0,0,4" />
+                <StackPanel Grid.Column="3" Margin="4,0,4,0">
+                    <Button
+                        x:Name="BtnAllPowerOn"
+                        Height="42"
+                        Margin="0,0,0,4"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#542327"
+                        Click="BtnAllPowerOn_Click"
+                        Content="⏻"
+                        FontSize="22" />
+                    <Button
+                        x:Name="BtnAllNext"
+                        Height="42"
+                        Margin="0,0,0,4"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#235427"
+                        Click="BtnAllNext_Click"
+                        Content="→"
+                        FontSize="26" />
+                    <Button
+                        x:Name="BtnAllPrevious"
+                        Height="42"
+                        Margin="0,0,0,4"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#235427"
+                        Click="BtnAllPrevious_Click"
+                        Content="←"
+                        FontSize="26" />
+                    <Button
+                        x:Name="BtnAllSelect"
+                        Height="42"
+                        Margin="0,0,0,4"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#232359"
+                        Click="BtnAllSelectAll_Click"
+                        Content="☑"
+                        FontSize="22" />
+                    <Button
+                        x:Name="BtnAllUnselect"
+                        Height="42"
+                        Margin="0,0,0,4"
+                        Padding="0"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Background="#232359"
+                        Click="BtnAllUnselectAll_Click"
+                        Content="□"
+                        FontSize="22" />
                 </StackPanel>
             </Grid>
         </Grid>
