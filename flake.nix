@@ -3,13 +3,16 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = {nixpkgs}: let
+  outputs = {
+    self,
+    nixpkgs,
+  }: let
     pkgs = nixpkgs.legacyPackages."x86_64-linux";
     lib = nixpkgs.lib;
   in {
     devShells."x86_64-linux".default = pkgs.mkShell {
       packages = with pkgs; [
-        dotnet-sdk_8
+        dotnet-sdk_9
         wmctrl
       ];
 
