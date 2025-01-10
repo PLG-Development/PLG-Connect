@@ -1,14 +1,9 @@
 {
-  description = "A very basic flake";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
+  outputs = {nixpkgs}: let
     pkgs = nixpkgs.legacyPackages."x86_64-linux";
     lib = nixpkgs.lib;
   in {
@@ -18,13 +13,14 @@
         wmctrl
       ];
 
-      LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
-        stdenv.cc.cc
-        fontconfig
-        xorg.libX11
-        xorg.libICE
-        xorg.libSM
-      ];
+      LD_LIBRARY_PATH = with pkgs;
+        lib.makeLibraryPath [
+          stdenv.cc.cc
+          fontconfig
+          xorg.libX11
+          xorg.libICE
+          xorg.libSM
+        ];
       NIX_LD = "${pkgs.stdenv.cc}/bin/ld";
     };
   };
