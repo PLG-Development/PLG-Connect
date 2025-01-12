@@ -225,48 +225,54 @@ partial class MainWindow : Window
 
         foreach (Display display in SettingsManager.Settings.Displays)
         {
-            CheckBox selectedCheckBox = new()
+            // FIXME: display the status controls on the right side of the display box
+
+            CheckBox checkbox = new() { IsChecked = display.IsChecked };
+            DockPanel.SetDock(checkbox, Dock.Left);
+            checkbox.IsCheckedChanged += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
             {
-                IsChecked = display.IsChecked,
-                Margin = new Thickness(5)
-            };
-            selectedCheckBox.IsCheckedChanged += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-            {
-                display.IsChecked = selectedCheckBox.IsChecked ?? false;
+                display.IsChecked = checkbox.IsChecked.Value;
+                SettingsManager.Save();
             };
 
-            StackPanel displayControllElementLeft = new()
+            StackPanel title = new()
             {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
                 Children = {
-                    selectedCheckBox
+                    new TextBlock() { Text = display.Name, FontWeight = FontWeight.Bold },
+                    new TextBlock() { Text = $" ({display.IPAddress})"}
+                }
+            };
+            DockPanel.SetDock(title, Dock.Left);
+
+            StackPanel status = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Spacing = 4,
+                Children = {
+                    new TextBlock() { Text = display.DisplayedType, FontStyle = FontStyle.Italic },
+                    new TextBlock() { Text = display.IsOn ? "🟢" : "🔴"},
+                    new TextBlock() { Text = display.HasBlackScreen ? "⬛" : "🟦"},
+                }
+            };
+            DockPanel.SetDock(status, Dock.Right);
+
+            Border uiDisplay = new()
+            {
+                BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(4, 4, 4, 4),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(8, 4, 8, 4),
+                Child = new DockPanel()
+                {
+                    Children = { checkbox, title, status }
                 }
             };
 
-            StackPanel displayControlElementCenter = new()
-            {
-                Children = {
-                    new Label() { Content = display.IPAddress + " - " + display.Name, Margin= new Thickness(5), FontWeight = FontWeight.Bold },
-                }
-            };
-
-            Grid displayControllElement = new Grid()
-            {
-                Margin = new Thickness(5),
-                Children = {
-                        displayControllElementLeft,
-                        displayControlElementCenter,
-                    },
-                Background = new SolidColorBrush(Color.Parse("#545457"))
-            };
-
-            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
-            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-            displayControllElement.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
-
-            Grid.SetColumn(displayControllElementLeft, 0);
-            Grid.SetColumn(displayControlElementCenter, 1);
-
-            UIDisplays.Children.Add(displayControllElement);
+            UIDisplays.Children.Add(uiDisplay);
         }
 
         Logger.Log("Successfully refreshed GUI");
