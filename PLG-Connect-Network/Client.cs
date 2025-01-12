@@ -15,7 +15,7 @@ public class PLGClient
     public string Password;
     static readonly HttpClient client = new HttpClient();
 
-    public PLGClient(string ipAddress, string macAddress = null, string password = "0", int port = 8080)
+    public PLGClient(string ipAddress, string? macAddress = null, string password = "0", int port = 8080)
     {
         Logger.Log("Welcome to PLG Connect Network Client!");
         Logger.Log("Starting up...");

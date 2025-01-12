@@ -77,7 +77,7 @@ partial class MainWindow : Window
         await MessageBox.Show(this, "Macht Nichts", "Macht Nichts");
     }
 
-    public void HandleKeyboardKeyDown(object sender, KeyEventArgs e)
+    public void HandleKeyboardKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.KeyModifiers == KeyModifiers.Control && e.KeyModifiers == KeyModifiers.Shift && e.Key == Key.S)
         {
