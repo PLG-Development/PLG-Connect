@@ -9,6 +9,7 @@ using Avalonia.Media;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Avalonia.Threading;
+using Avalonia.Platform.Storage;
 
 
 namespace PLG_Connect;
@@ -211,7 +212,25 @@ partial class MainWindow : Window
 
     private async void BtnOpenFileClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Console.WriteLine("Opening file dialog");
+        var topLevel = TopLevel.GetTopLevel(this);
+        var file = await topLevel!.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select File To Upload To Displays",
+            AllowMultiple = false,
+            FileTypeFilter = new[] {new FilePickerFileType("Images & Presentations") {
+                Patterns = new[] {"*.png", "*.jpg", "*.pptx"},
+            }}
+        });
+
+        if (file == null) return;
+
+        string filePath = file[0].Path.LocalPath;
+
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.OpenFile(filePath);
+        }
     }
 
     private async void BtnTogglePowerClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)

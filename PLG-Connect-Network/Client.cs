@@ -20,13 +20,14 @@ public class PLGClient
         Logger.Log("Welcome to PLG Connect Network Client!");
         Logger.Log("Starting up...");
         string macAddressPattern = @"^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$";
-        if(macAddress != null){
+        if (macAddress != null)
+        {
             if (!Regex.IsMatch(macAddress, macAddressPattern))
             {
                 throw new ArgumentException("Invalid MAC address format");
             }
         }
-        
+
 
 
         Password = password; Console.WriteLine(Password);
@@ -63,7 +64,7 @@ public class PLGClient
             Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
         }
-        
+
 
 
     }
@@ -135,7 +136,8 @@ public class PLGClient
     {
         try
         {
-            if (text == null || text.Length == 0){
+            if (text == null || text.Length == 0)
+            {
                 Logger.Log($"Error at {Address} while displaying text: Text cannot be null or empty", Logger.LogType.Error);
                 throw new ArgumentException("Text cannot be null or empty");
             }
@@ -147,7 +149,7 @@ public class PLGClient
         {
             Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
             //throw new Exception($"Unknown error for {Address}: {e.Message}");
-            
+
         }
 
     }
@@ -162,39 +164,44 @@ public class PLGClient
 
     public async Task Shutdown()
     {
-        try{
-             var message = new object();
+        try
+        {
+            var message = new object();
             await sendRequest("/shutdown", null, HttpMethod.Get);
             Logger.Log($"Powered off display at {Address}");
-        } catch (Exception ex){
+        }
+        catch (Exception ex)
+        {
             Logger.Log("Unknown error at Shutdown(): " + ex.Message);
         }
-       
+
     }
 
     public async Task RunCommand(string command)
     {
-        if (command == null || command.Length == 0){
+        if (command == null || command.Length == 0)
+        {
             Logger.Log($"Error at {Address} while running command: Command cannot be null or empty", Logger.LogType.Error);
             throw new ArgumentException("Command cannot be null or empty");
-        } 
+        }
         var message = new RunCommandMessage { Command = command };
         await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
         Logger.Log($"Ran command at {Address}: {command}");
     }
 
-    public async Task OpenFile(string path, string type)
+    public async Task OpenFile(string path)
     {
-        if (path == null){
+        if (path == null)
+        {
             Logger.Log($"Error at {Address} while opening file: Path cannot be null or empty", Logger.LogType.Error);
             throw new ArgumentException("Path cannot be null");
-             
-        } 
+
+        }
         string extension = Path.GetExtension(path).TrimStart('.').ToLower();
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendRequest($"/openFile?fileEnding={extension}&type={type}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
+        await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
         Logger.Log($"Opened file at {Address}: {path}");
     }
 

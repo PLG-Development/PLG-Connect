@@ -228,7 +228,6 @@ public class PLGServer
     async Task OpenFileRoute(HttpContextBase ctx)
     {
         string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");
-        string? type = ctx.Request.Query.Elements.Get("type");
         if (fileEnding == null)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -236,12 +235,6 @@ public class PLGServer
             await ctx.Response.Send("Missing fileEnding");
             return;
         }
-
-        if (type == null){
-            // try getTypeByExtension()
-            // else: error "Missing type"
-        }
-
 
         string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
 
@@ -263,7 +256,9 @@ public class PLGServer
         if (!File.Exists(filePath))
         {
             await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
-        } else {
+        }
+        else
+        {
             // ????
         }
 
