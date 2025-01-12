@@ -119,7 +119,7 @@
                                 DockPanel.Dock="Bottom"
                                 Orientation="Horizontal"
                                 Spacing="8">
-                                <Button Content="Shutdown ⏻" />
+                                <Button Click="BtnTogglePowerClick" Content="Shutdown / Startup ⏻" />
                                 <Button Click="BtnDeleteClick" Content="Delete 🗑️" />
                             </StackPanel>
                         </DockPanel>

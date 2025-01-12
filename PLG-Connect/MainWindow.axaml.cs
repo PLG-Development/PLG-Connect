@@ -214,6 +214,22 @@ partial class MainWindow : Window
         Console.WriteLine("Opening file dialog");
     }
 
+    private async void BtnTogglePowerClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            if (display.IsOn)
+            {
+                await display.Shutdown();
+            }
+            else
+            {
+                display.SendWakeOnLAN();
+            }
+        }
+    }
+
     ///<summary>
     /// Goes through every single instance of displays and mobile clients and updates their appearance in the window
     ///</summary>
