@@ -279,8 +279,6 @@ partial class MainWindow : Window
 
         foreach (Display display in SettingsManager.Settings.Displays)
         {
-            // FIXME: display the status controls on the right side of the display box
-
             CheckBox checkbox = new() { IsChecked = display.IsChecked };
             DockPanel.SetDock(checkbox, Dock.Left);
             checkbox.IsCheckedChanged += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
@@ -321,6 +319,7 @@ partial class MainWindow : Window
                 Padding = new Thickness(8, 4, 8, 4),
                 Child = new DockPanel()
                 {
+                    LastChildFill = false,
                     Children = { checkbox, title, status }
                 }
             };
