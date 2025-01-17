@@ -303,7 +303,17 @@ public class PLGServer
             return;
         }
 
-        await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+        try
+        {
+            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+        }
+        catch (Exception e)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            Logger.Log("Error while writing file: " + e.Message, Logger.LogType.Error);
+            await ctx.Response.Send("Error while writing file");
+            return;
+        }
 
         Logger.Log("Sent file");
     }
