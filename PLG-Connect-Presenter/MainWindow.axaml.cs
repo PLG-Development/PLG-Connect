@@ -269,7 +269,7 @@ public partial class MainWindow : Window
     }
 
 
-    private SlideControlType slideControlType = SlideControlType.ImageList;
+    private readonly SlideControlType slideControlType = SlideControlType.Presentation;
 
     private async void NextSlide()
     {
