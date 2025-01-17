@@ -284,37 +284,31 @@ public class PLGServer
 
     async Task SendFileRoute(HttpContextBase ctx)
     {
-        try
-        {
-            string? fileHash = ctx.Request.Query.Elements.Get("fileHash");
-            string? fileExtension = ctx.Request.Query.Elements.Get("fileExtension");
-            if (fileHash == null || fileExtension == null)
-            {
-                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                Logger.Log("Got wrong has file route request", Logger.LogType.Error);
-                await ctx.Response.Send("missing hash param");
-                return;
-            }
 
-            string filePath = Path.Combine(dataFolderPath, fileHash) + $".{fileExtension}";
-            if (File.Exists(filePath))
-            {
-                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                Logger.Log("File already exist", Logger.LogType.Error);
-                await ctx.Response.Send("file already exist");
-                return;
-            }
-
-            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
-            Logger.Log("Sent file");
-        }
-        catch (Exception e)
+        string? fileHash = ctx.Request.Query.Elements.Get("fileHash");
+        string? fileExtension = ctx.Request.Query.Elements.Get("fileExtension");
+        if (fileHash == null || fileExtension == null)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            Logger.Log("Error while sending file: " + e.Message, Logger.LogType.Error);
-            await ctx.Response.Send($"ERROR: {e.Message}");
+            Logger.Log("Got wrong has file route request", Logger.LogType.Error);
+            await ctx.Response.Send("missing hash param");
             return;
         }
+
+        string filePath = Path.Combine(dataFolderPath, fileHash) + $".{fileExtension}";
+        if (File.Exists(filePath))
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("File already exist", Logger.LogType.Error);
+            await ctx.Response.Send("file already exist");
+            return;
+        }
+
+        await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+
+        ctx.Response.StatusCode = (int)HttpStatusCode.OK;
+        await ctx.Response.Send("");
+        Logger.Log("Sent file");
     }
 
     async Task NextSlideRoute(HttpContextBase ctx)
