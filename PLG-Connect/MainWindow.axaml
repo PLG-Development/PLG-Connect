@@ -53,11 +53,15 @@
                         DockPanel.Dock="Top"
                         FontSize="18"
                         Text="Connected Monitors" />
-                    <DockPanel DockPanel.Dock="Bottom">
+                    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
                         <Button
                             Click="AddMonitorClick"
                             Content="Add Monitor"
                             DockPanel.Dock="Left" />
+                        <Button
+                            Click="BtnDeleteClick"
+                            Content="Delete 🗑️"
+                            DockPanel.Dock="Right" />
                     </DockPanel>
                     <Border
                         Margin="0,0,0,4"
@@ -121,7 +125,6 @@
                                 Spacing="8">
                                 <Button Click="BtnPowerOn" Content="Startup ⏻" />
                                 <Button Click="BtnPowerOff" Content="Shutdown ⏻" />
-                                <Button Click="BtnDeleteClick" Content="Delete 🗑️" />
                             </StackPanel>
                         </DockPanel>
                     </Border>
