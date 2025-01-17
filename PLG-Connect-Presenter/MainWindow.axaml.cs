@@ -27,12 +27,11 @@ public partial class MainWindow : Window
 {
 
     private System.Timers.Timer _mouseHideTimer;   // Timer, um den Mauszeiger auszublenden
-    private bool _mouseMoved;  
+    private bool _mouseMoved;
 
     public MainWindow()
     {
         InitializeComponent();
-        Logger.Log("Welcome to PLG Connect Presenter!");
         Logger.Log("Starting up...");
         LoadImage();
         TempInitialize();
@@ -45,7 +44,7 @@ public partial class MainWindow : Window
 
         // PointerMoved-Event registrieren
         this.AddHandler(InputElement.PointerMovedEvent, OnMouseMoved, handledEventsToo: true);
-    
+
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
@@ -72,7 +71,8 @@ public partial class MainWindow : Window
         Logger.Log("Successfully initialized GUI!");
     }
 
-    private void Shutdown(){
+    private void Shutdown()
+    {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // Windows: shutdown-Befehl
@@ -137,15 +137,20 @@ public partial class MainWindow : Window
         _mouseMoved = false;
     }
 
-    private void TempInitialize(){
+    private void TempInitialize()
+    {
         string folderPath = "Assets/";
         ImageList = new List<string>(Directory.GetFiles(folderPath));
     }
 
-    public void ToggleFullscreen(){
-        if(this.WindowState == WindowState.FullScreen){
+    public void ToggleFullscreen()
+    {
+        if (this.WindowState == WindowState.FullScreen)
+        {
             this.WindowState = WindowState.Maximized;
-        } else {
+        }
+        else
+        {
             this.WindowState = WindowState.FullScreen;
         }
     }
@@ -173,7 +178,6 @@ public partial class MainWindow : Window
         // wait until the latest window id changes -> app has started
         while (windowId == ownWindowId)
         {
-            Console.WriteLine("Waiting for window to open ...");
             await Task.Delay(1000);
             windowId = await WindowManager.getLatestWindowId();
         }
@@ -239,7 +243,8 @@ public partial class MainWindow : Window
 
     public void LoadImage()
     {
-        try{
+        try
+        {
             string theme = Application.Current!.ActualThemeVariant.ToString();
             if (theme == "Light")
             {
@@ -255,22 +260,27 @@ public partial class MainWindow : Window
             }
 
             Logger.Log("Loaded image");
-            
-        } catch (Exception ex){
+
+        }
+        catch (Exception ex)
+        {
             Logger.Log("Error while loading image: " + ex.Message, Logger.LogType.Error);
         }
     }
-        
-    
+
+
     private SlideControlType slideControlType = SlideControlType.ImageList;
 
     private async void NextSlide()
     {
-        
-        if(slideControlType == SlideControlType.ImageList){
+
+        if (slideControlType == SlideControlType.ImageList)
+        {
             SetWorkingMode("switcher");
             LoadNextImage();
-        } else if (slideControlType == SlideControlType.Presentation){
+        }
+        else if (slideControlType == SlideControlType.Presentation)
+        {
             SetWorkingMode("external");
             KeyControl(KeyCode.VcRight, "next");
         }
@@ -278,18 +288,23 @@ public partial class MainWindow : Window
 
     private async void PreviousSlide()
     {
-        
-        if(slideControlType == SlideControlType.ImageList){
+
+        if (slideControlType == SlideControlType.ImageList)
+        {
             SetWorkingMode("switcher");
             LoadPreviousImage();
-        } else if (slideControlType == SlideControlType.Presentation){
+        }
+        else if (slideControlType == SlideControlType.Presentation)
+        {
             SetWorkingMode("external");
             KeyControl(KeyCode.VcLeft, "previous");
         }
     }
 
-    private async void SetWorkingMode(string mode){ // enum is coming soon :joy:
-        switch(mode){
+    private async void SetWorkingMode(string mode)
+    { // enum is coming soon :joy:
+        switch (mode)
+        {
             case "switcher":
                 this.Show();
                 ImageViewer.IsVisible = true;
@@ -306,7 +321,8 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void KeyControl(KeyCode c, string description){
+    private async void KeyControl(KeyCode c, string description)
+    {
         EventSimulator simulator = new EventSimulator();
 
         simulator.SimulateKeyPress(c);
@@ -318,22 +334,28 @@ public partial class MainWindow : Window
     private List<string> ImageList = new List<string>();
     private int imageListPosition = 0;
 
-    private async void LoadNextImage(){
-        if(imageListPosition < ImageList.Count-1){
+    private async void LoadNextImage()
+    {
+        if (imageListPosition < ImageList.Count - 1)
+        {
             imageListPosition++;
             LoadImageFromList();
         }
     }
 
-    private async void LoadPreviousImage(){
-        if(imageListPosition > 0){
+    private async void LoadPreviousImage()
+    {
+        if (imageListPosition > 0)
+        {
             imageListPosition--;
             LoadImageFromList();
         }
     }
 
-    private async void LoadImageFromList(){
-        if(ImageList.Count >= imageListPosition+1){
+    private async void LoadImageFromList()
+    {
+        if (ImageList.Count >= imageListPosition + 1)
+        {
             //DisplayText(ImageList[imageListPosition]);
             ImageViewer.Source = new Bitmap(ImageList[imageListPosition]);
         }
@@ -358,12 +380,10 @@ public partial class MainWindow : Window
             {
                 case 0:
                     TbStartupInformation.Text = "Loading IP Address...\n\n";
-                    Logger.Log("Loading IP Adress...");
                     count++;
                     break;
                 case 1:
                     TbStartupInformation.Text = "Start Listening...\n\n";
-                    Logger.Log("Start listening...");
                     count++;
                     break;
                 case 2:
@@ -395,13 +415,14 @@ public partial class MainWindow : Window
         }
 
         Logger.Log("No MAC Address found - maybe there is no network interface available", Logger.LogType.Error);
-        
+
         throw new Exception("No MAC Address found");
     }
 }
 
 
-public enum SlideControlType{
+public enum SlideControlType
+{
     ImageList,
     Presentation,
     Textfile,

@@ -44,7 +44,6 @@ public class PLGClient
             }
         }
 
-        Password = password; Console.WriteLine(Password);
         Address = ipAddress + ":" + port;
         if (macAddress != null)
         {
@@ -61,66 +60,36 @@ public class PLGClient
 
     private async Task<ReceiveType> SendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
-        try
-        {
-            string json = JsonConvert.SerializeObject(message);
-            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            string response = await SendRequest(path, content, HttpMethod.Post);
+        string json = JsonConvert.SerializeObject(message);
+        StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+        string response = await SendRequest(path, content, HttpMethod.Post);
 
-            // only return an object if we got content from the server
-            if (response == null) return default!;
-            ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
-            Logger.Log($"Sent JSONPostRequest to {Address}{path}: {message}");
-            return result;
-        }
-        catch (Exception e)
-        {
-            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
-            throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
-        }
+        // only return an object if we got content from the server
+        if (response == null) return default!;
+        ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+        return result;
     }
 
     private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method)
     {
-        try
-        {
-            var request = new HttpRequestMessage(method, "http://" + Address + path);
-            request.Content = content;
+        var request = new HttpRequestMessage(method, "http://" + Address + path);
+        request.Content = content;
 
-            //Console.WriteLine(Password);
-            string header = "Bearer " + Password;
-            //Console.WriteLine(header);
-            // request.Content = new ByteArrayContent()
-            request.Headers.Add("Authorization", header);
+        string header = "Bearer " + Password;
+        request.Headers.Add("Authorization", header);
 
-            var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request);
 
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            return responseBody;
-        }
-        catch (HttpRequestException e)
-        {
-            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
-            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
-        }
-        catch (TaskCanceledException e)
-        {
-            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
-            throw new Exception($"Could not send post request to {Address}{path}: {e.Message}");
-        }
-        catch (Exception e)
-        {
-            Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
-            throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
-        }
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        return responseBody;
     }
 
     public void SendWakeOnLAN()
     {
         if (MacAddress == null)
         {
-            Console.WriteLine("No MAC configured :/");
+            Logger.Log("No MAC configured :/", Logger.LogType.Error);
             return;
         }
         PhysicalAddress.Parse(MacAddress).SendWol();
@@ -135,9 +104,8 @@ public class PLGClient
         {
             response = await SendRequest("/ping", null, HttpMethod.Get);
         }
-        catch (Exception ex)
+        catch
         {
-            Logger.Log($"Unknown error at {Address} while pinging: {ex.Message}", Logger.LogType.Error);
             return false;
         }
 

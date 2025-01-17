@@ -30,8 +30,6 @@ public class PLGServer
     private Webserver server;
     public PLGServer(string password = "0", int port = 8080)
     {
-        Logger.Log("Welcome to PLG Connect Network Server!");
-        Logger.Log("Starting up...");
         Password = password;
 
         if (!Directory.Exists(dataFolderPath))

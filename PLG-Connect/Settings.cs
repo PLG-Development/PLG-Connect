@@ -23,7 +23,6 @@ class SettingsManager
     /// </summary>
     public void Load(string? filePath = null)
     {
-        Logger.Log("Loading settings...");
         filePath ??= SettingsPath;
 
         if (!File.Exists(filePath))

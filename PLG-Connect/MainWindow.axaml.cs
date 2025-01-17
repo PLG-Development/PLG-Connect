@@ -21,14 +21,12 @@ partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        Logger.Log("Welcome to PLG Connect!");
         Logger.Log("Starting up...");
         this.KeyDown += HandleKeyboardKeyDown;
         Task.Run(async () => await Analytics.SendEvent("connect"));
 
         SettingsManager.Load();
         RefreshGUI();
-        Logger.Log("GUI initialized!");
     }
 
     // SaveAs
@@ -112,8 +110,6 @@ partial class MainWindow : Window
         {
             d.DisplayText("");
         }
-
-        Logger.Log("Cleared all monitors");
     }
 
     private void MenuPreferencesClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -367,7 +363,5 @@ partial class MainWindow : Window
 
             UIDisplays.Children.Add(uiDisplay);
         }
-
-        Logger.Log("Successfully refreshed GUI");
     }
 }
