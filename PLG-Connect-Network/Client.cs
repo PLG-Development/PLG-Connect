@@ -237,14 +237,14 @@ public class PLGClient
         byte[] fileData = File.ReadAllBytes(path);
         string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(fileData)).Replace("-", "").ToLower();
 
-        Console.WriteLine("checking file Hash");
+        Logger.Log("Checking file to open");
         bool displayHasFile = await HasFile(fileHash, fileExtension);
         if (!displayHasFile)
         {
-            Console.WriteLine("sending file");
+            Logger.Log("Sending file to open");
             await SendFile(fileData, fileExtension, fileHash);
         }
-        Console.WriteLine("opening file");
+        Logger.Log("Opened file");
         await JustOpenFile(fileHash, fileExtension);
 
         Logger.Log($"Opened file at {Address}: {path}");
