@@ -152,22 +152,14 @@ public class PLGClient
 
     public async Task DisplayText(string text)
     {
-        try
+        if (text == null || text.Length == 0)
         {
-            if (text == null || text.Length == 0)
-            {
-                Logger.Log($"Error at {Address} while displaying text: Text cannot be null or empty", Logger.LogType.Error);
-                throw new ArgumentException("Text cannot be null or empty");
-            }
-            var message = new DisplayTextMessage { Text = text };
-            await SendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
-            Logger.Log($"Displayed text to {Address}: {text}");
+            Logger.Log($"Error at {Address} while displaying text: Text cannot be null or empty", Logger.LogType.Error);
+            throw new ArgumentException("Text cannot be null or empty");
         }
-        catch (Exception e)
-        {
-            Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
-            //throw new Exception($"Unknown error for {Address}: {e.Message}");
-        }
+        var message = new DisplayTextMessage { Text = text };
+        await SendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
+        Logger.Log($"Displayed text to {Address}: {text}");
 
         LastSuccessfulAction = ClientAction.DisplayText;
     }
@@ -184,17 +176,9 @@ public class PLGClient
 
     public async Task Shutdown()
     {
-        try
-        {
-            var message = new object();
-            await SendRequest("/shutdown", null, HttpMethod.Get);
-            Logger.Log($"Powered off display at {Address}");
-            LastSuccessfulAction = ClientAction.Shutdown;
-        }
-        catch (Exception ex)
-        {
-            Logger.Log("Unknown error at Shutdown(): " + ex.Message);
-        }
+        await SendRequest("/shutdown", null, HttpMethod.Get);
+        Logger.Log($"Powered off display at {Address}");
+        LastSuccessfulAction = ClientAction.Shutdown;
     }
 
     public async Task RunCommand(string command)

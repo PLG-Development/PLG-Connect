@@ -153,7 +153,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.PreviousSlide();
+            try { await display.PreviousSlide(); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not go to previous slide on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not go to previous slide on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -164,7 +169,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.NextSlide();
+            try { await display.NextSlide(); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not go to next slide on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not go to next slide on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -175,7 +185,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.RunCommand(CommandInput.Text);
+            try { await display.RunCommand(CommandInput.Text); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not run command on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not run command on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -186,7 +201,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.DisplayText(DisplayTextTextInput.Text);
+            try { await display.DisplayText(DisplayTextTextInput.Text); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not display text on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not display text on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -197,7 +217,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.ToggleBlackScreen();
+            try { await display.ToggleBlackScreen(); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not toggle blackscreen on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not toggle blackscreen on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -241,7 +266,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.OpenFile(filePath);
+            try { await display.OpenFile(filePath); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not open file {filePath} on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not open file on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -252,7 +282,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            display.SendWakeOnLAN();
+            try { display.SendWakeOnLAN(); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not power on {display.Name}: {ex.Message}", Logger.LogType.Error);
+                MessageBox.Show(this, $"Could not power on {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
@@ -263,7 +298,12 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            await display.Shutdown();
+            try { await display.Shutdown(); }
+            catch (Exception ex)
+            {
+                Logger.Log($"Could not power of {display.Name}: {ex.Message}", Logger.LogType.Error);
+                await MessageBox.Show(this, $"Could not power of {display.Name}", "Error");
+            }
         }
 
         RefreshGUI();
