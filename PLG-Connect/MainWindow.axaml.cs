@@ -155,6 +155,8 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.PreviousSlide();
         }
+
+        RefreshGUI();
     }
 
     private async void BtnNextClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -164,6 +166,8 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.NextSlide();
         }
+
+        RefreshGUI();
     }
 
     private async void BtnRunCommandClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -173,6 +177,8 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.RunCommand(CommandInput.Text);
         }
+
+        RefreshGUI();
     }
 
     private async void BtnDisplayTextClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -182,6 +188,8 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.DisplayText(DisplayTextTextInput.Text);
         }
+
+        RefreshGUI();
     }
 
     private async void BtnToggleBlackscreenClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -191,6 +199,8 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.ToggleBlackScreen();
         }
+
+        RefreshGUI();
     }
 
     private async void BtnDeleteClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -207,6 +217,7 @@ partial class MainWindow : Window
         {
             SettingsManager.Settings.Displays.Remove(display);
         }
+
         RefreshGUI();
     }
 
@@ -231,22 +242,30 @@ partial class MainWindow : Window
             if (!display.IsChecked) continue;
             await display.OpenFile(filePath);
         }
+
+        RefreshGUI();
     }
 
-    private async void BtnTogglePowerClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void BtnPowerOn(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            if (display.IsOn)
-            {
-                await display.Shutdown();
-            }
-            else
-            {
-                display.SendWakeOnLAN();
-            }
+            display.SendWakeOnLAN();
         }
+
+        RefreshGUI();
+    }
+
+    private async void BtnPowerOff(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        foreach (Display display in SettingsManager.Settings.Displays)
+        {
+            if (!display.IsChecked) continue;
+            await display.Shutdown();
+        }
+
+        RefreshGUI();
     }
 
     ///<summary>
@@ -288,8 +307,7 @@ partial class MainWindow : Window
                 Spacing = 4,
                 Children = {
                     new TextBlock() { Text = display.DisplayedType, FontStyle = FontStyle.Italic },
-                    new TextBlock() { Text = display.IsOn ? "🟢" : "🔴"},
-                    new TextBlock() { Text = display.HasBlackScreen ? "⬛" : "🟦"},
+                    new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦"},
                 }
             };
             DockPanel.SetDock(status, Dock.Right);

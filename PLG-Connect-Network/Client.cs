@@ -13,7 +13,8 @@ public class PLGClient
     public string Address { get; set; }
     public string? MacAddress { get; set; }
     public string Password;
-    static readonly HttpClient client = new HttpClient();
+    static readonly HttpClient client = new();
+    public bool ShowsBlackScreen { get; set; }
 
     public PLGClient(string ipAddress, string? macAddress = null, string password = "0", int port = 8080)
     {
@@ -27,8 +28,6 @@ public class PLGClient
                 throw new ArgumentException("Invalid MAC address format");
             }
         }
-
-
 
         Password = password; Console.WriteLine(Password);
         Address = ipAddress + ":" + port;
@@ -45,13 +44,13 @@ public class PLGClient
 
     }
 
-    private async Task<ReceiveType> sendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
+    private async Task<ReceiveType> SendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
         try
         {
             string json = JsonConvert.SerializeObject(message);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            string response = await sendRequest(path, content, HttpMethod.Post);
+            string response = await SendRequest(path, content, HttpMethod.Post);
 
             // only return an object if we got content from the server
             if (response == null) return default!;
@@ -64,12 +63,9 @@ public class PLGClient
             Logger.Log($"Unknown error at {Address}{path} while sending JSONPostRequest: {e.Message}", Logger.LogType.Error);
             throw new Exception($"Unknown error at {Address}{path}: {e.Message}");
         }
-
-
-
     }
 
-    private async Task<string> sendRequest(string path, HttpContent? content, HttpMethod method)
+    private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method)
     {
         try
         {
@@ -118,17 +114,21 @@ public class PLGClient
 
     public async Task<bool> Ping()
     {
-        string response = "";
+        string response;
         try
         {
-            response = await sendRequest("/ping", null, HttpMethod.Get);
+            response = await SendRequest("/ping", null, HttpMethod.Get);
         }
         catch (Exception ex)
         {
             Logger.Log($"Unknown error at {Address} while pinging: {ex.Message}", Logger.LogType.Error);
             return false;
         }
-        if (response == "pong") return true;
+
+        if (response == "pong")
+        {
+            return true;
+        };
         return false;
     }
 
@@ -142,24 +142,23 @@ public class PLGClient
                 throw new ArgumentException("Text cannot be null or empty");
             }
             var message = new DisplayTextMessage { Text = text };
-            await sendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
+            await SendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
             Logger.Log($"Displayed text to {Address}: {text}");
         }
         catch (Exception e)
         {
             Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
             //throw new Exception($"Unknown error for {Address}: {e.Message}");
-
         }
-
     }
 
     public async Task<bool> ToggleBlackScreen()
     {
         var message = new object();
-        ToggleBlackScreenReturnMessage result = await sendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
+        ToggleBlackScreenReturnMessage result = await SendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
         Logger.Log($"Toggled blackscreen at {Address}");
-        return result.BlackScreenEnabled;
+        ShowsBlackScreen = result.BlackScreenEnabled;
+        return ShowsBlackScreen;
     }
 
     public async Task Shutdown()
@@ -167,14 +166,13 @@ public class PLGClient
         try
         {
             var message = new object();
-            await sendRequest("/shutdown", null, HttpMethod.Get);
+            await SendRequest("/shutdown", null, HttpMethod.Get);
             Logger.Log($"Powered off display at {Address}");
         }
         catch (Exception ex)
         {
             Logger.Log("Unknown error at Shutdown(): " + ex.Message);
         }
-
     }
 
     public async Task RunCommand(string command)
@@ -185,7 +183,7 @@ public class PLGClient
             throw new ArgumentException("Command cannot be null or empty");
         }
         var message = new RunCommandMessage { Command = command };
-        await sendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
+        await SendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
         Logger.Log($"Ran command at {Address}: {command}");
     }
 
@@ -201,21 +199,21 @@ public class PLGClient
 
         byte[] fileBytes = File.ReadAllBytes(path);
         ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await sendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
+        await SendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
         Logger.Log($"Opened file at {Address}: {path}");
     }
 
     public async Task NextSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object, object>("/nextSlide", message);
+        await SendJsonPostRequest<object, object>("/nextSlide", message);
         Logger.Log($"Invoked next slide at {Address}");
     }
 
     public async Task PreviousSlide()
     {
         var message = new object();
-        await sendJsonPostRequest<object, object>("/previousSlide", message);
+        await SendJsonPostRequest<object, object>("/previousSlide", message);
         Logger.Log($"Invoked previous slide at {Address}");
     }
 }
