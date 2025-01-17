@@ -7,6 +7,19 @@ using Newtonsoft.Json;
 
 namespace PLG_Connect_Network;
 
+public enum ClientAction
+{
+    Nothing,
+    DisplayText,
+    ToggleBlackScreen,
+    Shutdown,
+    RunCommand,
+    OpenFile,
+    NextSlide,
+    PreviousSlide,
+    WakeOnLAN,
+    Ping,
+}
 
 public class PLGClient
 {
@@ -15,6 +28,7 @@ public class PLGClient
     public string Password;
     static readonly HttpClient client = new();
     public bool ShowsBlackScreen { get; set; }
+    public ClientAction LastSuccessfulAction = ClientAction.Nothing;
 
     public PLGClient(string ipAddress, string? macAddress = null, string password = "0", int port = 8080)
     {
@@ -110,6 +124,7 @@ public class PLGClient
         }
         PhysicalAddress.Parse(MacAddress).SendWol();
         Logger.Log("WOL sent to " + MacAddress);
+        LastSuccessfulAction = ClientAction.WakeOnLAN;
     }
 
     public async Task<bool> Ping()
@@ -124,6 +139,8 @@ public class PLGClient
             Logger.Log($"Unknown error at {Address} while pinging: {ex.Message}", Logger.LogType.Error);
             return false;
         }
+
+        LastSuccessfulAction = ClientAction.Ping;
 
         if (response == "pong")
         {
@@ -150,6 +167,8 @@ public class PLGClient
             Logger.Log($"Unknown error at {Address} while displaying text: {e.Message}", Logger.LogType.Error);
             //throw new Exception($"Unknown error for {Address}: {e.Message}");
         }
+
+        LastSuccessfulAction = ClientAction.DisplayText;
     }
 
     public async Task<bool> ToggleBlackScreen()
@@ -158,6 +177,7 @@ public class PLGClient
         ToggleBlackScreenReturnMessage result = await SendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
         Logger.Log($"Toggled blackscreen at {Address}");
         ShowsBlackScreen = result.BlackScreenEnabled;
+        LastSuccessfulAction = ClientAction.ToggleBlackScreen;
         return ShowsBlackScreen;
     }
 
@@ -168,6 +188,7 @@ public class PLGClient
             var message = new object();
             await SendRequest("/shutdown", null, HttpMethod.Get);
             Logger.Log($"Powered off display at {Address}");
+            LastSuccessfulAction = ClientAction.Shutdown;
         }
         catch (Exception ex)
         {
@@ -185,6 +206,7 @@ public class PLGClient
         var message = new RunCommandMessage { Command = command };
         await SendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
         Logger.Log($"Ran command at {Address}: {command}");
+        LastSuccessfulAction = ClientAction.RunCommand;
     }
 
     public async Task OpenFile(string path)
@@ -201,6 +223,7 @@ public class PLGClient
         ByteArrayContent content = new ByteArrayContent(fileBytes);
         await SendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
         Logger.Log($"Opened file at {Address}: {path}");
+        LastSuccessfulAction = ClientAction.OpenFile;
     }
 
     public async Task NextSlide()
@@ -208,6 +231,7 @@ public class PLGClient
         var message = new object();
         await SendJsonPostRequest<object, object>("/nextSlide", message);
         Logger.Log($"Invoked next slide at {Address}");
+        LastSuccessfulAction = ClientAction.NextSlide;
     }
 
     public async Task PreviousSlide()
@@ -215,5 +239,6 @@ public class PLGClient
         var message = new object();
         await SendJsonPostRequest<object, object>("/previousSlide", message);
         Logger.Log($"Invoked previous slide at {Address}");
+        LastSuccessfulAction = ClientAction.PreviousSlide;
     }
 }

@@ -304,7 +304,7 @@ partial class MainWindow : Window
                 VerticalAlignment = VerticalAlignment.Center,
                 Spacing = 4,
                 Children = {
-                    new TextBlock() { Text = display.DisplayedType, FontStyle = FontStyle.Italic },
+                    new TextBlock() { Text = display.LastSuccessfulAction.ToString(), FontStyle = FontStyle.Italic },
                     new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦"},
                 }
             };
