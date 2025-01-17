@@ -229,7 +229,8 @@ partial class MainWindow : Window
             Title = "Select File To Upload To Displays",
             AllowMultiple = false,
             FileTypeFilter = new[] {new FilePickerFileType("Images & Presentations") {
-                Patterns = new[] {"*.png", "*.jpg", "*.pptx"},
+                // Patterns = new[] {"*.png", "*.jpg", "*.pptx"},
+                Patterns = new[] {"*"},
             }}
         });
 

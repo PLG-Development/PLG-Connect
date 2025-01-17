@@ -3,6 +3,7 @@ using System.Net.NetworkInformation;
 using System.Net;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
 
 
 namespace PLG_Connect_Network;
@@ -209,19 +210,43 @@ public class PLGClient
         LastSuccessfulAction = ClientAction.RunCommand;
     }
 
+    private async Task SendFile(byte[] data, string fileExtension, string fileHash)
+    {
+        ByteArrayContent content = new(data);
+        await SendRequest($"/sendFile?fileExtension={fileExtension}&fileHash={fileHash}", content, HttpMethod.Post);
+    }
+    private async Task JustOpenFile(string fileHash, string fileExtension)
+    {
+        var message = new object();
+        await SendJsonPostRequest<object, object>($"/openFile?fileExtension={fileExtension}&fileHash={fileHash}", message);
+    }
+    private async Task<bool> HasFile(string fileHash, string fileExtension)
+    {
+        var message = new object();
+        HasFileResponse response = await SendJsonPostRequest<object, HasFileResponse>($"/hasFile?fileExtension={fileExtension}&fileHash={fileHash}", message);
+        return response.HasFile;
+    }
     public async Task OpenFile(string path)
     {
-        if (path == null)
+        if (!File.Exists(path))
         {
-            Logger.Log($"Error at {Address} while opening file: Path cannot be null or empty", Logger.LogType.Error);
-            throw new ArgumentException("Path cannot be null");
-
+            throw new ArgumentException("Incorrect file path");
         }
-        string extension = Path.GetExtension(path).TrimStart('.').ToLower();
 
-        byte[] fileBytes = File.ReadAllBytes(path);
-        ByteArrayContent content = new ByteArrayContent(fileBytes);
-        await SendRequest($"/openFile?fileEnding={extension}", content, HttpMethod.Post); // type is needed to examine the controlling surface wether its internal or external
+        string fileExtension = Path.GetExtension(path).TrimStart('.').ToLower();
+        byte[] fileData = File.ReadAllBytes(path);
+        string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(fileData)).Replace("-", "").ToLower();
+
+        Console.WriteLine("checking file Hash");
+        bool displayHasFile = await HasFile(fileHash, fileExtension);
+        if (!displayHasFile)
+        {
+            Console.WriteLine("sending file");
+            await SendFile(fileData, fileExtension, fileHash);
+        }
+        Console.WriteLine("opening file");
+        await JustOpenFile(fileHash, fileExtension);
+
         Logger.Log($"Opened file at {Address}: {path}");
         LastSuccessfulAction = ClientAction.OpenFile;
     }

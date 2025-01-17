@@ -2,12 +2,7 @@ using System.Net;
 using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
-using System.Text.Json;
-using System.Security.Cryptography;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System;
 
 
 namespace PLG_Connect_Network;
@@ -25,6 +20,12 @@ public class PLGServer
     public List<Action<string>> openFileHandlers = new List<Action<string>>();
     public List<Action> shutdownHandlers = new List<Action>();
     public string Password;
+    private string dataFolderPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "PLG-Development",
+        "PLG-Connect-Presenter",
+        "data"
+    );
 
     private Webserver server;
     public PLGServer(string password = "0", int port = 8080)
@@ -32,6 +33,11 @@ public class PLGServer
         Logger.Log("Welcome to PLG Connect Network Server!");
         Logger.Log("Starting up...");
         Password = password;
+
+        if (!Directory.Exists(dataFolderPath))
+        {
+            Directory.CreateDirectory(dataFolderPath);
+        }
 
         WebserverSettings settings = new()
         {
@@ -48,8 +54,11 @@ public class PLGServer
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/runCommand", RunCommandRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/nextSlide", NextSlideRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/previousSlide", PreviousSlideRoute);
-        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openFile", OpenFileRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.GET, "/shutdown", ShutdownRoute);
+
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openFile", OpenFileRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/sendFile", SendFileRoute);
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/hasFile", HasFileRoute);
 
         server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
@@ -223,43 +232,45 @@ public class PLGServer
         Logger.Log("Bye bye display: powered off display");
     }
 
+    async Task HasFileRoute(HttpContextBase ctx)
+    {
+        string? fileHash = ctx.Request.Query.Elements.Get("fileHash");
+        string? fileExtension = ctx.Request.Query.Elements.Get("fileExtension");
+        if (fileHash == null || fileExtension == null)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("Got wrong has file route request", Logger.LogType.Error);
+            await ctx.Response.Send("missing hash param");
+            return;
+        }
+        string filePath = Path.Combine(dataFolderPath, fileHash) + $".{fileExtension}";
 
+        bool fileExists = File.Exists(filePath);
+        Logger.Log($"File exists: {fileExists}");
+
+        ctx.Response.StatusCode = (int)HttpStatusCode.OK;
+        await ctx.Response.Send(JsonConvert.SerializeObject(new HasFileResponse { HasFile = fileExists }));
+    }
 
     async Task OpenFileRoute(HttpContextBase ctx)
     {
-        string? fileEnding = ctx.Request.Query.Elements.Get("fileEnding");
-        if (fileEnding == null)
+        string? fileHash = ctx.Request.Query.Elements.Get("fileHash");
+        string? fileExtension = ctx.Request.Query.Elements.Get("fileExtension");
+        if (fileHash == null || fileExtension == null)
         {
             ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            Logger.Log("Error while opening file: No file ending found", Logger.LogType.Error);
-            await ctx.Response.Send("Missing fileEnding");
+            Logger.Log("Got wrong has file route request", Logger.LogType.Error);
+            await ctx.Response.Send("missing hash param");
             return;
         }
 
-        string fileHash = BitConverter.ToString(SHA1.Create().ComputeHash(ctx.Request.DataAsBytes)).Replace("-", "").ToLower();
-
-        string folderPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PLG-Development",
-            "PLG-Connect-Presenter",
-            "data"
-        );
-        // Create folder if it doesn't exist
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-
-        string filePath = Path.Combine(folderPath, fileHash) + $".{fileEnding}";
-
-        // Only donwload file if it doesn't exist - NONSENS, hier muss noch was hin, irgendne Rückmeldung. Könnte ja ne neue Version sein
+        string filePath = Path.Combine(dataFolderPath, fileHash) + $".{fileExtension}";
         if (!File.Exists(filePath))
         {
-            await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
-        }
-        else
-        {
-            // ????
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("File does not exist", Logger.LogType.Error);
+            await ctx.Response.Send("file does not exist");
+            return;
         }
 
         foreach (var handler in openFileHandlers)
@@ -269,6 +280,32 @@ public class PLGServer
 
         await ctx.Response.Send("");
         Logger.Log("Opened file");
+    }
+
+    async Task SendFileRoute(HttpContextBase ctx)
+    {
+        string? fileHash = ctx.Request.Query.Elements.Get("fileHash");
+        string? fileExtension = ctx.Request.Query.Elements.Get("fileExtension");
+        if (fileHash == null || fileExtension == null)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("Got wrong has file route request", Logger.LogType.Error);
+            await ctx.Response.Send("missing hash param");
+            return;
+        }
+
+        string filePath = Path.Combine(dataFolderPath, fileHash) + $".{fileExtension}";
+        if (File.Exists(filePath))
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            Logger.Log("File already exist", Logger.LogType.Error);
+            await ctx.Response.Send("file already exist");
+            return;
+        }
+
+        await File.WriteAllBytesAsync(filePath, ctx.Request.DataAsBytes);
+
+        Logger.Log("Sent file");
     }
 
     async Task NextSlideRoute(HttpContextBase ctx)
