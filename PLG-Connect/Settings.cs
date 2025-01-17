@@ -41,7 +41,6 @@ class SettingsManager
     /// </summary>
     public void Save(string? filePath = null)
     {
-        Logger.Log("Saving settings...");
         filePath ??= SettingsPath;
         string json = JsonConvert.SerializeObject(Settings);
         File.WriteAllText(filePath, json);

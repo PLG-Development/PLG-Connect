@@ -14,9 +14,7 @@ using PLG_Connect_Network;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Threading;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using SharpHook;
 using SharpHook.Native;
 
 
@@ -126,7 +124,6 @@ public partial class MainWindow : Window
 
     private void OnMouseHideTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        Logger.Log("Hiding cursor...");
         if (_mouseMoved)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
@@ -282,7 +279,7 @@ public partial class MainWindow : Window
         else if (slideControlType == SlideControlType.Presentation)
         {
             SetWorkingMode("external");
-            KeyControl(KeyCode.VcRight, "next");
+            await WindowManager.KeyControl(KeyCode.VcRight);
         }
     }
 
@@ -297,7 +294,7 @@ public partial class MainWindow : Window
         else if (slideControlType == SlideControlType.Presentation)
         {
             SetWorkingMode("external");
-            KeyControl(KeyCode.VcLeft, "previous");
+            await WindowManager.KeyControl(KeyCode.VcLeft);
         }
     }
 
@@ -319,16 +316,6 @@ public partial class MainWindow : Window
             default:
                 break;
         }
-    }
-
-    private async void KeyControl(KeyCode c, string description)
-    {
-        EventSimulator simulator = new EventSimulator();
-
-        simulator.SimulateKeyPress(c);
-        await Task.Delay(100);
-        simulator.SimulateKeyRelease(c);
-        Logger.Log($"Went to {description} slide");
     }
 
     private List<string> ImageList = new List<string>();
