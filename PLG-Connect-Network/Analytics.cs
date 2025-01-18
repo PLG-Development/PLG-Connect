@@ -8,13 +8,12 @@ public static class Analytics
         var request = new HttpRequestMessage(HttpMethod.Get, "https://" + "analytics.ugolis.de/track/plg-connect?action=" + action);
         var client = new HttpClient();
 
-        try {
+        try
+        {
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
             // No logging because ANALYTICS SPYWARE :eyes:
-        } catch (Exception e) {
-            // Console.WriteLine($"Error sending analytics: {e.Message}");
-            // ...
         }
+        catch (Exception) { }
     }
 }

@@ -45,7 +45,11 @@ public partial class MainWindow : Window
 
         // PointerMoved-Event registrieren
         this.AddHandler(InputElement.PointerMovedEvent, OnMouseMoved, handledEventsToo: true);
+<<<<<<< HEAD
         _mouseHideTimer.Start();
+=======
+
+>>>>>>> a1fcbcb59089d7d03107ac887a46b84d230de00e
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
@@ -72,7 +76,8 @@ public partial class MainWindow : Window
         Logger.Log("Successfully initialized GUI!");
     }
 
-    private void Shutdown(){
+    private void Shutdown()
+    {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             // Windows: shutdown-Befehl
@@ -126,7 +131,6 @@ public partial class MainWindow : Window
 
     private void OnMouseHideTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        Logger.Log("Hiding cursor...");
         if (_mouseMoved)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
@@ -137,15 +141,20 @@ public partial class MainWindow : Window
         _mouseMoved = false;
     }
 
-    private void TempInitialize(){
+    private void TempInitialize()
+    {
         string folderPath = "Assets/";
         ImageList = new List<string>(Directory.GetFiles(folderPath));
     }
 
-    public void ToggleFullscreen(){
-        if(this.WindowState == WindowState.FullScreen){
+    public void ToggleFullscreen()
+    {
+        if (this.WindowState == WindowState.FullScreen)
+        {
             this.WindowState = WindowState.Maximized;
-        } else {
+        }
+        else
+        {
             this.WindowState = WindowState.FullScreen;
         }
     }
@@ -173,7 +182,6 @@ public partial class MainWindow : Window
         // wait until the latest window id changes -> app has started
         while (windowId == ownWindowId)
         {
-            Console.WriteLine("Waiting for window to open ...");
             await Task.Delay(1000);
             windowId = await WindowManager.getLatestWindowId();
         }

@@ -22,3 +22,8 @@ public class ToggleBlackScreenReturnMessage
 {
     public required bool BlackScreenEnabled { get; set; }
 }
+
+public class HasFileResponse
+{
+    public required bool HasFile { get; set; }
+}

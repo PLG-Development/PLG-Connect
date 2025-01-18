@@ -49,7 +49,6 @@ public partial class WndEnterPassword : Window
         else
         {
             Logger.Log("Wrong password...");
-            Console.WriteLine("Passwort falsch");
             _passwordBox.Clear();
         }
     }
