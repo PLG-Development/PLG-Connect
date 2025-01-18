@@ -41,11 +41,11 @@ public partial class MainWindow : Window
         _mouseHideTimer.Elapsed += OnMouseHideTimerElapsed;
         _mouseHideTimer.AutoReset = false;
 
-        _mouseHideTimer.Start();
+        
 
         // PointerMoved-Event registrieren
         this.AddHandler(InputElement.PointerMovedEvent, OnMouseMoved, handledEventsToo: true);
-    
+        _mouseHideTimer.Start();
 
         Task.Run(async () => await Analytics.SendEvent("presenter"));
 
