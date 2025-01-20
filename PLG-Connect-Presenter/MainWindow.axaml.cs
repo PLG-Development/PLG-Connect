@@ -16,6 +16,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using System.Threading.Tasks;
 using SharpHook.Native;
+using WatsonWebserver.Core;
 
 
 namespace PLG_Connect_Presenter;
@@ -26,6 +27,9 @@ public partial class MainWindow : Window
 
     private System.Timers.Timer _mouseHideTimer;   // Timer, um den Mauszeiger auszublenden
     private bool _mouseMoved;
+    Process fileProgram;
+    private bool fileWindowOpen = false;
+    private string? fileWindowId;
 
     public MainWindow()
     {
@@ -38,8 +42,6 @@ public partial class MainWindow : Window
         _mouseHideTimer = new System.Timers.Timer(1000);
         _mouseHideTimer.Elapsed += OnMouseHideTimerElapsed;
         _mouseHideTimer.AutoReset = false;
-
-        
 
         // PointerMoved-Event registrieren
         this.AddHandler(InputElement.PointerMovedEvent, OnMouseMoved, handledEventsToo: true);
@@ -54,8 +56,6 @@ public partial class MainWindow : Window
             ToggleFullscreen();
         }, handledEventsToo: true);
 
-
-
         PLGServer server = new PLGServer();
 
         server.displayTextHandlers.Add(
@@ -63,10 +63,11 @@ public partial class MainWindow : Window
         );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
-        server.openFileHandlers.Add((string path) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path)));
+        server.openFileHandlers.Add((string path, string fileExtension) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path, fileExtension)));
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
         server.shutdownHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(Shutdown));
+        server.beforeRequestHandlers.Add((HttpContextBase ctx) => Dispatcher.UIThread.InvokeAsync(() => BeforeRequest(ctx)));
         Logger.Log("Successfully initialized GUI!");
     }
 
@@ -153,34 +154,70 @@ public partial class MainWindow : Window
         }
     }
 
-
-    private bool fileWindowOpen = false;
-    private string? fileWindowId;
-    async private void OpenFile(string path)
+    private async void BeforeRequest(HttpContextBase ctx)
     {
-        TextContent.IsVisible = false;
-
-        // Open file with default application
-        Process program = new Process
+        if (fileWindowOpen && !ctx.Request.Url.Full.Contains("toggleBlackScreen"))
         {
-            StartInfo = new ProcessStartInfo
+            if (fileWindowId != null)
             {
-                FileName = "xdg-open",
-                Arguments = path,
-                UseShellExecute = true
+                await WindowManager.CloseWindow(fileWindowId);
+                Logger.Log("Closed file window normaly");
+                fileWindowId = null;
             }
-        };
-        program.Start();
+            if (!fileProgram.HasExited)
+            {
+                fileProgram.Kill(entireProcessTree: true);
+                Logger.Log("Closed file window process");
+            }
 
-        string windowId = ownWindowId!;
+            fileWindowOpen = false;
+        }
+    }
+
+    async private void OpenFile(string path, string fileExtension)
+    {
+        if (fileExtension == "pptx")
+        {
+            OpenPresentationFile(path);
+        }
+        else
+        {
+            await OpenSimpleFile(path);
+        }
+
+        fileWindowOpen = true;
+    }
+
+    private void OpenPresentationFile(string path)
+    {
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = "soffice",
+            Arguments = path,
+            UseShellExecute = true
+        };
+        fileProgram = Process.Start(startInfo)!;
+    }
+
+    private async Task OpenSimpleFile(string path)
+    {
+        // Open file with its default application
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = "xdg-open",
+            Arguments = path,
+            UseShellExecute = true
+        };
+        fileProgram = Process.Start(startInfo)!;
+
         // wait until the latest window id changes -> app has started
+        string windowId = ownWindowId!;
         while (windowId == ownWindowId)
         {
             await Task.Delay(1000);
             windowId = await WindowManager.getLatestWindowId();
         }
         fileWindowId = windowId;
-        fileWindowOpen = true;
 
         // focus the file window only when the black screen is not shown
         // if the black screen is shown focus the main window so that the user
@@ -224,15 +261,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void DisplayText(string content)
+    private void DisplayText(string content)
     {
         SetWorkingMode("text");
-        // close additional window if it was opened
-        if (fileWindowOpen)
-        {
-            await WindowManager.CloseWindow(fileWindowId!);
-            fileWindowOpen = false;
-        }
 
         TextContent.IsVisible = true;
         TextContent.Content = content;

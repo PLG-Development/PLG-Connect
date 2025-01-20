@@ -16,8 +16,8 @@ public class PLGServer
     public List<Action> nextSlideHandlers = new List<Action>();
     public List<Action> previousSlideHandlers = new List<Action>();
     public List<Action> firstRequestHandlers = new List<Action>();
-    public List<Action> beforeRequestHandlers = new List<Action>();
-    public List<Action<string>> openFileHandlers = new List<Action<string>>();
+    public List<Action<HttpContextBase>> beforeRequestHandlers = new List<Action<HttpContextBase>>();
+    public List<Action<string, string>> openFileHandlers = new List<Action<string, string>>();
     public List<Action> shutdownHandlers = new List<Action>();
     public string Password;
     private string dataFolderPath = Path.Combine(
@@ -77,7 +77,7 @@ public class PLGServer
     {
         foreach (var handler in beforeRequestHandlers)
         {
-            handler();
+            handler(ctx);
         }
 
         if (firstRequestHappend) { return Task.CompletedTask; }
@@ -107,7 +107,6 @@ public class PLGServer
             await ctx.Response.Send("Unauthorized");
             return false;
         }
-        Logger.Log("Successfully Authenticated!");
         return true;
     }
 
@@ -178,7 +177,6 @@ public class PLGServer
             handler(result.Text);
         }
         await ctx.Response.Send("");
-        Logger.Log("Displayed text: " + result);
     }
 
     // note: this function handels the black screen state paralel to the actual presenter logic which duplicats the code and is not ideal
@@ -273,7 +271,7 @@ public class PLGServer
 
         foreach (var handler in openFileHandlers)
         {
-            handler(filePath);
+            handler(filePath, fileExtension);
         }
 
         await ctx.Response.Send("");
