@@ -193,7 +193,7 @@ public partial class MainWindow : Window
         ProcessStartInfo startInfo = new()
         {
             FileName = "soffice",
-            Arguments = path,
+            Arguments = "--show " + path,
             UseShellExecute = true
         };
         fileProgram = Process.Start(startInfo)!;
