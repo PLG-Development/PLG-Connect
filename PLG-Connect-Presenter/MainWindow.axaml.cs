@@ -266,7 +266,7 @@ public partial class MainWindow : Window
         SetWorkingMode("text");
 
         TextContent.IsVisible = true;
-        TextContent.Content = content;
+        TextContent.Content = content.Replace("\\n", "\n");
         Logger.Log("Displayed text: " + content);
     }
 
