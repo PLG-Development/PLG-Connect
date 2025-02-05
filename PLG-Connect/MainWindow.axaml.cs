@@ -364,4 +364,19 @@ partial class MainWindow : Window
             UIDisplays.Children.Add(uiDisplay);
         }
     }
+
+    public void BtnSelectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        foreach(Display d in SettingsManager.Settings.Displays){
+            d.IsChecked = true;
+        }
+
+        RefreshGUI();
+    }
+    public void BtnSelectNone_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        foreach(Display d in SettingsManager.Settings.Displays){
+            d.IsChecked = false;
+        }
+
+        RefreshGUI();
+    }
 }

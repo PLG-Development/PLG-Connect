@@ -59,6 +59,14 @@
                             Content="Add Monitor ➕"
                             DockPanel.Dock="Left" />
                         <Button
+                            Click="BtnSelectAll_Click"
+                            Content="Select All"
+                            DockPanel.Dock="Left" />
+                        <Button
+                            Click="BtnSelectNone_Click"
+                            Content="Select None"
+                            DockPanel.Dock="Left" />
+                        <Button
                             Click="BtnDeleteClick"
                             Content="Delete 🗑️"
                             DockPanel.Dock="Right" />
