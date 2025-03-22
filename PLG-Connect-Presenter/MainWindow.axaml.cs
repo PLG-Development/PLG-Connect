@@ -152,6 +152,7 @@ public partial class MainWindow : Window
         {
             this.WindowState = WindowState.FullScreen;
         }
+        currerntWindowState = this.WindowState;
     }
 
     private async void BeforeRequest(HttpContextBase ctx)
@@ -330,16 +331,20 @@ public partial class MainWindow : Window
         }
     }
 
+    public WindowState currerntWindowState = WindowState.Normal;
+
     private async void SetWorkingMode(string mode)
     { // enum is coming soon :joy:
         switch (mode)
         {
             case "switcher":
                 this.Show();
+                this.WindowState = currerntWindowState;
                 ImageViewer.IsVisible = true;
                 break;
             case "text":
                 this.Show();
+                this.WindowState = currerntWindowState;
                 ImageViewer.IsVisible = false;
                 break;
             case "external":
