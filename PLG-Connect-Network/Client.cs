@@ -20,6 +20,7 @@ public enum ClientAction
     PreviousSlide,
     WakeOnLAN,
     Ping,
+    Plugin,
 }
 
 public class PLGClient
@@ -217,5 +218,18 @@ public class PLGClient
         await SendJsonPostRequest<object, object>("/previousSlide", message);
         Logger.Log($"Invoked previous slide at {Address}");
         LastSuccessfulAction = ClientAction.PreviousSlide;
+    }
+
+
+    /// <summary>
+    /// message contains the data to be sent to the plugin including the plugin name
+    /// </summary>
+    /// <returns></returns>
+    public async Task SendPluginRawData()
+    {
+        var message = new object();
+        await SendJsonPostRequest<object, object>("/pluginCore", message);
+        Logger.Log($"Sent plugin data to {Address}");
+        LastSuccessfulAction = ClientAction.Plugin;
     }
 }

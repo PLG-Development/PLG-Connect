@@ -67,6 +67,7 @@ public partial class MainWindow : Window
         server.nextSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(NextSlide));
         server.previousSlideHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(PreviousSlide));
         server.shutdownHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(Shutdown));
+        server.pluginHandlers.Add((string message) => Dispatcher.UIThread.InvokeAsync(() => HandlePlugin(message)));
         server.beforeRequestHandlers.Add((HttpContextBase ctx) => Dispatcher.UIThread.InvokeAsync(() => BeforeRequest(ctx)));
         Logger.Log("Successfully initialized GUI!");
     }
@@ -95,6 +96,25 @@ public partial class MainWindow : Window
     }
 
     private static void ExecuteCommand(string command)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "bash", // Für Windows: "cmd.exe"
+                Arguments = $"-c \"{command}\"", // Für Windows: "/c {command}"
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.Log($"Fehler beim Ausführen des Befehls: {ex.Message}");
+        }
+    }
+
+    private static void HandlePlugin(string command)
     {
         try
         {

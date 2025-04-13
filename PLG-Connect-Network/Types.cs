@@ -12,6 +12,11 @@ public class RunCommandMessage
     public required string Command { get; set; }
 }
 
+public class PluginDataMessage
+{
+    public required string Data { get; set; }
+}
+
 
 public class ChangePasswordMessage
 {

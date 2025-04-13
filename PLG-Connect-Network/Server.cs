@@ -3,6 +3,7 @@ using WatsonHttpMethod = WatsonWebserver.Core.HttpMethod;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using Newtonsoft.Json;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 
 namespace PLG_Connect_Network;
@@ -19,6 +20,7 @@ public class PLGServer
     public List<Action<HttpContextBase>> beforeRequestHandlers = new List<Action<HttpContextBase>>();
     public List<Action<string, string>> openFileHandlers = new List<Action<string, string>>();
     public List<Action> shutdownHandlers = new List<Action>();
+    public List<Action<string>> pluginHandlers = new List<Action<string>>();
     public string Password;
     private string dataFolderPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -57,6 +59,8 @@ public class PLGServer
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/openFile", OpenFileRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/sendFile", SendFileRoute);
         server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/hasFile", HasFileRoute);
+
+        server.Routes.PostAuthentication.Static.Add(WatsonHttpMethod.POST, "/pluginCore", HandlePluginDataRoute);
 
         server.Routes.PreRouting = BeforeRequest;
         server.Routes.AuthenticateRequest = AuthenticateRequest;
@@ -325,5 +329,26 @@ public class PLGServer
         }
         await ctx.Response.Send("");
         Logger.Log("Invoked previous slide");
+    }
+
+    async Task HandlePluginDataRoute(HttpContextBase ctx){
+        foreach (var handler in pluginHandlers)
+        {
+            PluginDataMessage result;
+            try
+            {
+                result = ExtractObject<PluginDataMessage>(ctx);
+            }
+            catch (Exception e)
+            {
+                ctx.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                Logger.Log("Error while displaying text: " + e.Message, Logger.LogType.Error);
+                await ctx.Response.Send($"ERROR: {e.Message}");
+                return;
+            }
+            handler(result.Data);
+        }
+        await ctx.Response.Send("");
+        Logger.Log("Handled plugin data");
     }
 }
