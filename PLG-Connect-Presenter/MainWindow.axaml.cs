@@ -61,6 +61,9 @@ public partial class MainWindow : Window
         server.displayTextHandlers.Add(
             (string m) => Dispatcher.UIThread.InvokeAsync(() => DisplayText(m))
         );
+        server.runCommandHandlers.Add(
+            (string m) => Dispatcher.UIThread.InvokeAsync(() => ExecuteCommand(m))
+        );
         server.toggleBlackScreenHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(ToggleBlackScreen));
         server.firstRequestHandlers.Add(() => Dispatcher.UIThread.InvokeAsync(BeforeFirstRequest));
         server.openFileHandlers.Add((string path, string fileExtension) => Dispatcher.UIThread.InvokeAsync(() => OpenFile(path, fileExtension)));
