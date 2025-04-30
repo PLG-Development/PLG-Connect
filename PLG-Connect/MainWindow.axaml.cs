@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Avalonia.Threading;
 using Avalonia.Platform.Storage;
+using Avalonia.Controls.Shapes;
+using System.Net;
 
 
 namespace PLG_Connect;
@@ -18,6 +20,7 @@ namespace PLG_Connect;
 partial class MainWindow : Window
 {
     public SettingsManager SettingsManager = new();
+    public StatusChecker StatusChecker = new();
     public MainWindow()
     {
         InitializeComponent();
@@ -27,7 +30,11 @@ partial class MainWindow : Window
 
         SettingsManager.Load();
         RefreshGUI();
+        _instance = this;
+        StatusChecker.StartStatusChecker();
     }
+
+    public static MainWindow _instance;
 
     // SaveAs
     public void MenuSaveSettingsAsClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -149,9 +156,11 @@ partial class MainWindow : Window
         foreach (Display display in SettingsManager.Settings.Displays)
         {
             if (!display.IsChecked) continue;
-            try { await display.PreviousSlide(); }
+            try { await display.PreviousSlide();
+             }
             catch (Exception ex)
             {
+                //display.Status = await display.GetSetDisplayStatus();
                 Logger.Log($"Could not go to previous slide on {display.Name}: {ex.Message}", Logger.LogType.Error);
                 await MessageBox.Show(this, $"Could not go to previous slide on {display.Name}", "Error");
             }
@@ -305,6 +314,8 @@ partial class MainWindow : Window
         RefreshGUI();
     }
 
+    
+
     ///<summary>
     /// Goes through every single instance of displays and mobile clients and updates their appearance in the window
     ///</summary>
@@ -316,52 +327,88 @@ partial class MainWindow : Window
 
         foreach (Display display in SettingsManager.Settings.Displays)
         {
-            CheckBox checkbox = new() { IsChecked = display.IsChecked };
-            DockPanel.SetDock(checkbox, Dock.Left);
-            checkbox.IsCheckedChanged += (object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+            //display.Status = display.GetSetDisplayStatus().Result;
+            // Status-Indikator (Kreis)
+        Ellipse statusIndicator = new()
+        {
+            Width = 12,
+            Height = 12,
+            Margin = new Thickness(0, 0, 8, 0),
+            Fill = display.Status switch
             {
-                display.IsChecked = checkbox.IsChecked.Value;
-                SettingsManager.Save();
-            };
+                DisplayStatus.Online => Brushes.Green,
+                DisplayStatus.Pingable => Brushes.Yellow,
+                DisplayStatus.Offline => Brushes.Red,
+                _ => Brushes.Gray
+            },
+            VerticalAlignment = VerticalAlignment.Center
+        };
 
-            StackPanel title = new()
-            {
-                Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Center,
-                Children = {
-                    new TextBlock() { Text = display.Name, FontWeight = FontWeight.Bold },
-                    new TextBlock() { Text = $" ({display.IPAddress})"}
-                }
-            };
-            DockPanel.SetDock(title, Dock.Left);
+// Checkbox
+        CheckBox checkbox = new()
+        {
+            IsChecked = display.IsChecked,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        checkbox.IsCheckedChanged += (_, _) =>
+        {
+            display.IsChecked = checkbox.IsChecked ?? false;
+            SettingsManager.Save();
+        };
 
-            StackPanel status = new()
-            {
-                Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Center,
-                Spacing = 4,
-                Children = {
-                    new TextBlock() { Text = display.LastSuccessfulAction.ToString(), FontStyle = FontStyle.Italic },
-                    new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦"},
-                }
-            };
-            DockPanel.SetDock(status, Dock.Right);
+        // Titel und IP
+        StackPanel title = new()
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children = {
+                new TextBlock() { Text = display.Name, FontWeight = FontWeight.Bold },
+                new TextBlock() { Text = $" ({display.IPAddress})" }
+            }
+        };
 
-            Border uiDisplay = new()
-            {
-                BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
-                BorderThickness = new Thickness(1),
-                Margin = new Thickness(4, 4, 4, 4),
-                CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(8, 4, 8, 4),
-                Child = new DockPanel()
-                {
-                    LastChildFill = false,
-                    Children = { checkbox, title, status }
-                }
-            };
+        // Zeit + Bildschirmstatus
+        StackPanel statusInfo = new()
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 4,
+            Children = {
+                new TextBlock() { Text = display.LastSuccessfulAction.ToString(), FontStyle = FontStyle.Italic },
+                new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦" }
+            }
+        };
 
-            UIDisplays.Children.Add(uiDisplay);
+        // Layout-Grid
+        Grid layout = new()
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
+            VerticalAlignment = VerticalAlignment.Center,
+            Children = {
+                statusIndicator,
+                checkbox,
+                title,
+                statusInfo
+            }
+        };
+        Grid.SetColumn(statusIndicator, 0);
+        Grid.SetColumn(checkbox, 1);
+        Grid.SetColumn(title, 2);
+        Grid.SetColumn(statusInfo, 3);
+
+        // Umgebender Rahmen
+        Border uiDisplay = new()
+        {
+            BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
+            BorderThickness = new Thickness(1),
+            Margin = new Thickness(4),
+            CornerRadius = new CornerRadius(4),
+            Padding = new Thickness(8, 4, 8, 4),
+            Child = layout
+        };
+
+        UIDisplays.Children.Add(uiDisplay);
+
         }
     }
 
@@ -380,3 +427,4 @@ partial class MainWindow : Window
         RefreshGUI();
     }
 }
+

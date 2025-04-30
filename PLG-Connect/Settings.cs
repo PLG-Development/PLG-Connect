@@ -73,6 +73,7 @@ public class Display : PLGClient
     public string IPAddress;
     public bool IsChecked = false;
 
+
     public Display(string name, string ipAddress, string macAddress, string password = "0") : base(ipAddress, macAddress, password)
     {
         Name = name;

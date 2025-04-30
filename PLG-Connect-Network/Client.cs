@@ -31,6 +31,7 @@ public class PLGClient
     static readonly HttpClient client = new();
     public bool ShowsBlackScreen { get; set; }
     public ClientAction LastSuccessfulAction = ClientAction.Nothing;
+    public DisplayStatus Status = DisplayStatus.Offline;
 
     public PLGClient(string ipAddress, string? macAddress = null, string password = "0", int port = 8080)
     {
@@ -61,29 +62,53 @@ public class PLGClient
 
     private async Task<ReceiveType> SendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
     {
-        string json = JsonConvert.SerializeObject(message);
-        StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-        string response = await SendRequest(path, content, HttpMethod.Post);
+        try{
+            string json = JsonConvert.SerializeObject(message);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            string response = await SendRequest(path, content, HttpMethod.Post);
 
-        // only return an object if we got content from the server
-        if (response == null) return default!;
-        ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
-        return result;
+            // only return an object if we got content from the server
+            if (response == null) return default!;
+            
+            ReceiveType result = JsonConvert.DeserializeObject<ReceiveType>(response)!;
+
+            Status = DisplayStatus.Online;
+
+            return result;
+
+        } catch
+        {
+            
+            Status = await Task.Run(() => GetDisplayOfflineOrPingable());
+            throw;
+        }
     }
+
+
 
     private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method)
     {
-        var request = new HttpRequestMessage(method, "http://" + Address + path);
-        request.Content = content;
+        try{
+            var request = new HttpRequestMessage(method, "http://" + Address + path);
+            request.Content = content;
 
-        string header = "Bearer " + Password;
-        request.Headers.Add("Authorization", header);
+            string header = "Bearer " + Password;
+            request.Headers.Add("Authorization", header);
 
-        var response = await client.SendAsync(request);
+            var response = await client.SendAsync(request);
+            
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
 
-        response.EnsureSuccessStatusCode();
-        string responseBody = await response.Content.ReadAsStringAsync();
-        return responseBody;
+            Status = DisplayStatus.Online;
+
+            return responseBody;
+        } catch
+        {
+            Status = await Task.Run(() => GetDisplayOfflineOrPingable());
+            throw;
+        }
+        
     }
 
     public void SendWakeOnLAN()
@@ -96,9 +121,10 @@ public class PLGClient
         PhysicalAddress.Parse(MacAddress).SendWol();
         Logger.Log("WOL sent to " + MacAddress);
         LastSuccessfulAction = ClientAction.WakeOnLAN;
+        
     }
 
-    public async Task<bool> Ping()
+    public async Task<bool> Ping(bool silent = false)
     {
         string response;
         try
@@ -110,13 +136,32 @@ public class PLGClient
             return false;
         }
 
-        LastSuccessfulAction = ClientAction.Ping;
+        if (!silent) LastSuccessfulAction = ClientAction.Ping;
 
         if (response == "pong")
         {
+            //Status = DisplayStatus.Online;
             return true;
         };
         return false;
+    }
+
+    public DisplayStatus GetDisplayOfflineOrPingable()
+    {
+        Ping ping = new();
+        string ipOnly = Address.Split(':')[0];
+
+        PingReply reply = ping.Send(IPAddress.Parse(ipOnly), 50);
+        if (reply.Status == IPStatus.Success)
+        {
+            //Logger.Log($"Pingable: {ipOnly}");
+            return DisplayStatus.Pingable;
+        }
+        else
+        {
+            //Logger.Log($"Offline: {ipOnly}");
+            return DisplayStatus.Offline;
+        }
     }
 
     public async Task DisplayText(string text)
@@ -148,6 +193,7 @@ public class PLGClient
         await SendRequest("/shutdown", null, HttpMethod.Get);
         Logger.Log($"Powered off display at {Address}");
         LastSuccessfulAction = ClientAction.Shutdown;
+        Status = GetDisplayOfflineOrPingable();
     }
 
     public async Task RunCommand(string command)
@@ -232,4 +278,10 @@ public class PLGClient
         Logger.Log($"Sent plugin data to {Address}");
         LastSuccessfulAction = ClientAction.Plugin;
     }
+}
+public enum DisplayStatus
+{
+    Offline,
+    Pingable,
+    Online
 }
