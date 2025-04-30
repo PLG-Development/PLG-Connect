@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 using SharpHook.Native;
 using WatsonWebserver.Core;
 
+using PLG_Connect_Plugins;
+using Newtonsoft.Json;
+
 
 namespace PLG_Connect_Presenter;
 
@@ -38,6 +41,8 @@ public partial class MainWindow : Window
         Logger.Log("Starting up...");
         LoadImage();
         TempInitialize();
+        Logger.Log("Loading Plugins...");
+        PluginContainer.Initialize();
 
         _mouseHideTimer = new System.Timers.Timer(1000);
         _mouseHideTimer.Elapsed += OnMouseHideTimerElapsed;
@@ -121,18 +126,21 @@ public partial class MainWindow : Window
     {
         try
         {
-            Process.Start(new ProcessStartInfo
+            (string, string[]) messagecontents = JsonConvert.DeserializeObject<(string, string[])>(command);
+            //PluginContainer.Initialize();
+            foreach (var plugin in PluginContainer.Plugins)
             {
-                FileName = "bash", // Für Windows: "cmd.exe"
-                Arguments = $"-c \"{command}\"", // Für Windows: "/c {command}"
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            });
+                if (plugin.PluginName == messagecontents.Item1)
+                {
+                    Logger.Log($"Plugin {messagecontents.Item1} found");
+                    plugin.ExecuteOnServerDisplay(messagecontents.Item2);
+                    break;
+                }
+            }
         }
         catch (Exception ex)
         {
-            Logger.Log($"Fehler beim Ausführen des Befehls: {ex.Message}");
+            Logger.Log($"Fehler beim Starten des Plugins: {ex.Message}");
         }
     }
 

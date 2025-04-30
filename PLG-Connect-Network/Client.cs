@@ -225,9 +225,9 @@ public class PLGClient
     /// message contains the data to be sent to the plugin including the plugin name
     /// </summary>
     /// <returns></returns>
-    public async Task SendPluginRawData()
+    public async Task SendPluginRawData(string pluginName, string[] args)
     {
-        var message = new object();
+        var message = JsonConvert.SerializeObject(new { PluginName = pluginName, Args = args });
         await SendJsonPostRequest<object, object>("/pluginCore", message);
         Logger.Log($"Sent plugin data to {Address}");
         LastSuccessfulAction = ClientAction.Plugin;

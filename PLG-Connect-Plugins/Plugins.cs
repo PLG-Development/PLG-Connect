@@ -9,13 +9,8 @@ using System;
 namespace PLG_Connect_Plugins;
 
 
-public class PluginExecutor
-{
-    
-}
-
 public static class PluginContainer{
-    public static List<IConnectPlugin> Plugins { get; } = new List<IConnectPlugin>();
+    public static List<IConnectPlugin> Plugins { get; set; } = new List<IConnectPlugin>();
 
     public static void RegisterPlugin(IConnectPlugin plugin)
     {
@@ -26,6 +21,7 @@ public static class PluginContainer{
         Plugins.Remove(plugin);
     }
     public static void Initialize(){
+        Plugins = new List<IConnectPlugin>();
         string pluginFolder = "Plugins";
         foreach (var file in Directory.GetFiles(pluginFolder, "*.dll"))
         {
@@ -50,5 +46,5 @@ public interface IConnectPlugin
     Control GetServerUI(); // UI-Parts (if necessary) for the server
     
     // Optional: Server-Logic 
-    void ExecuteOnServerDisplay();
+    void ExecuteOnServerDisplay(string[] args);
 }

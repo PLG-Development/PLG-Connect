@@ -22,6 +22,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\PLG-Connect-Network\PLG-Connect-Network.csproj" />
+        <ProjectReference Include="..\PLG-Connect-Plugins\PLG_Connect_Plugins.csproj" />
     </ItemGroup>
 
     <ItemGroup>
