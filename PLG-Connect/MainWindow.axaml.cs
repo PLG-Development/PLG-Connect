@@ -391,8 +391,8 @@ partial class MainWindow : Window
                     statusInfo
                 }
             };
-            Grid.SetColumn(statusIndicator, 0);
-            Grid.SetColumn(checkbox, 1);
+            Grid.SetColumn(statusIndicator, 1);
+            Grid.SetColumn(checkbox, 0);
             Grid.SetColumn(title, 2);
             Grid.SetColumn(statusInfo, 3);
 
