@@ -56,6 +56,8 @@ public partial class MainWindow : Window
 
         Start();
 
+        currentWindowState = this.WindowState;
+
         this.AddHandler(PointerPressedEvent, (sender, e) =>
         {
             ToggleFullscreen();
