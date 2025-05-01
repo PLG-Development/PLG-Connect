@@ -38,7 +38,7 @@ public class StatusChecker
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(10), _statusCheckCts.Token);
+                await Task.Delay(TimeSpan.FromSeconds(2), _statusCheckCts.Token);
             }
         }, _statusCheckCts.Token);
     }

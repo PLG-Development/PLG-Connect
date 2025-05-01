@@ -86,30 +86,37 @@ public class PLGClient
 
 
 
-    private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method)
+    private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method, int timeout = 100)
     {
-        try{
-            var request = new HttpRequestMessage(method, "http://" + Address + path);
-            request.Content = content;
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeout));
 
-            string header = "Bearer " + Password;
-            request.Headers.Add("Authorization", header);
+        try
+        {
+            var request = new HttpRequestMessage(method, "http://" + Address + path)
+            {
+                Content = content
+            };
+            request.Headers.Add("Authorization", "Bearer " + Password);
 
-            var response = await client.SendAsync(request);
-            
+            var response = await client.SendAsync(request, cts.Token);
             response.EnsureSuccessStatusCode();
+
             string responseBody = await response.Content.ReadAsStringAsync();
-
             Status = DisplayStatus.Online;
-
             return responseBody;
-        } catch
+        }
+        catch (TaskCanceledException ex) when (!cts.Token.IsCancellationRequested)
+        {
+            Status = DisplayStatus.Offline;
+            throw new TimeoutException("Die Anfrage hat das Zeitlimit überschritten.", ex);
+        }
+        catch
         {
             Status = await Task.Run(() => GetDisplayOfflineOrPingable());
             throw;
         }
-        
     }
+
 
     public void SendWakeOnLAN()
     {
@@ -129,7 +136,7 @@ public class PLGClient
         string response;
         try
         {
-            response = await SendRequest("/ping", null, HttpMethod.Get);
+            response = await SendRequest("/ping", null, HttpMethod.Get, 1);
         }
         catch
         {
@@ -171,6 +178,9 @@ public class PLGClient
             Logger.Log($"Error at {Address} while displaying text: Text cannot be null or empty", Logger.LogType.Error);
             throw new ArgumentException("Text cannot be null or empty");
         }
+
+        CheckReachable();
+
         var message = new DisplayTextMessage { Text = text };
         await SendJsonPostRequest<DisplayTextMessage, object>("/displayText", message);
         Logger.Log($"Displayed text to {Address}: {text}");
@@ -180,6 +190,8 @@ public class PLGClient
 
     public async Task<bool> ToggleBlackScreen()
     {
+        CheckReachable();
+
         var message = new object();
         ToggleBlackScreenReturnMessage result = await SendJsonPostRequest<object, ToggleBlackScreenReturnMessage>("/toggleBlackScreen", message);
         Logger.Log($"Toggled blackscreen at {Address}");
@@ -188,8 +200,24 @@ public class PLGClient
         return ShowsBlackScreen;
     }
 
+    public void CheckReachable()
+    {
+        if(Status == DisplayStatus.Offline)
+        {
+            Logger.Log($"Error at {Address} while displaying text: Display is offline", Logger.LogType.Error);
+            throw new Exception("Display is offline");
+        }
+
+        if(Status == DisplayStatus.Pingable)
+        {
+            Logger.Log($"Error at {Address} while displaying text: Display is pingable but not online", Logger.LogType.Error);
+            throw new Exception("Display is pingable but not online");
+        }
+    }
+
     public async Task Shutdown()
     {
+        CheckReachable();
         await SendRequest("/shutdown", null, HttpMethod.Get);
         Logger.Log($"Powered off display at {Address}");
         LastSuccessfulAction = ClientAction.Shutdown;
@@ -203,6 +231,7 @@ public class PLGClient
             Logger.Log($"Error at {Address} while running command: Command cannot be null or empty", Logger.LogType.Error);
             throw new ArgumentException("Command cannot be null or empty");
         }
+        CheckReachable();
         var message = new RunCommandMessage { Command = command };
         await SendJsonPostRequest<RunCommandMessage, object>("/runCommand", message);
         Logger.Log($"Ran command at {Address}: {command}");
@@ -211,16 +240,19 @@ public class PLGClient
 
     private async Task SendFile(byte[] data, string fileExtension, string fileHash)
     {
+        CheckReachable();
         ByteArrayContent content = new(data);
         await SendRequest($"/sendFile?fileExtension={fileExtension}&fileHash={fileHash}", content, HttpMethod.Post);
     }
     private async Task JustOpenFile(string fileHash, string fileExtension)
     {
+        CheckReachable();
         var message = new object();
         await SendJsonPostRequest<object, object>($"/openFile?fileExtension={fileExtension}&fileHash={fileHash}", message);
     }
     private async Task<bool> HasFile(string fileHash, string fileExtension)
     {
+        CheckReachable();
         var message = new object();
         HasFileResponse response = await SendJsonPostRequest<object, HasFileResponse>($"/hasFile?fileExtension={fileExtension}&fileHash={fileHash}", message);
         return response.HasFile;
@@ -231,6 +263,7 @@ public class PLGClient
         {
             throw new ArgumentException("Incorrect file path");
         }
+        CheckReachable();
 
         string fileExtension = Path.GetExtension(path).TrimStart('.').ToLower();
         byte[] fileData = File.ReadAllBytes(path);
@@ -252,6 +285,7 @@ public class PLGClient
 
     public async Task NextSlide()
     {
+        CheckReachable();
         var message = new object();
         await SendJsonPostRequest<object, object>("/nextSlide", message);
         Logger.Log($"Invoked next slide at {Address}");
@@ -260,6 +294,7 @@ public class PLGClient
 
     public async Task PreviousSlide()
     {
+        CheckReachable();
         var message = new object();
         await SendJsonPostRequest<object, object>("/previousSlide", message);
         Logger.Log($"Invoked previous slide at {Address}");
@@ -273,6 +308,7 @@ public class PLGClient
     /// <returns></returns>
     public async Task SendPluginRawData(string pluginName, string[] args)
     {
+        CheckReachable();
         var message = JsonConvert.SerializeObject(new { PluginName = pluginName, Args = args });
         await SendJsonPostRequest<object, object>("/pluginCore", message);
         Logger.Log($"Sent plugin data to {Address}");
