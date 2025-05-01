@@ -242,7 +242,7 @@ public class PLGClient
     {
         CheckReachable();
         ByteArrayContent content = new(data);
-        await SendRequest($"/sendFile?fileExtension={fileExtension}&fileHash={fileHash}", content, HttpMethod.Post);
+        await SendRequest($"/sendFile?fileExtension={fileExtension}&fileHash={fileHash}", content, HttpMethod.Post, 120);
     }
     private async Task JustOpenFile(string fileHash, string fileExtension)
     {
