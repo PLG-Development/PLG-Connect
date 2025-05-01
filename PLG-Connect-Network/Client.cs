@@ -60,12 +60,12 @@ public class PLGClient
 
     }
 
-    private async Task<ReceiveType> SendJsonPostRequest<SendType, ReceiveType>(string path, SendType message)
+    private async Task<ReceiveType> SendJsonPostRequest<SendType, ReceiveType>(string path, SendType message, int timeout = 5)
     {
         try{
             string json = JsonConvert.SerializeObject(message);
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            string response = await SendRequest(path, content, HttpMethod.Post);
+            string response = await SendRequest(path, content, HttpMethod.Post, timeout);
 
             // only return an object if we got content from the server
             if (response == null) return default!;
@@ -86,7 +86,7 @@ public class PLGClient
 
 
 
-    private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method, int timeout = 100)
+    private async Task<string> SendRequest(string path, HttpContent? content, HttpMethod method, int timeout = 5)
     {
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeout));
 
