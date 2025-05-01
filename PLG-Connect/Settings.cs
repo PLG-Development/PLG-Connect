@@ -52,12 +52,14 @@ class SettingsManager
 public struct Settings
 {
     public List<Display> Displays;
+    public List<List<string>> DisplayGroups; // uses IP to identify the display
     public Themes Theme;
     public string Language;
 
     public Settings()
     {
         Displays = [];
+        DisplayGroups = new List<List<string>>();
         Theme = Themes.Auto;
         Language = "en";
     }
