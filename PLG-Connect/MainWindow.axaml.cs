@@ -356,6 +356,23 @@ partial class MainWindow : Window
                 SettingsManager.Save();
             };
 
+            // Edit
+            Button editButton = new Button
+            {
+                // Settings-Emoji
+                Content = "⚙️",
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = Brushes.Transparent,
+                BorderBrush = Brushes.Transparent,
+                Foreground = Brushes.White,
+                FontSize = 16,
+            };
+            editButton.Click += (_, _) =>
+            {
+                NewMonitorWindow w = new NewMonitorWindow(this, display);
+                w.Show();
+            };
+
             // Titel und IP
             StackPanel title = new()
             {
@@ -382,19 +399,21 @@ partial class MainWindow : Window
             // Layout-Grid
             Grid layout = new()
             {
-                ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
+                ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto,Auto"),
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = {
                     checkbox,
                     statusIndicator,
                     title,
-                    statusInfo
+                    statusInfo,
+                    editButton
                 }
             };
             Grid.SetColumn(statusIndicator, 1);
             Grid.SetColumn(checkbox, 0);
             Grid.SetColumn(title, 2);
             Grid.SetColumn(statusInfo, 3);
+            Grid.SetColumn(editButton, 4);
 
             // Umgebender Rahmen
             Border uiDisplay = new()

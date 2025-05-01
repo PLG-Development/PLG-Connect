@@ -20,10 +20,34 @@ public partial class NewMonitorWindow : Window
         mainWindow = mv;
     }
 
+    public bool updating = false;
+    internal NewMonitorWindow(MainWindow mv, Display display)
+    {
+        InitializeComponent();
+
+        mainWindow = mv;
+        DisplayName = display.Name;
+        DisplayIp = display.IPAddress;
+        DisplayMac = display.MacAddress;
+
+        NameTextBox.Text = DisplayName;
+        IpTextBox.Text = DisplayIp;
+        MacTextBox.Text = DisplayMac;
+
+        updating = true;
+        AddButton.Content = "Update";
+
+        display_instance = display;
+
+        ButtonCheck();
+
+    }
+
     public string DisplayName;
     public string DisplayIp;
     public string DisplayMac;
     private MainWindow mainWindow;
+    private Display display_instance;
 
     private void CancelButtonClick(object sender, RoutedEventArgs e)
     {
@@ -154,6 +178,23 @@ public partial class NewMonitorWindow : Window
 
     private void AddButtonClick(object sender, RoutedEventArgs e)
     {
+        if(updating)
+        {
+            var displayInList = MainWindow._instance.SettingsManager.Settings.Displays.FirstOrDefault(d => ReferenceEquals(d, display_instance));
+            if(displayInList != null)
+            {
+                displayInList.Name = DisplayName;
+                displayInList.IPAddress = DisplayIp;
+                displayInList.Address = DisplayIp + ":8080"; // WARNING: This is a hardcoded port, should be changed to a variable in the future
+                displayInList.MacAddress = DisplayMac;
+            }
+            mainWindow.RefreshGUI();
+            Logger.Log("Updated monitor: " + DisplayIp);
+            Close();
+            return;
+
+            
+        }
         // Check if mac already exists
         if (mainWindow.SettingsManager.Settings.Displays.Where(d => d.MacAddress == DisplayMac).Count() > 0 && DisplayMac != null && DisplayMac != "")
         {
