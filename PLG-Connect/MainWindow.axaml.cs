@@ -329,86 +329,143 @@ partial class MainWindow : Window
         {
             //display.Status = display.GetSetDisplayStatus().Result;
             // Status-Indikator (Kreis)
-        Ellipse statusIndicator = new()
-        {
-            Width = 12,
-            Height = 12,
-            Margin = new Thickness(0, 0, 8, 0),
-            Fill = display.Status switch
+            Ellipse statusIndicator = new()
             {
-                DisplayStatus.Online => Brushes.Green,
-                DisplayStatus.Pingable => Brushes.Yellow,
-                DisplayStatus.Offline => Brushes.Red,
-                _ => Brushes.Gray
-            },
-            VerticalAlignment = VerticalAlignment.Center
-        };
+                Width = 12,
+                Height = 12,
+                Margin = new Thickness(0, 0, 8, 0),
+                Fill = display.Status switch
+                {
+                    DisplayStatus.Online => Brushes.Green,
+                    DisplayStatus.Pingable => Brushes.Yellow,
+                    DisplayStatus.Offline => Brushes.Red,
+                    _ => Brushes.Gray
+                },
+                VerticalAlignment = VerticalAlignment.Center
+            };
 
-// Checkbox
-        CheckBox checkbox = new()
+            // Checkbox
+            CheckBox checkbox = new()
+            {
+                IsChecked = display.IsChecked,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            checkbox.IsCheckedChanged += (_, _) =>
+            {
+                display.IsChecked = checkbox.IsChecked ?? false;
+                SettingsManager.Save();
+            };
+
+            // Titel und IP
+            StackPanel title = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = {
+                    new TextBlock() { Text = display.Name, FontWeight = FontWeight.Bold },
+                    new TextBlock() { Text = $" ({display.IPAddress})" }
+                }
+            };
+
+            // Zeit + Bildschirmstatus
+            StackPanel statusInfo = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Spacing = 4,
+                Children = {
+                    new TextBlock() { Text = display.LastSuccessfulAction.ToString(), FontStyle = FontStyle.Italic },
+                    new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦" }
+                }
+            };
+
+            // Layout-Grid
+            Grid layout = new()
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = {
+                    checkbox,
+                    statusIndicator,
+                    title,
+                    statusInfo
+                }
+            };
+            Grid.SetColumn(statusIndicator, 0);
+            Grid.SetColumn(checkbox, 1);
+            Grid.SetColumn(title, 2);
+            Grid.SetColumn(statusInfo, 3);
+
+            // Umgebender Rahmen
+            Border uiDisplay = new()
+            {
+                BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(4),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(8, 4, 8, 4),
+                Child = layout
+            };
+
+            UIDisplays.Children.Add(uiDisplay);
+
+        }
+
+        DisplayGroups.Children.Clear();
+
+        foreach(var displayGroup in SettingsManager.Settings.DisplayGroups)
         {
-            IsChecked = display.IsChecked,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-        checkbox.IsCheckedChanged += (_, _) =>
-        {
-            display.IsChecked = checkbox.IsChecked ?? false;
-            SettingsManager.Save();
-        };
+             CheckBox checkbox = new()
+            {
+                IsChecked = displayGroup.TrueForAll(ip => SettingsManager.Settings.Displays.Find(d => d.IPAddress == ip).IsChecked),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            checkbox.IsCheckedChanged += (_, _) =>
+            {
+                foreach(Display d in SettingsManager.Settings.Displays)
+                {
+                    if(displayGroup.Contains(d.IPAddress))
+                    {
+                        d.IsChecked = checkbox.IsChecked ?? false;
+                    }
+                }
+                RefreshGUI();
+            };
+            
+            StackPanel title = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Spacing = 4,
+                Children = {
+                    new TextBlock() { Text = "Gruppe " + SettingsManager.Settings.DisplayGroups.IndexOf(displayGroup), FontWeight = FontWeight.Bold },
+                }
+            };
 
-        // Titel und IP
-        StackPanel title = new()
-        {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center,
-            Children = {
-                new TextBlock() { Text = display.Name, FontWeight = FontWeight.Bold },
-                new TextBlock() { Text = $" ({display.IPAddress})" }
-            }
-        };
+            Grid layout = new()
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = {
+                    checkbox,
+                    title,
+                }
+            };
+            Grid.SetColumn(checkbox, 1);
+            Grid.SetColumn(title, 2);
 
-        // Zeit + Bildschirmstatus
-        StackPanel statusInfo = new()
-        {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center,
-            Spacing = 4,
-            Children = {
-                new TextBlock() { Text = display.LastSuccessfulAction.ToString(), FontStyle = FontStyle.Italic },
-                new TextBlock() { Text = display.ShowsBlackScreen ? "⬛" : "🟦" }
-            }
-        };
+            Border uiDisplayGroup = new()
+            {
+                BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
+                BorderThickness = new Thickness(1),
+                Margin = new Thickness(4),
+                CornerRadius = new CornerRadius(4),
+                Padding = new Thickness(8, 4, 8, 4),
+                Child = layout
+            };
+            
 
-        // Layout-Grid
-        Grid layout = new()
-        {
-            ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
-            VerticalAlignment = VerticalAlignment.Center,
-            Children = {
-                checkbox,
-                statusIndicator,
-                title,
-                statusInfo
-            }
-        };
-        Grid.SetColumn(statusIndicator, 0);
-        Grid.SetColumn(checkbox, 1);
-        Grid.SetColumn(title, 2);
-        Grid.SetColumn(statusInfo, 3);
-
-        // Umgebender Rahmen
-        Border uiDisplay = new()
-        {
-            BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
-            BorderThickness = new Thickness(1),
-            Margin = new Thickness(4),
-            CornerRadius = new CornerRadius(4),
-            Padding = new Thickness(8, 4, 8, 4),
-            Child = layout
-        };
-
-        UIDisplays.Children.Add(uiDisplay);
-
+            DisplayGroups.Children.Add(uiDisplayGroup);
         }
     }
 
@@ -424,6 +481,18 @@ partial class MainWindow : Window
             d.IsChecked = false;
         }
 
+        RefreshGUI();
+    }
+
+    public void BtnGroupSelected_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
+        List<string> group = new List<string>();
+        foreach(Display d in SettingsManager.Settings.Displays){
+            if(d.IsChecked){
+                group.Add(d.IPAddress);
+            }
+        }
+        SettingsManager.Settings.DisplayGroups.Add(group);
+        SettingsManager.Save();
         RefreshGUI();
     }
 }
