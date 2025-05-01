@@ -155,7 +155,7 @@ public partial class NewMonitorWindow : Window
     private void AddButtonClick(object sender, RoutedEventArgs e)
     {
         // Check if mac already exists
-        if (mainWindow.SettingsManager.Settings.Displays.Where(d => d.MacAddress == DisplayMac).Count() > 0 && (DisplayMac != null || DisplayMac != ""))
+        if (mainWindow.SettingsManager.Settings.Displays.Where(d => d.MacAddress == DisplayMac).Count() > 0 && DisplayMac != null && DisplayMac != "")
         {
             PLG_Connect.MessageBox.Show(this, "This MAC-Address is already configured", "MAC-Adress already found");
             return;
