@@ -415,9 +415,14 @@ partial class MainWindow : Window
 
         foreach(var displayGroup in SettingsManager.Settings.DisplayGroups)
         {
-             CheckBox checkbox = new()
+            CheckBox checkbox = new()
             {
-                IsChecked = displayGroup.TrueForAll(ip => SettingsManager.Settings.Displays.Find(d => d.IPAddress == ip).IsChecked),
+                IsChecked = displayGroup.TrueForAll(ip =>
+                {
+                    var display = SettingsManager.Settings.Displays.Find(d => d.IPAddress == ip);
+                    if(display == null) return true;
+                    return display != null && display.IsChecked;
+                }),
                 VerticalAlignment = VerticalAlignment.Center
             };
             checkbox.IsCheckedChanged += (_, _) =>
@@ -441,6 +446,20 @@ partial class MainWindow : Window
                     new TextBlock() { Text = "Gruppe " + SettingsManager.Settings.DisplayGroups.IndexOf(displayGroup), FontWeight = FontWeight.Bold },
                 }
             };
+            Button removeButton = new()
+            {
+                Content = "-",
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = Brushes.Transparent,
+                BorderBrush = Brushes.Transparent,
+                Foreground = Brushes.Red,
+                
+            };
+            removeButton.Click += (_, _) =>
+            {
+                SettingsManager.Settings.DisplayGroups.Remove(displayGroup);
+                RefreshGUI();
+            };
 
             Grid layout = new()
             {
@@ -449,10 +468,12 @@ partial class MainWindow : Window
                 Children = {
                     checkbox,
                     title,
+                    removeButton,
                 }
             };
             Grid.SetColumn(checkbox, 1);
             Grid.SetColumn(title, 2);
+            Grid.SetColumn(removeButton, 4);
 
             Border uiDisplayGroup = new()
             {
