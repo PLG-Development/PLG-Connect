@@ -385,8 +385,8 @@ partial class MainWindow : Window
             ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
             VerticalAlignment = VerticalAlignment.Center,
             Children = {
-                statusIndicator,
                 checkbox,
+                statusIndicator,
                 title,
                 statusInfo
             }
