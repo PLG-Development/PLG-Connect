@@ -29,7 +29,12 @@ partial class MainWindow : Window
         Task.Run(async () => await Analytics.SendEvent("connect"));
 
         SettingsManager.Load();
-        RefreshGUI();
+        try{
+            RefreshGUI();
+        } catch {
+            
+        }
+       
         _instance = this;
         StatusChecker.StartStatusChecker();
     }
@@ -432,81 +437,94 @@ partial class MainWindow : Window
 
         DisplayGroups.Children.Clear();
 
-        foreach(var displayGroup in SettingsManager.Settings.DisplayGroups)
+        if(SettingsManager.Settings.DisplayGroups == null)
         {
-            CheckBox checkbox = new()
+            TextBlock noGroups = new()
             {
-                IsChecked = displayGroup.TrueForAll(ip =>
-                {
-                    var display = SettingsManager.Settings.Displays.Find(d => d.IPAddress == ip);
-                    if(display == null) return true;
-                    return display != null && display.IsChecked;
-                }),
-                VerticalAlignment = VerticalAlignment.Center
+                Text = "No display groups found",
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
             };
-            checkbox.IsCheckedChanged += (_, _) =>
+            DisplayGroups.Children.Add(noGroups);
+        } else {
+            foreach(var displayGroup in SettingsManager.Settings.DisplayGroups)
             {
-                foreach(Display d in SettingsManager.Settings.Displays)
+                CheckBox checkbox = new()
                 {
-                    if(displayGroup.Contains(d.IPAddress))
+                    IsChecked = displayGroup.TrueForAll(ip =>
                     {
-                        d.IsChecked = checkbox.IsChecked ?? false;
+                        var display = SettingsManager.Settings.Displays.Find(d => d.IPAddress == ip);
+                        if(display == null) return true;
+                        return display != null && display.IsChecked;
+                    }),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                checkbox.IsCheckedChanged += (_, _) =>
+                {
+                    foreach(Display d in SettingsManager.Settings.Displays)
+                    {
+                        if(displayGroup.Contains(d.IPAddress))
+                        {
+                            d.IsChecked = checkbox.IsChecked ?? false;
+                        }
                     }
-                }
-                RefreshGUI();
-            };
-            
-            StackPanel title = new()
-            {
-                Orientation = Orientation.Horizontal,
-                VerticalAlignment = VerticalAlignment.Center,
-                Spacing = 4,
-                Children = {
-                    new TextBlock() { Text = "Gruppe " + SettingsManager.Settings.DisplayGroups.IndexOf(displayGroup), FontWeight = FontWeight.Bold },
-                }
-            };
-            Button removeButton = new()
-            {
-                Content = "-",
-                VerticalAlignment = VerticalAlignment.Center,
-                Background = Brushes.Transparent,
-                BorderBrush = Brushes.Transparent,
-                Foreground = Brushes.Red,
+                    RefreshGUI();
+                };
                 
-            };
-            removeButton.Click += (_, _) =>
-            {
-                SettingsManager.Settings.DisplayGroups.Remove(displayGroup);
-                RefreshGUI();
-            };
+                StackPanel title = new()
+                {
+                    Orientation = Orientation.Horizontal,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Spacing = 4,
+                    Children = {
+                        new TextBlock() { Text = "Gruppe " + SettingsManager.Settings.DisplayGroups.IndexOf(displayGroup), FontWeight = FontWeight.Bold },
+                    }
+                };
+                Button removeButton = new()
+                {
+                    Content = "-",
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Background = Brushes.Transparent,
+                    BorderBrush = Brushes.Transparent,
+                    Foreground = Brushes.Red,
+                    
+                };
+                removeButton.Click += (_, _) =>
+                {
+                    SettingsManager.Settings.DisplayGroups.Remove(displayGroup);
+                    RefreshGUI();
+                };
 
-            Grid layout = new()
-            {
-                ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
-                VerticalAlignment = VerticalAlignment.Center,
-                Children = {
-                    checkbox,
-                    title,
-                    removeButton,
-                }
-            };
-            Grid.SetColumn(checkbox, 1);
-            Grid.SetColumn(title, 2);
-            Grid.SetColumn(removeButton, 4);
+                Grid layout = new()
+                {
+                    ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*,Auto"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children = {
+                        checkbox,
+                        title,
+                        removeButton,
+                    }
+                };
+                Grid.SetColumn(checkbox, 1);
+                Grid.SetColumn(title, 2);
+                Grid.SetColumn(removeButton, 4);
 
-            Border uiDisplayGroup = new()
-            {
-                BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
-                BorderThickness = new Thickness(1),
-                Margin = new Thickness(4),
-                CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(8, 4, 8, 4),
-                Child = layout
-            };
-            
+                Border uiDisplayGroup = new()
+                {
+                    BorderBrush = new SolidColorBrush(Color.Parse("#545457")),
+                    BorderThickness = new Thickness(1),
+                    Margin = new Thickness(4),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(8, 4, 8, 4),
+                    Child = layout
+                };
+                
 
-            DisplayGroups.Children.Add(uiDisplayGroup);
+                DisplayGroups.Children.Add(uiDisplayGroup);
+            }
         }
+
+        
     }
 
     public void BtnSelectAll_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e){
@@ -530,6 +548,10 @@ partial class MainWindow : Window
             if(d.IsChecked){
                 group.Add(d.IPAddress);
             }
+        }
+        if (SettingsManager.Settings.DisplayGroups == null)
+        {
+            SettingsManager.Settings.DisplayGroups = new List<List<string>>();
         }
         SettingsManager.Settings.DisplayGroups.Add(group);
         SettingsManager.Save();
