@@ -79,6 +79,11 @@ public class PLGServer
     bool firstRequestHappend = false;
     Task BeforeRequest(HttpContextBase ctx)
     {
+        if (ctx.Request.Url.RawWithoutQuery == "/ping")
+        {
+            return Task.CompletedTask;
+        }
+
         foreach (var handler in beforeRequestHandlers)
         {
             handler(ctx);
