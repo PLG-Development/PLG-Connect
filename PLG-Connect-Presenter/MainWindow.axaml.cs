@@ -44,6 +44,8 @@ public partial class MainWindow : Window
         Logger.Log("Loading Plugins...");
         PluginContainer.Initialize();
 
+        this.Cursor = new Cursor(StandardCursorType.None);
+
         _mouseHideTimer = new System.Timers.Timer(1000);
         _mouseHideTimer.Elapsed += OnMouseHideTimerElapsed;
         _mouseHideTimer.AutoReset = false;
@@ -270,7 +272,7 @@ public partial class MainWindow : Window
     private async void BeforeFirstRequest()
     {
         ownWindowId = await WindowManager.getLatestWindowId();
-
+        
         startInfo.IsVisible = false;
     }
 
