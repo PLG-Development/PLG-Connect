@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System;
+using PLG_Connect_Network;
 
 namespace PLG_Connect_Plugins;
 
@@ -23,16 +24,24 @@ public static class PluginContainer{
     public static void Initialize(){
         Plugins = new List<IConnectPlugin>();
         string pluginFolder = "Plugins";
-        foreach (var file in Directory.GetFiles(pluginFolder, "*.dll"))
+        try
         {
-            var asm = Assembly.LoadFrom(file);
-            var types = asm.GetTypes().Where(t => typeof(IConnectPlugin).IsAssignableFrom(t) && !t.IsInterface);
-            foreach (var type in types)
+            foreach (var file in Directory.GetFiles(pluginFolder, "*.dll"))
             {
-                var plugin = (IConnectPlugin)Activator.CreateInstance(type);
-                Plugins.Add(plugin);
+                var asm = Assembly.LoadFrom(file);
+                var types = asm.GetTypes().Where(t => typeof(IConnectPlugin).IsAssignableFrom(t) && !t.IsInterface);
+                foreach (var type in types)
+                {
+                    var plugin = (IConnectPlugin)Activator.CreateInstance(type);
+                    Plugins.Add(plugin);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Logger.Log($"Error loading plugins: {ex.Message}");
+        }
+        
     }
 }
 
