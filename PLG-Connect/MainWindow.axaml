@@ -64,7 +64,7 @@
                         <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
                             <Button
                                 Click="AddMonitorClick"
-                                Content="Add Monitor ➕"
+                                Content="Add Monitor +"
                                 DockPanel.Dock="Left" />
                             <Button
                                 Click="BtnSelectAll_Click"
