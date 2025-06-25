@@ -212,7 +212,7 @@ public partial class MainWindow : Window
 
     async private void OpenFile(string path, string fileExtension)
     {
-        if (fileExtension == "pptx")
+        if (fileExtension == "pptx" || fileExtension == "odp" || fileExtension == "ppt")
         {
             OpenPresentationFile(path);
         }
